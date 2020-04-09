@@ -1,4 +1,4 @@
-import React, {useLayoutEffect} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import {
   StyleSheet,
   Dimensions,
@@ -42,47 +42,17 @@ const WrapMain = ({navigation}) => {
             }}></View>
         </View>
       )}>
-      <WrapDraw.Screen name="main-draw" component={StackComponent} />
+      <WrapDraw.Screen name="main-draw" component={MainComponent} />
     </WrapDraw.Navigator>
   );
 };
 
-const StackComponent = ({navigation}) => {
-  return (
-    <WrapStack.Navigator>
-      <WrapStack.Screen name="main-stack" component={MainComponent} />
-    </WrapStack.Navigator>
-  );
-};
-
 const MainComponent = ({navigation}) => {
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: 'Recordary',
-      headerStyle: {backgroundColor: 'rgba(20, 81, 51, 0.8)'},
-      headerTintColor: 'white',
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize: 24,
-      },
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.openDrawer();
-          }}>
-          <Text style={{padding: 10}}>
-            <MaterialCommunityIcons name="menu" size={34} color="white" />
-          </Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, []);
   return (
     <BottomTab.Navigator
       initialRouteName="home"
       tabBarOptions={{
-        activeTintColor: 'rgba(20, 81, 51, 0.8)',
+        activeTintColor: 'rgb(64, 114, 89)',
         showLabel: false,
       }}>
       <BottomTab.Screen

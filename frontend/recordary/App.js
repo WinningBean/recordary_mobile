@@ -7,7 +7,6 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import Login from 'Components/Login/Login';
 import WrapMain from 'Components/WrapMain';
-import Test from './Test';
 import {StatusBar} from 'react-native';
 
 const Stack = createStackNavigator();
