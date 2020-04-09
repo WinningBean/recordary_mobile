@@ -28,9 +28,7 @@ const ProfileTab = () => {
           <View style={{flex: 3, justifyContent: 'center', paddingRight: 20}}>
             <View
               style={{
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 1,
-                paddingBottom: 10,
+                paddingBottom: 5,
               }}>
               <Text
                 style={{
@@ -44,7 +42,11 @@ const ProfileTab = () => {
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-around',
-                marginTop: 10,
+                marginTop: 2,
+                marginHorizontal: 20,
+                borderTopColor: 'lightgray',
+                borderTopWidth: 1,
+                paddingTop: 5,
               }}>
               <TouchableOpacity>
                 <View style={{alignItems: 'center'}}>
