@@ -15,6 +15,8 @@ import HomeTab from 'Components/Tab/HomeTab/HomeTab';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+
 const Stack = createStackNavigator();
 
 const AddPostTab = () => {
@@ -66,7 +68,7 @@ const AddPost = ({navigation}) => {
   const [selectedPublic, setSelectedPublic] = useState('전체공개');
 
   return (
-    <ScrollView style={styles.container}>
+    <KeyboardAwareScrollView style={styles.container}>
       <Picker
         mode="dropdown"
         selectedValue={selectedValue}
@@ -141,7 +143,7 @@ const AddPost = ({navigation}) => {
       <TouchableOpacity style={styles.addTag}>
         <Text>게시물을 함께할 사람 태그하기</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
