@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -6,9 +6,42 @@ import FastImage from 'react-native-fast-image';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import {createStackNavigator} from '@react-navigation/stack';
+const Stack = createStackNavigator();
+
 const ProfileTab = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="profile" component={Profile} />
+    </Stack.Navigator>
+  );
+};
+
+const Profile = ({navigation}) => {
   const [content, setContent] = useState(`안녕하세요
-테스트중 입니다.`);
+  테스트중 입니다.`);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: '프로필',
+      headerStyle: {backgroundColor: 'rgb(64, 114, 89)'},
+      headerTintColor: 'white',
+      headerTitleAlign: 'left',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize: 24,
+      },
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.openDrawer();
+          }}>
+          <Text style={{padding: 10}}>
+            <MaterialCommunityIcons name="menu" size={34} color="white" />
+          </Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, []);
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.section, {paddingTop: 12}]}>
