@@ -19,6 +19,8 @@ import ProfileTab from 'Components/Tab/ProfileTab/ProfileTab';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import Menu from 'Components/Menu/Menu';
+
 const WrapStack = createStackNavigator();
 const WrapDraw = createDrawerNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -31,17 +33,9 @@ const WrapMain = ({navigation}) => {
       initialRouteName="main-draw"
       edgeWidth={0}
       drawerStyle={{
-        width: Dimensions.get('window').width * 0.9,
+        width: Dimensions.get('window').width * 0.7,
       }}
-      drawerContent={() => (
-        <View style={{flex: 1}}>
-          <View
-            style={{
-              height: Dimensions.get('window').height * 0.3,
-              backgroundColor: 'tomato',
-            }}></View>
-        </View>
-      )}>
+      drawerContent={() => <Menu />}>
       <WrapDraw.Screen name="main-draw" component={StackComponent} />
     </WrapDraw.Navigator>
   );
