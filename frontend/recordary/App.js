@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
 
 import 'react-native-gesture-handler';
 
@@ -8,20 +7,28 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import Login from 'Components/Login/Login';
 import WrapMain from 'Components/WrapMain';
+import Test from './Test';
+import {StatusBar} from 'react-native';
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   return (
+    // <>
+    //   <StatusBar backgroundColor="transparent" />
     <NavigationContainer>
       <Stack.Navigator>
         {isLogin ? (
-          <Stack.Screen name="wrap" component={WrapMain} />
+          <Stack.Screen
+            name="wrap"
+            component={WrapMain}
+            options={{headerShown: false}}
+          />
         ) : (
           <Stack.Screen
             name="login"
-            component={Login}
+            component={login}
             options={{
               headerShown: false,
             }}
@@ -32,9 +39,8 @@ const App = () => {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+    // </>
   );
 };
 
 export default App;
-
-const styles = StyleSheet.create({});

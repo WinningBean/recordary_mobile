@@ -1,7 +1,14 @@
 import React, {useLayoutEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  StyleSheet,
+  Dimensions,
+  View,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import AddPostTab from 'Components/Tab/AddPostTab/AddPostTab';
 import ActiviteTab from 'Components/Tab/ActiviteTab/ActiviteTab';
@@ -13,49 +20,38 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const WrapStack = createStackNavigator();
+const WrapDraw = createDrawerNavigator();
 const BottomTab = createBottomTabNavigator();
 
 const WrapMain = ({navigation}) => {
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  });
-  console.log(navigation);
+  console.log({...TransitionPresets.SlideFromRightIOS});
 
   return (
-    <WrapStack.Navigator initialRouteName="main">
-      <WrapStack.Screen
-        name="menu"
-        component={MenuComponent}
-        options={{
-          ...TransitionPresets.SlideFromRightIOS,
-          gestureDirection: 'horizontal-inverted',
-        }}
-      />
-      <WrapStack.Screen name="main" component={MainComponent} />
-    </WrapStack.Navigator>
+    <WrapDraw.Navigator
+      initialRouteName="main-draw"
+      edgeWidth={0}
+      drawerStyle={{
+        width: Dimensions.get('window').width * 0.9,
+      }}
+      drawerContent={() => (
+        <View style={{flex: 1}}>
+          <View
+            style={{
+              height: Dimensions.get('window').height * 0.3,
+              backgroundColor: 'tomato',
+            }}></View>
+        </View>
+      )}>
+      <WrapDraw.Screen name="main-draw" component={StackComponent} />
+    </WrapDraw.Navigator>
   );
 };
 
-const MenuComponent = ({navigation}) => {
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => null,
-      headerRight: () => (
-        <MaterialCommunityIcons
-          name="arrow-right"
-          size={30}
-          style={{padding: 10}}
-          onPress={() => navigation.goBack()}
-        />
-      ),
-    });
-  }, []);
+const StackComponent = ({navigation}) => {
   return (
-    <View>
-      <Text>afds</Text>
-    </View>
+    <WrapStack.Navigator>
+      <WrapStack.Screen name="main-stack" component={MainComponent} />
+    </WrapStack.Navigator>
   );
 };
 
@@ -71,15 +67,14 @@ const MainComponent = ({navigation}) => {
         fontSize: 24,
       },
       headerLeft: () => (
-        <MaterialCommunityIcons
-          name="menu"
-          size={34}
-          color="white"
-          style={{padding: 10}}
+        <TouchableOpacity
           onPress={() => {
-            navigation.navigate('menu');
-          }}
-        />
+            navigation.openDrawer();
+          }}>
+          <Text style={{padding: 10}}>
+            <MaterialCommunityIcons name="menu" size={34} color="white" />
+          </Text>
+        </TouchableOpacity>
       ),
     });
   }, []);

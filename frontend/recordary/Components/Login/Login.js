@@ -8,7 +8,6 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import {Button} from 'react-native-material-ui';
 
 const Login = ({route}) => {
   console.log(route);
