@@ -1,5 +1,13 @@
 import React, {useLayoutEffect, useState, useRef} from 'react';
-import {StyleSheet, Text, View, Dimensions} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+} from 'react-native';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
@@ -18,8 +26,8 @@ const Message = ({navigation, route}) => {
   const info = useState({nm: route.params.nm, pic: route.params.pic})[0];
 
   return (
-    <>
-      <KeyboardAwareScrollView
+    <KeyboardAvoidingView style={{flex: 1}}>
+      <ScrollView
         style={styles.chatContainer}
         ref={scrollViewRef}
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd(true)}>
@@ -49,9 +57,14 @@ const Message = ({navigation, route}) => {
             </View>
           );
         })}
-      </KeyboardAwareScrollView>
-      <View style={styles.keyboard}></View>
-    </>
+      </ScrollView>
+      <TextInput
+        style={styles.keyboard}
+        onFocus={() =>
+          setTimeout(() => scrollViewRef.current.scrollToEnd(true), 400)
+        }
+      />
+    </KeyboardAvoidingView>
   );
 };
 

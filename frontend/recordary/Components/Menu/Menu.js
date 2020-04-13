@@ -139,23 +139,23 @@ const Menu = () => {
         <TouchableOpacity
           style={{flex: 1, height: 30, alignItems: 'center'}}
           onPress={() => {
-            menuRef.current.animateNextTransition();
             setIsClickFriend(false);
+            menuRef.current.animateNextTransition();
           }}>
           <Text>그룹</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{flex: 1, height: 30, alignItems: 'center'}}
           onPress={() => {
-            menuRef.current.animateNextTransition();
             setIsClickFriend(true);
+            menuRef.current.animateNextTransition();
           }}>
           <Text>친구</Text>
         </TouchableOpacity>
       </View>
       <Transitioning.View
         ref={menuRef}
-        transition={<Transition.Change durationMs={100} />}
+        transition={<Transition.Change />}
         style={[
           {
             height: 1,

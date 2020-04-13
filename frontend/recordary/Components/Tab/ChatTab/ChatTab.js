@@ -6,15 +6,10 @@ import {
   TouchableNativeFeedback,
   TouchableOpacity,
 } from 'react-native';
-import {
-  createStackNavigator,
-  CardStyleInterpolators,
-} from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FastImage from 'react-native-fast-image';
-
-import Message from 'Components/Tab/ChatTab/Message';
 
 const Stack = createStackNavigator();
 
@@ -22,19 +17,6 @@ const ChatTab = () => {
   return (
     <Stack.Navigator initialRouteName="chat">
       <Stack.Screen name="chat" component={Chat} />
-      <Stack.Screen
-        name="message"
-        component={Message}
-        options={{
-          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-          headerStyle: {backgroundColor: 'tomato'},
-          headerTintColor: 'white',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 24,
-          },
-        }}
-      />
     </Stack.Navigator>
   );
 };

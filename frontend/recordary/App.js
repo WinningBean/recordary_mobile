@@ -11,6 +11,7 @@ import {
 import Login from 'Components/Login/Login';
 import WrapMain from 'Components/WrapMain';
 import Comment from 'Components/Tab/HomeTab/Comment';
+import Message from 'Components/Tab/ChatTab/Message';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,20 @@ const App = () => {
                   cardStyleInterpolator:
                     CardStyleInterpolators.forHorizontalIOS,
                   tabBarVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name="message"
+                component={Message}
+                options={{
+                  cardStyleInterpolator:
+                    CardStyleInterpolators.forHorizontalIOS,
+                  headerStyle: {backgroundColor: 'tomato'},
+                  headerTintColor: 'white',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 24,
+                  },
                 }}
               />
             </>
