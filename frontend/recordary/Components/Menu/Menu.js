@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,8 +10,11 @@ import {
 
 import FastImage from 'react-native-fast-image';
 
+import {Transition, Transitioning} from 'react-native-reanimated';
+
 const Menu = () => {
   const [isClickFriend, setIsClickFriend] = useState(false);
+  const menuRef = useRef();
   const data = useState({
     group: [
       {
@@ -134,26 +137,36 @@ const Menu = () => {
           height: 30,
         }}>
         <TouchableOpacity
-          style={[
-            {flex: 1, height: 30, alignItems: 'center'},
-            isClickFriend
-              ? null
-              : {borderBottomColor: 'black', borderBottomWidth: 1},
-          ]}
-          onPress={() => setIsClickFriend(false)}>
+          style={{flex: 1, height: 30, alignItems: 'center'}}
+          onPress={() => {
+            menuRef.current.animateNextTransition();
+            setIsClickFriend(false);
+          }}>
           <Text>그룹</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[
-            {flex: 1, height: 30, alignItems: 'center'},
-            isClickFriend
-              ? {borderBottomColor: 'black', borderBottomWidth: 1}
-              : null,
-          ]}
-          onPress={() => setIsClickFriend(true)}>
+          style={{flex: 1, height: 30, alignItems: 'center'}}
+          onPress={() => {
+            menuRef.current.animateNextTransition();
+            setIsClickFriend(true);
+          }}>
           <Text>친구</Text>
         </TouchableOpacity>
       </View>
+      <Transitioning.View
+        ref={menuRef}
+        transition={<Transition.Change durationMs={100} />}
+        style={[
+          {
+            height: 1,
+            width: Dimensions.get('window').width * 0.31,
+            backgroundColor: 'black',
+          },
+          isClickFriend
+            ? {marginLeft: Dimensions.get('window').width * 0.31}
+            : null,
+        ]}
+      />
       <ScrollView>{isClickFriend ? friendList : groupList}</ScrollView>
     </View>
   );

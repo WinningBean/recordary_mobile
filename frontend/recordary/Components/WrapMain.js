@@ -95,7 +95,7 @@ const MainComponent = ({navigation}) => {
           tabBarIcon: ({color, focused}) => (
             <MaterialCommunityIcons
               name="chat"
-              color={color}
+              color={focused ? 'tomato' : color}
               size={focused ? 32 : 26}
             />
           ),
