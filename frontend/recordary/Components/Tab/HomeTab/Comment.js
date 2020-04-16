@@ -4,7 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Picker,
   Image,
   TextInput,
   ScrollView,
@@ -41,7 +40,7 @@ const Comment = ({navigation, route}) => {
           {
             user_id: '위승빈',
             user_pic:
-              'https://i.pinimg.com/originals/e8/f1/3d/e8f13d744f012e0900b8b3f0d387ca40.jpg0',
+              'https://i.pinimg.com/originals/e8/f1/3d/e8f13d744f012e0900b8b3f0d387ca40.jpg',
             user_comment: '배고프다',
             commentLike: false,
           },
@@ -84,11 +83,64 @@ const Comment = ({navigation, route}) => {
           },
         ],
       },
+      {
+        user_id: 'wsbeenenenenene',
+        user_pic:
+          'https://i.pinimg.com/originals/e8/f1/3d/e8f13d744f012e0900b8b3f0d387ca40.jpg',
+        user_comment: '샌드위치',
+        commentLike: false,
+        recommentList: [],
+      },
     ],
   })[0];
 
   const {postData} = route.params;
-  // const [isClick]
+  const [isClickList, setIsClickList] = useState(data.comment.map(() => false));
+
+  const showRecommentList = (list, index) =>
+    list.map((value) => (
+      <View
+        style={{display: 'flex', flexDirection: 'row'}}
+        key={`대댓글-img${index}`}>
+        <Image
+          source={{
+            uri: value.user_pic,
+          }}
+          style={{
+            width: 40,
+            height: 40,
+            resizeMode: 'cover',
+            borderRadius: 50,
+            marginTop: 10,
+          }}
+        />
+        <View
+          style={{
+            display: 'flex',
+            paddingTop: 5,
+            paddingBottom: 5,
+            paddingLeft: 10,
+          }}>
+          <View style={styles.flexRow}>
+            <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+              {value.user_id}
+            </Text>
+            <Text style={{fontSize: 15, paddingLeft: 10}}>
+              {value.user_comment}
+            </Text>
+          </View>
+
+          <View style={styles.flexRow}>
+            <TouchableOpacity style={{padding: 2}}>
+              <MaterialIcons name="thumb-up" size={15} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{padding: 2}}>
+              <MaterialCommunityIcons name="comment-processing" size={15} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    ));
   return (
     <View style={{flex: 1}}>
       <ScrollView style={styles.container}>
@@ -154,9 +206,11 @@ const Comment = ({navigation, route}) => {
             </View>
           </View>
         </View>
-        <View style={{backgroundColor: 'white', marginTop: 10, paddingLeft: 5}}>
+        <View style={{paddingLeft: 5, marginTop: 5}}>
           {data.comment.map((value, index) => (
-            <View style={styles.flexRow} key={`댓글img-${index}`}>
+            <View
+              style={{display: 'flex', flexDirection: 'row'}}
+              key={`댓글img-${index}`}>
               <Image
                 source={{
                   uri: value.user_pic,
@@ -166,9 +220,16 @@ const Comment = ({navigation, route}) => {
                   height: 40,
                   resizeMode: 'cover',
                   borderRadius: 50,
+                  marginTop: 10,
                 }}
               />
-              <View style={{display: 'flex', padding: 10}}>
+              <View
+                style={{
+                  display: 'flex',
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  paddingLeft: 10,
+                }}>
                 <View style={styles.flexRow}>
                   <Text style={{fontSize: 15, fontWeight: 'bold'}}>
                     {value.user_id}
@@ -189,7 +250,37 @@ const Comment = ({navigation, route}) => {
                     />
                   </TouchableOpacity>
                 </View>
-                {}
+
+                <View>
+                  <TouchableOpacity
+                    style={{padding: 2}}
+                    onPress={() =>
+                      setIsClickList(
+                        isClickList.map((val, reIndex) => {
+                          if (reIndex === index) {
+                            return !val;
+                          }
+                          return val;
+                        }),
+                      )
+                    }>
+                    {isClickList[index] === false &&
+                    value.recommentList.length > 0 ? (
+                      <Text
+                        style={{
+                          color: 'gray',
+                        }}>{`댓글 ${value.recommentList.length}개 보기`}</Text>
+                    ) : isClickList[index] === true ? (
+                      <Text>{`댓글 접기`}</Text>
+                    ) : null}
+                  </TouchableOpacity>
+                  <View>
+                    {value.recommentList.length > 0 &&
+                    isClickList[index] === true
+                      ? showRecommentList(value.recommentList, index)
+                      : null}
+                  </View>
+                </View>
               </View>
             </View>
           ))}
@@ -205,6 +296,7 @@ const Comment = ({navigation, route}) => {
             style={styles.commentImage}
           />
           <TextInput
+            autoFocus={true}
             style={{height: 40, paddingLeft: 10}}
             placeholder="댓글을 입력하세요..."
             maxLength={200}

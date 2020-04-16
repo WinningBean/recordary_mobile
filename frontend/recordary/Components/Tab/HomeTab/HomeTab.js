@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import {
   TextInput,
   ScrollView,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -184,7 +185,7 @@ const Home = ({navigation}) => {
             <Text>{`${value.postLikePerson} 님 외 ${value.postLikeCount}명이 좋아합니다`}</Text>
           </View>
           <View style={styles.spaceBetween}>
-            <View style={styles.flexRow}>
+            <KeyboardAvoidingView style={styles.flexRow} enabled={true}>
               <Image
                 source={{
                   uri:
@@ -192,12 +193,16 @@ const Home = ({navigation}) => {
                 }}
                 style={styles.commentImage}
               />
-              <TextInput
-                style={{height: 40, paddingLeft: 10}}
-                placeholder="댓글을 입력하세요..."
-                maxLength={200}
-              />
-            </View>
+              <TouchableOpacity
+                onPress={() => navigation.push('comment', {postData: value})}>
+                <TextInput
+                  style={{height: 40, paddingLeft: 10}}
+                  placeholder="댓글을 입력하세요..."
+                  maxLength={200}
+                  editable={false}
+                />
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
 
             <TouchableOpacity
               style={{padding: 5}}
