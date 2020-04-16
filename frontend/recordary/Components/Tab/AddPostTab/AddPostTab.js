@@ -7,6 +7,7 @@ import {
   Picker,
   Image,
   TextInput,
+  Modal,
 } from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeTab from 'Components/Tab/HomeTab/HomeTab';
@@ -212,7 +213,7 @@ const AddPost = ({navigation}) => {
                   setMode('date'), setStartShow(true);
                 }}>
                 <Text
-                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
                   {dateFns.format(startDate, 'yyyy.M.d EEE')}
                 </Text>
               </TouchableOpacity>
@@ -224,7 +225,7 @@ const AddPost = ({navigation}) => {
                   setMode('time'), setStartShow(true);
                 }}>
                 <Text
-                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
                   {dateFns.format(startDate, 'a h:mm')}
                 </Text>
               </TouchableOpacity>
@@ -248,7 +249,7 @@ const AddPost = ({navigation}) => {
                   setMode('date'), setEndShow(true);
                 }}>
                 <Text
-                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
                   {dateFns.format(endDate, 'yyyy.M.d EEE')}
                 </Text>
               </TouchableOpacity>
@@ -260,7 +261,7 @@ const AddPost = ({navigation}) => {
                   setMode('time'), setEndShow(true);
                 }}>
                 <Text
-                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
                   {dateFns.format(endDate, 'a h:mm')}
                 </Text>
               </TouchableOpacity>
