@@ -7,13 +7,13 @@ import {
   Picker,
   Image,
   TextInput,
-  ScrollView,
 } from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
-// import {Picker} from '@react-native-community/picker';
 import HomeTab from 'Components/Tab/HomeTab/HomeTab';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as dateFns from 'date-fns';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -67,6 +67,28 @@ const AddPost = ({navigation}) => {
   const [selectedValue, setSelectedValue] = useState('그룹 미선택');
   const [selectedPublic, setSelectedPublic] = useState('전체공개');
 
+  const [isScheduleClick, setIsScheduleClick] = useState(false);
+  const [isMediaClick, setIsMediaClick] = useState(false);
+
+  const [mode, setMode] = useState('');
+
+  const [startShow, setStartShow] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+
+  const [endShow, setEndShow] = useState(false);
+  const [endDate, setEndDate] = useState(new Date());
+
+  const onStartChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setStartShow(false);
+    setStartDate(currentDate);
+  };
+  const onEndChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setEndShow(false);
+    setEndDate(currentDate);
+  };
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <Picker
@@ -85,9 +107,9 @@ const AddPost = ({navigation}) => {
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
+          marginBottom: 10,
         }}>
-        <View
-          style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <View style={styles.flexRow}>
           <Image
             source={{
               uri:
@@ -102,13 +124,32 @@ const AddPost = ({navigation}) => {
           />
           <Text style={{padding: 10, fontSize: 20}}>이지은</Text>
         </View>
-        <View
-          style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity style={styles.addButton}>
-            <MaterialCommunityIcons name="calendar" size={30} />
+        <View style={styles.flexRow}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setIsScheduleClick(!isScheduleClick)}>
+            {isScheduleClick === true ? (
+              <MaterialCommunityIcons
+                name="calendar"
+                size={30}
+                style={{color: 'rgb(64, 114, 89)'}}
+              />
+            ) : (
+              <MaterialCommunityIcons name="calendar" size={30} />
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.addButton}>
-            <MaterialIcons name="perm-media" size={30} />
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setIsMediaClick(!isMediaClick)}>
+            {isMediaClick === true ? (
+              <MaterialIcons
+                name="perm-media"
+                size={30}
+                style={{color: 'rgb(64, 114, 89)'}}
+              />
+            ) : (
+              <MaterialIcons name="perm-media" size={30} />
+            )}
           </TouchableOpacity>
           <Picker
             mode="dialog"
@@ -126,20 +167,124 @@ const AddPost = ({navigation}) => {
           </Picker>
         </View>
       </View>
+      {isScheduleClick === true ? (
+        <TextInput
+          autoFocus={true}
+          style={{
+            height: 40,
+            borderBottomColor: 'lightgray',
+            borderBottomWidth: 1,
+          }}
+          placeholder="일정제목"
+          maxLength={200}
+        />
+      ) : null}
       <TextInput
         style={{
-          marginTop: 10,
           maxHeight: 200,
           borderBottomColor: 'lightgray',
           borderBottomWidth: 1,
-          borderTopColor: 'lightgray',
-          borderTopWidth: 1,
+          // borderTopColor: 'lightgray',
+          // borderTopWidth: 1,
         }}
-        placeholder="게시물 내용을 입력하세요"
+        placeholder="내용을 입력하세요"
         autoFocus={true}
         multiline={true}
         maxLength={2000}
       />
+      {isScheduleClick === true ? (
+        <>
+          <View
+            style={[
+              {
+                // borderTopColor: 'lightgray',
+                // borderTopWidth: 1,
+                paddingTop: 10,
+                marginBottom: 5,
+                paddingLeft: 5,
+              },
+              styles.spaceBetween,
+            ]}>
+            <View style={{flex: 1}}>
+              <Text>시작날짜</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setMode('date'), setStartShow(true);
+                }}>
+                <Text
+                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  {dateFns.format(startDate, 'yyyy.M.d EEE')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{flex: 1}}>
+              <Text>시작시간</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setMode('time'), setStartShow(true);
+                }}>
+                <Text
+                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  {dateFns.format(startDate, 'a h:mm')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View
+            style={[
+              {
+                // borderTopColor: 'lightgray',
+                // borderTopWidth: 1,
+                paddingTop: 10,
+                marginBottom: 5,
+                paddingLeft: 5,
+              },
+              styles.spaceBetween,
+            ]}>
+            <View style={{flex: 1}}>
+              <Text>종료날짜</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setMode('date'), setEndShow(true);
+                }}>
+                <Text
+                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  {dateFns.format(endDate, 'yyyy.M.d EEE')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{flex: 1}}>
+              <Text>종료시간</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setMode('time'), setEndShow(true);
+                }}>
+                <Text
+                  style={{fontSize: 17, fontWeight: 'bold', paddingRight: 5}}>
+                  {dateFns.format(endDate, 'a h:mm')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      ) : null}
+      {startShow === true ? (
+        <DateTimePicker
+          value={startDate}
+          mode={mode}
+          is24Hour={true}
+          display="default"
+          onChange={onStartChange}
+        />
+      ) : endShow === true ? (
+        <DateTimePicker
+          value={endDate}
+          mode={mode}
+          is24Hour={true}
+          display="default"
+          onChange={onEndChange}
+        />
+      ) : null}
       <TouchableOpacity style={styles.addTag}>
         <Text>게시물을 함께할 사람 태그하기</Text>
       </TouchableOpacity>
@@ -151,6 +296,18 @@ export default AddPostTab;
 
 const styles = StyleSheet.create({
   container: {padding: 10},
+  spaceBetween: {
+    paddingLeft: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  flexRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   addButton: {
     padding: 5,
     margin: 5,
