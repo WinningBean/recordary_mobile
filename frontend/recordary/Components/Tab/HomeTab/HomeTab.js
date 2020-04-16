@@ -214,6 +214,85 @@ const Home = ({navigation}) => {
           </View>
         </View>
       ))}
+      {data.post.map((value, index) => (
+        <View style={styles.post} key={`post${index}`}>
+          <View style={styles.spaceBetween}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                source={{
+                  uri: value.user_pic,
+                }}
+                style={{
+                  width: 50,
+                  height: 50,
+                  resizeMode: 'cover',
+                  borderRadius: 50,
+                }}
+              />
+              <Text style={{padding: 10, fontSize: 20}}>{value.user_id}</Text>
+            </View>
+            <View style={styles.flexRow}>
+              <Text>{`${Math.abs(
+                dateFns.differenceInDays(value.uploadDate, new Date()),
+              )}일 전`}</Text>
+              <TouchableOpacity style={{padding: 5}}>
+                <MaterialIcons name="more-vert" size={25} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.scheduleDate}>
+            <Text style={styles.scheduleText}>시작 날짜</Text>
+            <Text style={styles.scheduleText}>
+              {dateFns.format(value.post_str_ymd, 'yyyy.M.d EEE a h:mm')}
+            </Text>
+          </View>
+          <View style={styles.scheduleDate}>
+            <Text style={styles.scheduleText}>종료 날짜</Text>
+            <Text style={styles.scheduleText}>
+              {dateFns.format(value.post_end_ymd, 'yyyy.M.d EEE a h:mm')}
+            </Text>
+          </View>
+          <View style={styles.flexRow}>
+            <TouchableOpacity style={{padding: 5}}>
+              <MaterialCommunityIcons name="thumb-up" size={25} />
+            </TouchableOpacity>
+            <Text>{`${value.postLikePerson} 님 외 ${value.postLikeCount}명이 좋아합니다`}</Text>
+          </View>
+          <View style={styles.spaceBetween}>
+            <KeyboardAvoidingView style={styles.flexRow} enabled={true}>
+              <Image
+                source={{
+                  uri:
+                    'https://file3.instiz.net/data/file3/2018/01/31/6/c/f/6cf544c9adce51443d50013f636b2639.jpg',
+                }}
+                style={styles.commentImage}
+              />
+              <TouchableOpacity
+                onPress={() => navigation.push('comment', {postData: value})}>
+                <TextInput
+                  style={{height: 40, paddingLeft: 10}}
+                  placeholder="댓글을 입력하세요..."
+                  maxLength={200}
+                  editable={false}
+                />
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
+
+            <TouchableOpacity
+              style={{padding: 5}}
+              onPress={() => {
+                navigation.push('comment', {postData: value});
+              }}>
+              <Text style={{padding: 5, fontWeight: 'bold'}}>more ››</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ))}
     </ScrollView>
   );
 };
@@ -253,5 +332,19 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: 'cover',
     borderRadius: 50,
+  },
+  scheduleDate: {
+    paddingLeft: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    borderBottomColor: 'lightgray',
+    borderBottomWidth: 1,
+  },
+  scheduleText: {
+    fontSize: 14,
+    height: 40,
   },
 });
