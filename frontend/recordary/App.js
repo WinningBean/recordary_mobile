@@ -42,8 +42,8 @@ const App = () => {
                   headerStyle: {backgroundColor: 'rgb(64, 114, 89)'},
                   headerTintColor: 'white',
                   headerTitleAlign: 'left',
-                  cardStyleInterpolator:
-                    CardStyleInterpolators.forHorizontalIOS,
+                  // cardStyleInterpolator:
+                  //   CardStyleInterpolators.forHorizontalIOS,
                   tabBarVisible: false,
                 }}
               />
