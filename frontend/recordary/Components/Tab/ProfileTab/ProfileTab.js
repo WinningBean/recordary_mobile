@@ -7,6 +7,9 @@ import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {createStackNavigator} from '@react-navigation/stack';
+
+import Calendar from 'Components/Tab/ProfileTab/Calendar';
+
 const Stack = createStackNavigator();
 
 const ProfileTab = () => {
@@ -18,8 +21,9 @@ const ProfileTab = () => {
 };
 
 const Profile = ({navigation}) => {
-  const [content, setContent] = useState(`안녕하세요
-  테스트중 입니다.`);
+  const [content, setContent] = useState(`Hello
+World`);
+  const [height, setHeight] = useState(undefined);
   useLayoutEffect(() => {
     navigation.setOptions({
       title: '프로필',
@@ -42,121 +46,144 @@ const Profile = ({navigation}) => {
       ),
     });
   }, []);
+
+  const onLayout = ({
+    nativeEvent: {
+      layout: {height},
+    },
+  }) => {
+    setHeight(height);
+  };
   return (
-    <KeyboardAwareScrollView style={styles.container}>
-      <View style={[styles.section, {paddingTop: 12}]}>
-        <View style={styles.profileInfo}>
-          <View
-            style={{
-              flex: 2,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <FastImage
-              resizeMode={FastImage.resizeMode.cover}
-              source={{uri: 'https://unsplash.it/400/400?image=1'}}
-              style={{height: 110, width: 110, borderRadius: 50}}
-            />
-          </View>
-          <View style={{flex: 3, justifyContent: 'center', paddingRight: 20}}>
-            <View
-              style={{
-                paddingBottom: 5,
-              }}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  textAlign: 'center',
-                }}>
-                {`fornals222 (위성호)`}
-              </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                marginTop: 2,
-                marginHorizontal: 20,
-                borderTopColor: 'lightgray',
-                borderTopWidth: 1,
-                paddingTop: 5,
-              }}>
-              <TouchableOpacity>
-                <View style={{alignItems: 'center'}}>
-                  <Text style={{fontSize: 14}}>팔로우</Text>
-                  <Text style={{fontSize: 18}}>20</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <View style={{alignItems: 'center', marginLeft: 10}}>
-                  <Text style={{fontSize: 14}}>팔로잉</Text>
-                  <Text style={{fontSize: 18}}>20</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-        <View style={styles.profileContent}>
-          <View style={{flex: 2}}>
-            <View
-              style={{
-                flex: 1,
-                paddingLeft: 20,
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 1,
-                borderRadius: 5,
-              }}>
-              <Text
-                style={[
-                  {fontSize: 16},
-                  content === '' ? null : {marginVertical: 10},
-                ]}>
-                {content}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-      <View style={[styles.section]}>
-        <View
-          style={{
-            flexDirection: 'row',
-            height: 50,
-            justifyContent: 'space-between',
-            // backgroundColor: 'rgba(145,2,2,0.3)',
-          }}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <MaterialCommunityIcons name="calendar-month" size={28} />
-          </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <MaterialCommunityIcons name="clipboard-account" size={28} />
-          </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <MaterialCommunityIcons name="image" size={28} />
-          </View>
-        </View>
+    <View style={styles.container} onLayout={onLayout}>
+      <KeyboardAwareScrollView>
         <View
           style={[
             styles.section,
-            {height: 300, backgroundColor: 'tomato'},
-          ]}></View>
-      </View>
-    </KeyboardAwareScrollView>
+            {height: height !== undefined ? height * 0.35 : null},
+          ]}>
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            <View style={styles.profileInfo}>
+              <View
+                style={{
+                  flex: 2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <FastImage
+                  resizeMode={FastImage.resizeMode.cover}
+                  source={{uri: 'https://unsplash.it/400/400?image=1'}}
+                  style={{height: 90, width: 90, borderRadius: 50}}
+                />
+              </View>
+              <View
+                style={{
+                  flex: 3,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <View
+                  style={{
+                    paddingBottom: 5,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      textAlign: 'center',
+                    }}>
+                    {`fornals222 (위성호)`}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-around',
+                    marginTop: 2,
+                    marginHorizontal: 20,
+                    borderTopColor: 'lightgray',
+                    borderTopWidth: 1,
+                    paddingTop: 5,
+                  }}>
+                  <TouchableOpacity>
+                    <View style={{alignItems: 'center'}}>
+                      <Text style={{fontSize: 14}}>팔로우</Text>
+                      <Text style={{fontSize: 16}}>20</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <View style={{alignItems: 'center', marginLeft: 10}}>
+                      <Text style={{fontSize: 14}}>팔로잉</Text>
+                      <Text style={{fontSize: 16}}>20</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <View style={styles.profileContent}>
+              <View style={{flex: 2}}>
+                <View
+                  style={{
+                    flex: 1,
+                    paddingLeft: 20,
+                    borderRadius: 5,
+                  }}>
+                  <Text
+                    style={[
+                      {fontSize: 14},
+                      content === '' ? null : {marginVertical: 10},
+                    ]}>
+                    {content}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View style={[styles.section, {backgroundColor: 'white'}]}>
+            <View
+              style={{
+                flexDirection: 'row',
+                height: 50,
+                justifyContent: 'space-between',
+                // backgroundColor: 'rgba(145,2,2,0.3)',
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#f9f9f9',
+                }}>
+                <MaterialCommunityIcons name="calendar-month" size={28} />
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#f9f9f9',
+                }}>
+                <MaterialCommunityIcons name="clipboard-account" size={28} />
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <MaterialCommunityIcons
+                  name="image"
+                  size={28}
+                  color="rgb(64, 114, 89)"
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+        <View style={height !== undefined && {height: height * 0.65}}>
+          {height === undefined ? null : <Calendar height={height * 0.65} />}
+        </View>
+      </KeyboardAwareScrollView>
+    </View>
   );
 };
 
@@ -165,18 +192,18 @@ export default ProfileTab;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f9f9f9',
   },
   section: {
-    paddingHorizontal: 10,
     // backgroundColor: 'orange',
   },
   profileInfo: {
     flex: 5,
     flexDirection: 'row',
+    paddingTop: 4,
   },
   profileContent: {
     flex: 3,
-    // backgroundColor: 'orange',
   },
   center: {
     justifyContent: 'center',

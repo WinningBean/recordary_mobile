@@ -12,6 +12,9 @@ import Login from 'Components/Login/Login';
 import WrapMain from 'Components/WrapMain';
 import Comment from 'Components/Tab/HomeTab/Comment';
 import Message from 'Components/Tab/ChatTab/Message';
+import Search from 'Components/Tab/ChatTab/Search';
+
+import Wrap from './Test';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +31,7 @@ const App = () => {
               <Stack.Screen
                 name="wrap"
                 component={WrapMain}
+                // component={Test}
                 options={{headerShown: false}}
               />
               <Stack.Screen
@@ -55,6 +59,15 @@ const App = () => {
                     fontWeight: 'bold',
                     fontSize: 24,
                   },
+                }}
+              />
+              <Stack.Screen
+                name="search"
+                component={Search}
+                options={{
+                  cardStyleInterpolator:
+                    CardStyleInterpolators.forHorizontalIOS,
+                  headerShown: false,
                 }}
               />
             </>

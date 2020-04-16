@@ -43,6 +43,20 @@ const Chat = ({navigation}) => {
           </Text>
         </TouchableOpacity>
       ),
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('search');
+          }}>
+          <Text style={{padding: 10}}>
+            <MaterialCommunityIcons
+              name="comment-search-outline"
+              size={34}
+              color="white"
+            />
+          </Text>
+        </TouchableOpacity>
+      ),
     });
   }, []);
 
@@ -189,7 +203,7 @@ const Chat = ({navigation}) => {
               : {paddingLeft: 8},
           ]}
           key={index}>
-          <View style={{height: 80, width: 80, padding: 5}}>
+          <View style={{height: 70, width: 70, padding: 5}}>
             <FastImage
               source={{uri: value.pic}}
               style={styles.itemImage}
@@ -223,13 +237,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   item: {
-    height: 80,
+    height: 70,
     backgroundColor: 'white',
     flexDirection: 'row',
   },
   itemImage: {
-    height: 70,
-    width: 70,
+    height: 60,
+    width: 60,
     borderRadius: 50,
   },
   itemContent: {

@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useRef} from 'react';
+import React, {useState, useMemo, useRef, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,7 +13,7 @@ import FastImage from 'react-native-fast-image';
 import {Transition, Transitioning} from 'react-native-reanimated';
 
 const Menu = () => {
-  const [isClickFriend, setIsClickFriend] = useState(false);
+  const [isClickFriend, setIsClickFriend] = useState(true);
   const menuRef = useRef();
   const data = useState({
     group: [
@@ -98,6 +98,12 @@ const Menu = () => {
     ));
   }, [data]);
 
+  const changeClick = (isFriend) => {
+    if (isFriend === isClickFriend) return;
+    menuRef.current.animateNextTransition();
+    setIsClickFriend(isFriend);
+  };
+
   return (
     <View style={{paddingHorizontal: 18}}>
       <View
@@ -138,18 +144,12 @@ const Menu = () => {
         }}>
         <TouchableOpacity
           style={{flex: 1, height: 30, alignItems: 'center'}}
-          onPress={() => {
-            setIsClickFriend(false);
-            menuRef.current.animateNextTransition();
-          }}>
+          onPress={() => changeClick(false)}>
           <Text>그룹</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{flex: 1, height: 30, alignItems: 'center'}}
-          onPress={() => {
-            setIsClickFriend(true);
-            menuRef.current.animateNextTransition();
-          }}>
+          onPress={() => changeClick(true)}>
           <Text>친구</Text>
         </TouchableOpacity>
       </View>
