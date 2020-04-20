@@ -8,7 +8,10 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+
 import FastImage from 'react-native-fast-image';
+import ImagePicker from 'react-native-image-picker';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProfileEdit = ({navigation, route}) => {
@@ -37,18 +40,30 @@ const ProfileEdit = ({navigation, route}) => {
 
   const {currentUser} = route.params;
 
+  const showPicker = () => {
+    const options = {
+      title: '프로필 사진',
+      takePhotoButtonTitle: '카메라',
+      chooseFromLibraryButtonTitle: '갤러리에서 선택 ',
+      cancelButtonTitle: '취소',
+    };
+    ImagePicker.showImagePicker(options, () => {});
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={{display: 'flex', alignItems: 'center', margin: 20}}>
-        <FastImage
-          source={{uri: currentUser.pic}}
-          style={{
-            resizeMode: 'cover',
-            width: Dimensions.get('window').width * 0.6,
-            height: Dimensions.get('window').width * 0.6,
-            borderRadius: 200,
-          }}
-        />
+        <TouchableOpacity onPress={showPicker}>
+          <FastImage
+            source={{uri: currentUser.pic}}
+            style={{
+              resizeMode: 'cover',
+              width: Dimensions.get('window').width * 0.6,
+              height: Dimensions.get('window').width * 0.6,
+              borderRadius: 200,
+            }}
+          />
+        </TouchableOpacity>
       </View>
       <View
         style={{
