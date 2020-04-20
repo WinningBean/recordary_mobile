@@ -7,15 +7,25 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 import FastImage from 'react-native-fast-image';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Transition, Transitioning} from 'react-native-reanimated';
 
 const Menu = () => {
+  const navigation = useNavigation();
+
   const [isClickFriend, setIsClickFriend] = useState(true);
   const menuRef = useRef();
   const data = useState({
+    currentUser: {
+      id: 'fornals222',
+      nm: '위성호',
+      pic: 'https://unsplash.it/400/400?image=1',
+      ex: 'ㅈ데렂덜ㄴ으뤌ㅇㅈ다루포여ㅑㄷ저ㅗㅠ허ㅑ대자러ㅑㄷ자ㅓ',
+    },
     group: [
       {
         nm: '졸업작품',
@@ -105,69 +115,107 @@ const Menu = () => {
   };
 
   return (
-    <View style={{paddingHorizontal: 18}}>
-      <View
-        style={{
-          height: Dimensions.get('window').height * 0.16,
-          backgroundColor: 'white',
-          // backgroundColor: 'lightgray',
-          justifyContent: 'center',
-        }}>
+    <View>
+      <View style={{paddingHorizontal: 18}}>
+        <View
+          style={{
+            height: Dimensions.get('window').height * 0.16,
+            backgroundColor: 'white',
+            // backgroundColor: 'lightgray',
+            justifyContent: 'center',
+          }}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <View>
+                <FastImage
+                  source={{uri: data.currentUser.pic}}
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: 50,
+                  }}
+                />
+              </View>
+              <View style={{paddingLeft: 10}}>
+                <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                  {data.currentUser.id}
+                </Text>
+                <Text style={{color: 'gray'}}>{data.currentUser.nm}</Text>
+              </View>
+            </View>
+            <View style={{marginTop: 10}}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.push('profileEdit', {
+                    currentUser: data.currentUser,
+                  })
+                }>
+                <MaterialIcons name="edit" size={30} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
         <View
           style={{
             flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            borderBottomColor: '#eeeeee',
+            borderBottomWidth: 1,
+            height: 30,
           }}>
-          <View>
-            <FastImage
-              source={{uri: 'https://unsplash.it/400/400?image=1'}}
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 50,
-              }}
-            />
-          </View>
-          <View style={{paddingLeft: 10}}>
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>fornals222</Text>
-            <Text style={{color: 'gray'}}>위성호</Text>
-          </View>
+          <TouchableOpacity
+            style={{flex: 1, height: 30, alignItems: 'center'}}
+            onPress={() => changeClick(false)}>
+            <Text>그룹</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{flex: 1, height: 30, alignItems: 'center'}}
+            onPress={() => changeClick(true)}>
+            <Text>친구</Text>
+          </TouchableOpacity>
         </View>
+        <Transitioning.View
+          ref={menuRef}
+          transition={<Transition.Change />}
+          style={[
+            {
+              height: 1,
+              width: Dimensions.get('window').width * 0.31,
+              backgroundColor: 'black',
+            },
+            isClickFriend
+              ? {marginLeft: Dimensions.get('window').width * 0.31}
+              : null,
+          ]}
+        />
+        <ScrollView style={{height: Dimensions.get('window').height * 0.8}}>
+          {isClickFriend ? friendList : groupList}
+        </ScrollView>
       </View>
+
       <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          borderBottomColor: '#eeeeee',
-          borderBottomWidth: 1,
-          height: 30,
-        }}>
+        style={[
+          styles.spaceBetween,
+          {
+            backgroundColor: '#eee',
+          },
+        ]}>
+        <Text style={{color: 'gray', marginLeft: 15}}>From.FairyPitta</Text>
         <TouchableOpacity
-          style={{flex: 1, height: 30, alignItems: 'center'}}
-          onPress={() => changeClick(false)}>
-          <Text>그룹</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{flex: 1, height: 30, alignItems: 'center'}}
-          onPress={() => changeClick(true)}>
-          <Text>친구</Text>
+          style={{padding: 10}}
+          onPress={() => navigation.push('setting')}>
+          <MaterialIcons name="settings" size={25} />
         </TouchableOpacity>
       </View>
-      <Transitioning.View
-        ref={menuRef}
-        transition={<Transition.Change />}
-        style={[
-          {
-            height: 1,
-            width: Dimensions.get('window').width * 0.31,
-            backgroundColor: 'black',
-          },
-          isClickFriend
-            ? {marginLeft: Dimensions.get('window').width * 0.31}
-            : null,
-        ]}
-      />
-      <ScrollView>{isClickFriend ? friendList : groupList}</ScrollView>
     </View>
   );
 };
@@ -181,5 +229,16 @@ const styles = StyleSheet.create({
     borderBottomColor: '#eeeeee',
     borderBottomWidth: 1,
     paddingLeft: 2,
+  },
+  spaceBetween: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  flexRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

@@ -14,6 +14,9 @@ import Comment from 'Components/Tab/HomeTab/Comment';
 import Message from 'Components/Tab/ChatTab/Message';
 import Search from 'Components/Tab/ChatTab/Search';
 
+import Setting from 'Components/Menu/Setting';
+import ProfileEdit from 'Components/Menu/ProfileEdit';
+
 import Wrap from './Test';
 
 const Stack = createStackNavigator();
@@ -25,7 +28,7 @@ const App = () => {
     <>
       <StatusBar backgroundColor={'transparent'} translucent={true} />
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName="wrap">
           {isLogin ? (
             <>
               <Stack.Screen
@@ -35,6 +38,20 @@ const App = () => {
                 options={{headerShown: false}}
               />
               <Stack.Screen
+                name="setting"
+                component={Setting}
+                options={{
+                  title: '설정',
+                  headerStyle: {backgroundColor: 'rgb(64, 114, 89)'},
+                  headerTintColor: 'white',
+                  headerTitleAlign: 'left',
+                  cardStyleInterpolator:
+                    CardStyleInterpolators.forHorizontalIOS,
+                  tabBarVisible: false,
+                }}
+              />
+              <Stack.Screen name="profileEdit" component={ProfileEdit} />
+              <Stack.Screen
                 name="comment"
                 component={Comment}
                 options={{
@@ -42,8 +59,6 @@ const App = () => {
                   headerStyle: {backgroundColor: 'rgb(64, 114, 89)'},
                   headerTintColor: 'white',
                   headerTitleAlign: 'left',
-                  // cardStyleInterpolator:
-                  //   CardStyleInterpolators.forHorizontalIOS,
                   tabBarVisible: false,
                 }}
               />

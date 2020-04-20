@@ -21,7 +21,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import Menu from 'Components/Menu/Menu';
 
-const WrapStack = createStackNavigator();
 const WrapDraw = createDrawerNavigator();
 const BottomTab = createBottomTabNavigator();
 
