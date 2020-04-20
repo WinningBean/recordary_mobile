@@ -107,12 +107,7 @@ const Home = ({navigation}) => {
       {data.post.map((value, index) => (
         <View style={styles.post} key={`post${index}`}>
           <View style={styles.spaceBetween}>
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+            <View style={styles.flexRow}>
               <Image
                 source={{
                   uri: value.user_pic,
@@ -217,12 +212,7 @@ const Home = ({navigation}) => {
       {data.post.map((value, index) => (
         <View style={styles.post} key={`post${index}`}>
           <View style={styles.spaceBetween}>
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+            <View style={styles.flexRow}>
               <Image
                 source={{
                   uri: value.user_pic,
@@ -245,15 +235,31 @@ const Home = ({navigation}) => {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.scheduleDate}>
-            <Text style={styles.scheduleText}>시작 날짜</Text>
-            <Text style={styles.scheduleText}>
+          <View style={[{paddingLeft: 5}, styles.flexRow, styles.oneSchedule]}>
+            <Text style={{fontSize: 16}}>{value.post_title}</Text>
+          </View>
+          <View
+            style={[
+              {
+                paddingLeft: 5,
+                paddingTop: 10,
+                paddingBottom: 10,
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 1,
+              },
+              styles.flexRow,
+            ]}>
+            <Text>{value.post_ex}</Text>
+          </View>
+          <View style={[styles.spaceBetween, styles.oneSchedule]}>
+            <Text>시작 날짜</Text>
+            <Text>
               {dateFns.format(value.post_str_ymd, 'yyyy.M.d EEE a h:mm')}
             </Text>
           </View>
-          <View style={styles.scheduleDate}>
-            <Text style={styles.scheduleText}>종료 날짜</Text>
-            <Text style={styles.scheduleText}>
+          <View style={[styles.spaceBetween, styles.oneSchedule]}>
+            <Text>종료 날짜</Text>
+            <Text>
               {dateFns.format(value.post_end_ymd, 'yyyy.M.d EEE a h:mm')}
             </Text>
           </View>
@@ -282,7 +288,6 @@ const Home = ({navigation}) => {
                 />
               </TouchableOpacity>
             </KeyboardAvoidingView>
-
             <TouchableOpacity
               style={{padding: 5}}
               onPress={() => {
@@ -333,18 +338,9 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 50,
   },
-  scheduleDate: {
-    paddingLeft: 5,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
+  oneSchedule: {
     borderBottomColor: 'lightgray',
     borderBottomWidth: 1,
-  },
-  scheduleText: {
-    fontSize: 14,
     height: 40,
   },
 });
