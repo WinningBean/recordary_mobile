@@ -10,7 +10,7 @@ const Calendar = ({height}) => {
     <View style={styles.container}>
       <View
         style={{
-          flex: 1.5,
+          flex: 0.8,
           justifyContent: 'center',
           flexDirection: 'row',
         }}>
@@ -70,6 +70,7 @@ const Month = ({date}) => {
     },
   ]);
 
+  var selectDate = new Date();
   const monthStart = dateFns.startOfMonth(date);
   const monthEnd = dateFns.endOfMonth(monthStart);
   const startDate = dateFns.startOfWeek(monthStart);
@@ -85,17 +86,25 @@ const Month = ({date}) => {
   let formattedDate = '';
   var days = [];
 
+  const copyList = scList.splice(0);
+  var queue = [];
+
   while (day <= endDate) {
+    //dateFns.isSameWeek(selectDate, dateFns.subDays(day, 1))
     for (let i = 0; i < 7; i++) {
-      formattedDate = dateFns.format(day, 'd');
-
-      let sc = scList.filter((value) =>
+      while (
+        copyList.length > 0 &&
         dateFns.isWithinInterval(day, {
-          start: dateFns.startOfDay(value.start),
-          end: dateFns.endOfDay(value.end),
-        }),
-      );
-
+          start: copyList[0].start,
+          end: copyList[0].end,
+        })
+      ) {
+        queue.push({
+          value: copyList[0],
+          index: queue.length > 0 ? queue[queue.length - 1].index + 1 : 0,
+        });
+        copyList.shift();
+      }
       days.push(
         <View
           style={{
@@ -117,30 +126,45 @@ const Month = ({date}) => {
                   ? {color: 'lightgray'}
                   : null,
               ]}>
-              {formattedDate}
+              {dateFns.format(day, 'd')}
             </Text>
+            {queue.map((draft) => {
+              const result = [];
+              for (let i = 0; i < draft.index; i++) {
+                result.push(<View style={{height: 2.6, marginTop: 1}} />);
+              }
+              result.push(
+                <View
+                  key={`${day}-${draft.index}`}
+                  style={[
+                    {
+                      height: 2.6,
+                      marginTop: 1,
+                      opacity: 0.75,
+                      backgroundColor: draft.value.color,
+                    },
+                    dateFns.isSameDay(draft.value.start, day)
+                      ? {marginLeft: 5}
+                      : null,
+                    dateFns.isSameDay(draft.value.end, day)
+                      ? {marginRight: 5}
+                      : null,
+                  ]}
+                />,
+              );
+              return result;
+            })}
           </View>
-          {sc.map((value, index) => (
-            <View
-              key={`${value}-${index}`}
-              style={[
-                {
-                  height: 4,
-                  marginTop: 1,
-                  opacity: 0.75,
-                  backgroundColor: value.color,
-                },
-                dateFns.isSameDay(value.start, day) ? {marginLeft: 5} : null,
-                dateFns.isSameDay(value.end, day) ? {marginRight: 5} : null,
-              ]}
-            />
-          ))}
         </View>,
       );
+      while (queue.length > 0 && dateFns.isSameDay(day, queue[0].value.end)) {
+        queue.shift();
+      }
       day = dateFns.addDays(day, 1);
     }
     rows.push(<View style={styles.weekleyWrap}>{days}</View>);
     days = [];
+    queue.forEach((value, index) => (value.index = index));
   }
 
   return <>{rows}</>;

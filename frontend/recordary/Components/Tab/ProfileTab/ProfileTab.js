@@ -97,20 +97,20 @@ World`);
                 <View
                   style={{
                     flexDirection: 'row',
-                    justifyContent: 'space-around',
+                    justifyContent: 'space-between',
                     marginTop: 2,
                     marginHorizontal: 20,
                     borderTopColor: 'lightgray',
                     borderTopWidth: 1,
                     paddingTop: 5,
                   }}>
-                  <TouchableOpacity>
+                  <TouchableOpacity style={{flex: 1}}>
                     <View style={{alignItems: 'center'}}>
                       <Text style={{fontSize: 14}}>팔로우</Text>
                       <Text style={{fontSize: 16}}>20</Text>
                     </View>
                   </TouchableOpacity>
-                  <TouchableOpacity>
+                  <TouchableOpacity style={{flex: 1}}>
                     <View style={{alignItems: 'center', marginLeft: 10}}>
                       <Text style={{fontSize: 14}}>팔로잉</Text>
                       <Text style={{fontSize: 16}}>20</Text>
