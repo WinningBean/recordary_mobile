@@ -55,7 +55,7 @@ const Month = ({date}) => {
     },
     {
       start: dateFns.addDays(new Date(), -4),
-      end: dateFns.addDays(new Date(), -1),
+      end: new Date(),
       color: 'tomato',
     },
     {
@@ -66,7 +66,17 @@ const Month = ({date}) => {
     {
       start: new Date(),
       end: dateFns.addDays(new Date(), 4),
-      color: 'gray',
+      color: 'red',
+    },
+    {
+      start: new Date(),
+      end: new Date(),
+      color: 'orange',
+    },
+    {
+      start: dateFns.addDays(new Date(), 10),
+      end: dateFns.addDays(new Date(), 18),
+      color: 'green',
     },
   ]);
 
@@ -86,31 +96,31 @@ const Month = ({date}) => {
   let formattedDate = '';
   var days = [];
 
-  const copyList = scList.splice(0);
-  var queue = [];
+  const queueList = scList.splice(0);
+  var stack = [];
 
   while (day <= endDate) {
     //dateFns.isSameWeek(selectDate, dateFns.subDays(day, 1))
     for (let i = 0; i < 7; i++) {
       while (
-        copyList.length > 0 &&
+        queueList.length > 0 &&
         dateFns.isWithinInterval(day, {
-          start: copyList[0].start,
-          end: copyList[0].end,
+          start: dateFns.startOfDay(queueList[0].start),
+          end: dateFns.endOfDay(queueList[0].end),
         })
       ) {
-        queue.push({
-          value: copyList[0],
-          index: queue.length > 0 ? queue[queue.length - 1].index + 1 : 0,
+        stack.push({
+          value: queueList[0],
+          index: stack.length > 0 ? stack[stack.length - 1].index + 1 : 0,
         });
-        copyList.shift();
+        queueList.shift();
       }
       days.push(
         <View
           style={{
             flex: 1,
           }}
-          key={day}>
+          key={`cell-${day}`}>
           <View>
             <Text
               style={[
@@ -128,14 +138,22 @@ const Month = ({date}) => {
               ]}>
               {dateFns.format(day, 'd')}
             </Text>
-            {queue.map((draft) => {
+            {stack.map((draft, index) => {
               const result = [];
-              for (let i = 0; i < draft.index; i++) {
-                result.push(<View style={{height: 2.6, marginTop: 1}} />);
+              if (index === 0) {
+                for (let i = 0; i < draft.index; i++) {
+                  result.push(
+                    <View
+                      key={`blank-${day}-${i}`}
+                      style={{height: 2.6, marginTop: 1}}
+                    />,
+                  );
+                }
               }
+
               result.push(
                 <View
-                  key={`${day}-${draft.index}`}
+                  key={`schedule-${day}-${draft.index}`}
                   style={[
                     {
                       height: 2.6,
@@ -157,14 +175,16 @@ const Month = ({date}) => {
           </View>
         </View>,
       );
-      while (queue.length > 0 && dateFns.isSameDay(day, queue[0].value.end)) {
-        queue.shift();
-      }
+      stack = stack.filter((val) => !dateFns.isSameDay(day, val.value.end));
       day = dateFns.addDays(day, 1);
     }
-    rows.push(<View style={styles.weekleyWrap}>{days}</View>);
+    rows.push(
+      <View key={`week-${day}`} style={styles.weekleyWrap}>
+        {days}
+      </View>,
+    );
     days = [];
-    queue.forEach((value, index) => (value.index = index));
+    stack.forEach((value, index) => (value.index = index));
   }
 
   return <>{rows}</>;
