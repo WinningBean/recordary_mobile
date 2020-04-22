@@ -74,7 +74,47 @@ const Month = ({date}) => {
       color: 'orange',
     },
     {
+      start: dateFns.addDays(new Date(), 1),
+      end: dateFns.addDays(new Date(), 3),
+      color: 'orange',
+    },
+    {
       start: dateFns.addDays(new Date(), 10),
+      end: dateFns.addDays(new Date(), 18),
+      color: 'green',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 13),
+      color: 'green',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 13),
+      color: 'green',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 13),
+      color: 'green',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 30),
+      color: 'green',
+    },
+    {
+      start: dateFns.addDays(new Date(), 14),
+      end: dateFns.addDays(new Date(), 18),
+      color: 'green',
+    },
+    {
+      start: dateFns.addDays(new Date(), 14),
+      end: dateFns.addDays(new Date(), 18),
+      color: 'green',
+    },
+    {
+      start: dateFns.addDays(new Date(), 14),
       end: dateFns.addDays(new Date(), 18),
       color: 'green',
     },
@@ -100,7 +140,6 @@ const Month = ({date}) => {
   var stack = [];
 
   while (day <= endDate) {
-    //dateFns.isSameWeek(selectDate, dateFns.subDays(day, 1))
     for (let i = 0; i < 7; i++) {
       while (
         queueList.length > 0 &&
@@ -109,10 +148,31 @@ const Month = ({date}) => {
           end: dateFns.endOfDay(queueList[0].end),
         })
       ) {
-        stack.push({
-          value: queueList[0],
-          index: stack.length > 0 ? stack[stack.length - 1].index + 1 : 0,
-        });
+        if (
+          stack.length > 0 &&
+          stack[stack.length - 1].index !== stack.length - 1
+        ) {
+          for (let a = 0; a < stack.length; a++) {
+            if (stack[a].index > a) {
+              stack.splice(a, 0, {
+                value: queueList[0],
+                index: a,
+              });
+            }
+          }
+        }
+        // if (stack.length > 0 && stack[0].index > 0) {
+        //   stack.unshift({
+        //     value: queueList[0],
+        //     index: stack[0].index - 1,
+        //   });
+        // }
+        else {
+          stack.push({
+            value: queueList[0],
+            index: stack.length > 0 ? stack[stack.length - 1].index + 1 : 0,
+          });
+        }
         queueList.shift();
       }
       days.push(
@@ -140,8 +200,8 @@ const Month = ({date}) => {
             </Text>
             {stack.map((draft, index) => {
               const result = [];
-              if (index === 0) {
-                for (let i = 0; i < draft.index; i++) {
+              if (index !== draft.index) {
+                for (let i = 0; i < draft.index - index; i++) {
                   result.push(
                     <View
                       key={`blank-${day}-${i}`}
@@ -179,7 +239,14 @@ const Month = ({date}) => {
       day = dateFns.addDays(day, 1);
     }
     rows.push(
-      <View key={`week-${day}`} style={styles.weekleyWrap}>
+      <View
+        key={`week-${day}`}
+        style={[
+          styles.weekleyWrap,
+          dateFns.isSameWeek(selectDate, dateFns.subDays(day, 1))
+            ? {flex: 2}
+            : null,
+        ]}>
         {days}
       </View>,
     );
