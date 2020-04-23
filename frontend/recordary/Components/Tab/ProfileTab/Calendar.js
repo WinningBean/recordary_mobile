@@ -1,11 +1,90 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, Dimensions} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TouchableHighlight,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 import * as dateFns from 'date-fns';
 
 const {width} = Dimensions.get('window');
 const Calendar = ({height}) => {
-  const currDate = new Date();
+  const [scList, setScList] = useState([
+    {
+      start: dateFns.addDays(new Date(), -5),
+      end: dateFns.addDays(new Date(), -1),
+      color: '#f1c40f',
+    },
+    {
+      start: dateFns.addDays(new Date(), -4),
+      end: new Date(),
+      color: '#2ecc71',
+    },
+    {
+      start: new Date(),
+      end: dateFns.addDays(new Date(), 7),
+      color: '#2ecc71',
+    },
+    {
+      start: new Date(),
+      end: dateFns.addDays(new Date(), 4),
+      color: '#2ecc71',
+    },
+    {
+      start: new Date(),
+      end: new Date(),
+      color: '#9b59b6',
+    },
+    {
+      start: dateFns.addDays(new Date(), 1),
+      end: dateFns.addDays(new Date(), 3),
+      color: '#9b59b6',
+    },
+    {
+      start: dateFns.addDays(new Date(), 10),
+      end: dateFns.addDays(new Date(), 18),
+      color: '#9b59b6',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 13),
+      color: '#bdc3c7',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 13),
+      color: '#bdc3c7',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 13),
+      color: '#bdc3c7',
+    },
+    {
+      start: dateFns.addDays(new Date(), 13),
+      end: dateFns.addDays(new Date(), 30),
+      color: '#34495e',
+    },
+    {
+      start: dateFns.addDays(new Date(), 14),
+      end: dateFns.addDays(new Date(), 18),
+      color: '#34495e',
+    },
+    {
+      start: dateFns.addDays(new Date(), 14),
+      end: dateFns.addDays(new Date(), 18),
+      color: '#34495e',
+    },
+    {
+      start: dateFns.addDays(new Date(), 14),
+      end: dateFns.addDays(new Date(), 18),
+      color: '#3498db',
+    },
+  ]);
+  const [currDate, setCurrDate] = useState(new Date());
   return (
     <View style={styles.container}>
       <View
@@ -41,86 +120,19 @@ const Calendar = ({height}) => {
         <Text style={styles.weeklyText}>THU</Text>
         <Text style={[styles.weeklyText, {color: '#8888FF'}]}>FRI</Text>
       </View>
-      <Month date={currDate} />
+      <Month
+        scList={scList}
+        date={currDate}
+        onSetDate={(value) => setCurrDate(value)}
+      />
     </View>
   );
 };
 
-const Month = ({date}) => {
-  const [scList, setScList] = useState([
-    {
-      start: dateFns.addDays(new Date(), -5),
-      end: dateFns.addDays(new Date(), -1),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), -4),
-      end: new Date(),
-      color: 'tomato',
-    },
-    {
-      start: new Date(),
-      end: dateFns.addDays(new Date(), 7),
-      color: 'blue',
-    },
-    {
-      start: new Date(),
-      end: dateFns.addDays(new Date(), 4),
-      color: 'red',
-    },
-    {
-      start: new Date(),
-      end: new Date(),
-      color: 'orange',
-    },
-    {
-      start: dateFns.addDays(new Date(), 1),
-      end: dateFns.addDays(new Date(), 3),
-      color: 'orange',
-    },
-    {
-      start: dateFns.addDays(new Date(), 10),
-      end: dateFns.addDays(new Date(), 18),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 13),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 13),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 13),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 30),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), 14),
-      end: dateFns.addDays(new Date(), 18),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), 14),
-      end: dateFns.addDays(new Date(), 18),
-      color: 'green',
-    },
-    {
-      start: dateFns.addDays(new Date(), 14),
-      end: dateFns.addDays(new Date(), 18),
-      color: 'green',
-    },
-  ]);
+const Month = ({date, scList, onSetDate}) => {
+  const [selectDate, setSelectDate] = useState(new Date());
+  const today = new Date();
 
-  var selectDate = new Date();
   const monthStart = dateFns.startOfMonth(date);
   const monthEnd = dateFns.endOfMonth(monthStart);
   const startDate = dateFns.startOfWeek(monthStart);
@@ -129,15 +141,12 @@ const Month = ({date}) => {
     ? (endDate = dateFns.addWeeks(endDate, 1))
     : null;
 
-  let currIndex = 0;
+  var stack = [];
 
   const rows = [];
   let day = startDate;
-  let formattedDate = '';
   var days = [];
-
-  const queueList = scList.splice(0);
-  var stack = [];
+  const queueList = scList.slice();
 
   while (day <= endDate) {
     for (let i = 0; i < 7; i++) {
@@ -160,14 +169,7 @@ const Month = ({date}) => {
               });
             }
           }
-        }
-        // if (stack.length > 0 && stack[0].index > 0) {
-        //   stack.unshift({
-        //     value: queueList[0],
-        //     index: stack[0].index - 1,
-        //   });
-        // }
-        else {
+        } else {
           stack.push({
             value: queueList[0],
             index: stack.length > 0 ? stack[stack.length - 1].index + 1 : 0,
@@ -175,65 +177,140 @@ const Month = ({date}) => {
         }
         queueList.shift();
       }
+      const currDay = day;
       days.push(
-        <View
-          style={{
-            flex: 1,
-          }}
-          key={`cell-${day}`}>
-          <View>
-            <Text
-              style={[
-                {
-                  paddingLeft: 4,
-                  fontSize: 12,
-                  color: '#333',
-                  // textAlign: 'center',
-                },
-                dateFns.isSaturday(day) ? {color: '#8888FF'} : null,
-                dateFns.isSunday(day) ? {color: '#FF7777'} : null,
-                !dateFns.isSameMonth(day, monthStart)
-                  ? {color: 'lightgray'}
-                  : null,
-              ]}>
-              {dateFns.format(day, 'd')}
-            </Text>
-            {stack.map((draft, index) => {
-              const result = [];
-              if (index !== draft.index) {
-                for (let i = 0; i < draft.index - index; i++) {
+        <TouchableWithoutFeedback
+          key={`cell-${day}`}
+          onPress={() => onSetDate(currDay)}>
+          <View
+            style={[
+              {
+                flex: 1,
+              },
+              dateFns.isSameDay(day, date)
+                ? {
+                    borderWidth: 0.6,
+                    borderRadius: 6,
+                    borderColor: '#333',
+                    overflow: 'hidden',
+                  }
+                : null,
+            ]}>
+            <View>
+              <Text
+                style={[
+                  {
+                    paddingLeft: 4,
+                    fontSize: 12,
+                    color: '#333',
+                    // textAlign: 'center',
+                  },
+                  dateFns.isSaturday(day) ? {color: '#8888FF'} : null,
+                  dateFns.isSunday(day) ? {color: '#FF7777'} : null,
+                  !dateFns.isSameMonth(day, monthStart)
+                    ? {color: 'lightgray'}
+                    : null,
+                  ,
+                  dateFns.isSameDay(today, day)
+                    ? {
+                        borderLeftWidth: 22,
+                        borderLeftColor: 'rgba(20, 81, 51, 0.8)',
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }
+                    : null,
+                ]}>
+                {dateFns.format(day, 'd')}
+              </Text>
+              {stack.map((draft, index) => {
+                const result = [];
+                if (index !== draft.index) {
+                  for (let i = 0; i < draft.index - index; i++) {
+                    result.push(
+                      <View
+                        key={`blank-${day}-${i}`}
+                        style={{height: 2.6, marginTop: 1}}
+                      />,
+                    );
+                  }
+                }
+                if (dateFns.isSameWeek(day, date)) {
+                  if (
+                    dateFns.isSameDay(draft.value.start, day) ||
+                    dateFns.isSameDay(dateFns.startOfWeek(date, draft), day)
+                  ) {
+                    result.push(
+                      <View
+                        key={`schedule-${day}-${draft.index}`}
+                        style={[
+                          {
+                            height: 12,
+                            marginTop: 1,
+                            backgroundColor: `${draft.value.color}A0`,
+                            overflow: 'hidden',
+                          },
+                          dateFns.isSameDay(draft.value.start, day)
+                            ? {marginLeft: 5}
+                            : null,
+                          dateFns.isSameDay(draft.value.end, day)
+                            ? {marginRight: 5}
+                            : null,
+                        ]}>
+                        <Text
+                          style={{
+                            textAlignVertical: 'center',
+                            fontSize: 12,
+                            lineHeight: 12,
+                          }}>
+                          Hello World
+                        </Text>
+                      </View>,
+                    );
+                  } else {
+                    result.push(
+                      <View
+                        key={`schedule-${day}-${draft.index}`}
+                        style={[
+                          {
+                            height: 12,
+                            marginTop: 1,
+                            backgroundColor: `${draft.value.color}A0`,
+                          },
+                          dateFns.isSameDay(draft.value.start, day)
+                            ? {marginLeft: 5}
+                            : null,
+                          dateFns.isSameDay(draft.value.end, day)
+                            ? {marginRight: 5}
+                            : null,
+                        ]}
+                      />,
+                    );
+                  }
+                } else {
                   result.push(
                     <View
-                      key={`blank-${day}-${i}`}
-                      style={{height: 2.6, marginTop: 1}}
+                      key={`schedule-${day}-${draft.index}`}
+                      style={[
+                        {
+                          height: 2.6,
+                          marginTop: 1,
+                          backgroundColor: `${draft.value.color}A0`,
+                        },
+                        dateFns.isSameDay(draft.value.start, day)
+                          ? {marginLeft: 5}
+                          : null,
+                        dateFns.isSameDay(draft.value.end, day)
+                          ? {marginRight: 5}
+                          : null,
+                      ]}
                     />,
                   );
                 }
-              }
-
-              result.push(
-                <View
-                  key={`schedule-${day}-${draft.index}`}
-                  style={[
-                    {
-                      height: 2.6,
-                      marginTop: 1,
-                      opacity: 0.75,
-                      backgroundColor: draft.value.color,
-                    },
-                    dateFns.isSameDay(draft.value.start, day)
-                      ? {marginLeft: 5}
-                      : null,
-                    dateFns.isSameDay(draft.value.end, day)
-                      ? {marginRight: 5}
-                      : null,
-                  ]}
-                />,
-              );
-              return result;
-            })}
+                return result;
+              })}
+            </View>
           </View>
-        </View>,
+        </TouchableWithoutFeedback>,
       );
       stack = stack.filter((val) => !dateFns.isSameDay(day, val.value.end));
       day = dateFns.addDays(day, 1);
@@ -243,9 +320,7 @@ const Month = ({date}) => {
         key={`week-${day}`}
         style={[
           styles.weekleyWrap,
-          dateFns.isSameWeek(selectDate, dateFns.subDays(day, 1))
-            ? {flex: 2}
-            : null,
+          dateFns.isSameWeek(date, dateFns.subDays(day, 1)) ? {flex: 2} : null,
         ]}>
         {days}
       </View>,
