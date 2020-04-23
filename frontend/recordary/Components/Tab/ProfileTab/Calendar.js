@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,8 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
 } from 'react-native';
+
+import {Transition, Transitioning} from 'react-native-reanimated';
 
 import * as dateFns from 'date-fns';
 
@@ -131,6 +133,7 @@ const Calendar = ({height}) => {
 
 const Month = ({date, scList, onSetDate}) => {
   const [selectDate, setSelectDate] = useState(new Date());
+  const cellsRef = useRef();
   const today = new Date();
 
   const monthStart = dateFns.startOfMonth(date);
@@ -147,6 +150,11 @@ const Month = ({date, scList, onSetDate}) => {
   let day = startDate;
   var days = [];
   const queueList = scList.slice();
+
+  const onPressCell = (value) => {
+    cellsRef.current.animateNextTransition();
+    onSetDate(value);
+  };
 
   while (day <= endDate) {
     for (let i = 0; i < 7; i++) {
@@ -181,7 +189,7 @@ const Month = ({date, scList, onSetDate}) => {
       days.push(
         <TouchableWithoutFeedback
           key={`cell-${day}`}
-          onPress={() => onSetDate(currDay)}>
+          onPress={() => onPressCell(currDay)}>
           <View
             style={[
               {
@@ -189,9 +197,9 @@ const Month = ({date, scList, onSetDate}) => {
               },
               dateFns.isSameDay(day, date)
                 ? {
-                    borderWidth: 0.6,
+                    borderWidth: 2,
                     borderRadius: 6,
-                    borderColor: '#333',
+                    borderColor: '#999',
                     overflow: 'hidden',
                   }
                 : null,
@@ -226,12 +234,21 @@ const Month = ({date, scList, onSetDate}) => {
                 const result = [];
                 if (index !== draft.index) {
                   for (let i = 0; i < draft.index - index; i++) {
-                    result.push(
-                      <View
-                        key={`blank-${day}-${i}`}
-                        style={{height: 2.6, marginTop: 1}}
-                      />,
-                    );
+                    if (dateFns.isSameWeek(day, date)) {
+                      result.push(
+                        <View
+                          key={`blank-${day}-${i}`}
+                          style={{height: 12, marginTop: 1}}
+                        />,
+                      );
+                    } else {
+                      result.push(
+                        <View
+                          key={`blank-${day}-${i}`}
+                          style={{height: 2.6, marginTop: 1}}
+                        />,
+                      );
+                    }
                   }
                 }
                 if (dateFns.isSameWeek(day, date)) {
@@ -329,7 +346,19 @@ const Month = ({date, scList, onSetDate}) => {
     stack.forEach((value, index) => (value.index = index));
   }
 
-  return <>{rows}</>;
+  return (
+    <Transitioning.View
+      style={{flex: 6}}
+      transition={
+        <Transition.Together>
+          <Transition.In type="fade" />
+          <Transition.Change durationMs={150} />
+        </Transition.Together>
+      }
+      ref={cellsRef}>
+      {rows}
+    </Transitioning.View>
+  );
 };
 
 export default Calendar;
