@@ -4,13 +4,16 @@ import {
   Text,
   View,
   Dimensions,
-  TouchableHighlight,
   TouchableWithoutFeedback,
+  Animated,
 } from 'react-native';
 
 import {Transition, Transitioning} from 'react-native-reanimated';
+import {PanGestureHandler, State} from 'react-native-gesture-handler';
 
 import * as dateFns from 'date-fns';
+
+const {event, Value} = Animated;
 
 const {width} = Dimensions.get('window');
 const Calendar = ({height}) => {
@@ -87,6 +90,7 @@ const Calendar = ({height}) => {
     },
   ]);
   const [currDate, setCurrDate] = useState(new Date());
+
   return (
     <View style={styles.container}>
       <View
@@ -136,6 +140,9 @@ const Month = ({date, scList, onSetDate}) => {
   const cellsRef = useRef();
   const today = new Date();
 
+  const value = new Value(0);
+  const currState = new Value(State.UNDETERMINED);
+
   const monthStart = dateFns.startOfMonth(date);
   const monthEnd = dateFns.endOfMonth(monthStart);
   const startDate = dateFns.startOfWeek(monthStart);
@@ -151,7 +158,17 @@ const Month = ({date, scList, onSetDate}) => {
   var days = [];
   const queueList = scList.slice();
 
+  const transition = (
+    <Transition.Together>
+      <Transition.In type="fade" />
+      <Transition.Change durationMs={150} />
+    </Transition.Together>
+  );
+
   const onPressCell = (value) => {
+    if (dateFns.isSameDay(value, date)) {
+      return;
+    }
     cellsRef.current.animateNextTransition();
     onSetDate(value);
   };
@@ -346,17 +363,60 @@ const Month = ({date, scList, onSetDate}) => {
     stack.forEach((value, index) => (value.index = index));
   }
 
+  const onHandlerStateChange = (e) => {
+    if (e.nativeEvent.oldState === State.ACTIVE) {
+      if (e.nativeEvent.translationX > 150 || e.nativeEvent.velocityX > 800) {
+        Animated.spring(value, {
+          velocity: e.nativeEvent.velocityX,
+          tension: 0,
+          friction: 20,
+          toValue: Dimensions.get('window').width,
+          useNativeDriver: true,
+        }).start();
+      } else if (
+        e.nativeEvent.translationX < -150 ||
+        e.nativeEvent.velocityX < -800
+      ) {
+        Animated.spring(value, {
+          velocity: e.nativeEvent.velocityX,
+          tension: 0,
+          friction: 20,
+          toValue: Dimensions.get('window').width * -1,
+          useNativeDriver: true,
+        }).start();
+      } else
+        Animated.spring(value, {
+          velocity: 10,
+          tension: 0,
+          friction: 20,
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+    }
+    console.log(value);
+  };
+
   return (
     <Transitioning.View
       style={{flex: 6}}
-      transition={
-        <Transition.Together>
-          <Transition.In type="fade" />
-          <Transition.Change durationMs={150} />
-        </Transition.Together>
-      }
+      transition={transition}
       ref={cellsRef}>
-      {rows}
+      <PanGestureHandler
+        onHandlerStateChange={onHandlerStateChange}
+        onGestureEvent={event(
+          [
+            {
+              nativeEvent: {
+                translationX: value,
+              },
+            },
+          ],
+          {useNativeDriver: true},
+        )}>
+        <Animated.View style={[{flex: 6}, {transform: [{translateX: value}]}]}>
+          {rows}
+        </Animated.View>
+      </PanGestureHandler>
     </Transitioning.View>
   );
 };
