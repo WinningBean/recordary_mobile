@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -16,7 +16,7 @@ import * as dateFns from 'date-fns';
 const {event, Value} = Animated;
 
 const {width} = Dimensions.get('window');
-const Calendar = ({height}) => {
+const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
   const [scList, setScList] = useState([
     {
       start: dateFns.addDays(new Date(), -5),
@@ -117,6 +117,7 @@ const Calendar = ({height}) => {
           marginBottom: 3,
           borderTopWidth: 1,
           borderBottomWidth: 1,
+          marginHorizontal: 10,
         }}>
         <Text style={[styles.weeklyText, {color: '#FF7777'}]}>SUN</Text>
         <Text style={styles.weeklyText}>SUN</Text>
@@ -130,184 +131,223 @@ const Calendar = ({height}) => {
         scList={scList}
         date={currDate}
         onSetDate={(value) => setCurrDate(value)}
+        isFullCalendar={isFullCalendar}
+        onFullCalendar={() => onFullCalendar()}
+        onSmallCalendar={() => onSmallCalendar()}
       />
     </View>
   );
 };
 
-const Month = ({date, scList, onSetDate}) => {
-  const [selectDate, setSelectDate] = useState(new Date());
+const Month = ({
+  date,
+  scList,
+  onSetDate,
+  isFullCalendar,
+  onSmallCalendar,
+  onFullCalendar,
+}) => {
   const cellsRef = useRef();
   const today = new Date();
 
-  const value = new Value(0);
-  const currState = new Value(State.UNDETERMINED);
+  const value = useRef(new Value(0)).current;
+  const [state, setState] = useState(0);
+  const velocityY = useRef(new Value(0)).current;
 
-  const monthStart = dateFns.startOfMonth(date);
-  const monthEnd = dateFns.endOfMonth(monthStart);
-  const startDate = dateFns.startOfWeek(monthStart);
-  var endDate = dateFns.endOfWeek(monthEnd);
-  dateFns.getWeeksInMonth(date) === 5
-    ? (endDate = dateFns.addWeeks(endDate, 1))
-    : null;
+  useEffect(() => {
+    console.log(state, 'state');
+    Animated.spring(value, {
+      velocity: 10,
+      tension: 0,
+      friction: 20,
+      toValue: 0,
+      useNativeDriver: true,
+    }).start();
+  }, [date]);
 
-  var stack = [];
+  // 0 main
+  // 1 pre
+  // 2 next
+  const GetMonth = () => {
+    const monthStart = dateFns.startOfMonth(date);
 
-  const rows = [];
-  let day = startDate;
-  var days = [];
-  const queueList = scList.slice();
+    const monthEnd = dateFns.endOfMonth(monthStart);
+    const startDate = dateFns.startOfWeek(monthStart);
+    var endDate = dateFns.endOfWeek(monthEnd);
+    dateFns.getWeeksInMonth(monthStart) === 5
+      ? (endDate = dateFns.addWeeks(endDate, 1))
+      : null;
 
-  const transition = (
-    <Transition.Together>
-      <Transition.In type="fade" />
-      <Transition.Change durationMs={150} />
-    </Transition.Together>
-  );
+    var stack = [];
 
-  const onPressCell = (value) => {
-    if (dateFns.isSameDay(value, date)) {
-      return;
-    }
-    cellsRef.current.animateNextTransition();
-    onSetDate(value);
-  };
+    const rows = [];
+    let day = startDate;
+    var days = [];
+    const queueList = scList.slice();
 
-  while (day <= endDate) {
-    for (let i = 0; i < 7; i++) {
-      while (
-        queueList.length > 0 &&
-        dateFns.isWithinInterval(day, {
-          start: dateFns.startOfDay(queueList[0].start),
-          end: dateFns.endOfDay(queueList[0].end),
-        })
-      ) {
-        if (
-          stack.length > 0 &&
-          stack[stack.length - 1].index !== stack.length - 1
-        ) {
-          for (let a = 0; a < stack.length; a++) {
-            if (stack[a].index > a) {
-              stack.splice(a, 0, {
-                value: queueList[0],
-                index: a,
-              });
-            }
-          }
-        } else {
-          stack.push({
-            value: queueList[0],
-            index: stack.length > 0 ? stack[stack.length - 1].index + 1 : 0,
-          });
-        }
-        queueList.shift();
+    const onPressCell = (value) => {
+      if (dateFns.isSameDay(value, date)) {
+        return;
       }
-      const currDay = day;
-      days.push(
-        <TouchableWithoutFeedback
-          key={`cell-${day}`}
-          onPress={() => onPressCell(currDay)}>
-          <View
-            style={[
-              {
-                flex: 1,
-              },
-              dateFns.isSameDay(day, date)
-                ? {
-                    borderWidth: 2,
-                    borderRadius: 6,
-                    borderColor: '#999',
-                    overflow: 'hidden',
-                  }
-                : null,
-            ]}>
-            <View>
-              <Text
-                style={[
-                  {
-                    paddingLeft: 4,
-                    fontSize: 12,
-                    color: '#333',
-                    // textAlign: 'center',
-                  },
-                  dateFns.isSaturday(day) ? {color: '#8888FF'} : null,
-                  dateFns.isSunday(day) ? {color: '#FF7777'} : null,
-                  !dateFns.isSameMonth(day, monthStart)
-                    ? {color: 'lightgray'}
-                    : null,
-                  ,
-                  dateFns.isSameDay(today, day)
-                    ? {
-                        borderLeftWidth: 22,
-                        borderLeftColor: 'rgba(20, 81, 51, 0.8)',
-                        color: 'white',
-                        fontWeight: 'bold',
+      cellsRef.current.animateNextTransition();
+      onSetDate(value);
+    };
+
+    while (day <= endDate) {
+      for (let i = 0; i < 7; i++) {
+        while (
+          queueList.length > 0 &&
+          dateFns.isWithinInterval(day, {
+            start: dateFns.startOfDay(queueList[0].start),
+            end: dateFns.endOfDay(queueList[0].end),
+          })
+        ) {
+          if (
+            stack.length > 0 &&
+            stack[stack.length - 1].index !== stack.length - 1
+          ) {
+            for (let a = 0; a < stack.length; a++) {
+              if (stack[a].index > a) {
+                stack.splice(a, 0, {
+                  value: queueList[0],
+                  index: a,
+                });
+              }
+            }
+          } else {
+            stack.push({
+              value: queueList[0],
+              index: stack.length > 0 ? stack[stack.length - 1].index + 1 : 0,
+            });
+          }
+          queueList.shift();
+        }
+        const currDay = day;
+        days.push(
+          <TouchableWithoutFeedback
+            key={`cell-${day}`}
+            onPress={() => onPressCell(currDay)}>
+            <View
+              style={[
+                {
+                  flex: 1,
+                  overflow: 'hidden',
+                },
+                dateFns.isSameDay(day, date)
+                  ? {
+                      borderWidth: 2,
+                      borderRadius: 6,
+                      borderColor: '#999',
+                    }
+                  : null,
+              ]}>
+              <View>
+                <Text
+                  style={[
+                    {
+                      paddingLeft: 4,
+                      fontSize: 12,
+                      color: '#333',
+                      // textAlign: 'center',
+                    },
+                    dateFns.isSaturday(day) ? {color: '#8888FF'} : null,
+                    dateFns.isSunday(day) ? {color: '#FF7777'} : null,
+                    !dateFns.isSameMonth(day, monthStart)
+                      ? {color: 'lightgray'}
+                      : null,
+                    ,
+                    dateFns.isSameDay(today, day)
+                      ? {
+                          borderLeftWidth: 22,
+                          borderLeftColor: 'rgba(20, 81, 51, 0.8)',
+                          color: 'white',
+                          fontWeight: 'bold',
+                        }
+                      : null,
+                  ]}>
+                  {dateFns.format(day, 'd')}
+                </Text>
+                {stack.map((draft, index) => {
+                  const result = [];
+                  if (index !== draft.index) {
+                    for (let i = 0; i < draft.index - index; i++) {
+                      if (dateFns.isSameWeek(day, date)) {
+                        result.push(
+                          <View
+                            key={`blank-${day}-${i}`}
+                            style={{height: 12, marginTop: 2}}
+                          />,
+                        );
+                      } else {
+                        result.push(
+                          <View
+                            key={`blank-${day}-${i}`}
+                            style={{height: 2.6, marginTop: 2}}
+                          />,
+                        );
                       }
-                    : null,
-                ]}>
-                {dateFns.format(day, 'd')}
-              </Text>
-              {stack.map((draft, index) => {
-                const result = [];
-                if (index !== draft.index) {
-                  for (let i = 0; i < draft.index - index; i++) {
-                    if (dateFns.isSameWeek(day, date)) {
+                    }
+                  }
+                  if (dateFns.isSameWeek(day, date)) {
+                    if (
+                      dateFns.isSameDay(draft.value.start, day) ||
+                      dateFns.isSameDay(dateFns.startOfWeek(date, draft), day)
+                    ) {
                       result.push(
                         <View
-                          key={`blank-${day}-${i}`}
-                          style={{height: 12, marginTop: 1}}
-                        />,
+                          key={`schedule-${day}-${draft.index}`}
+                          style={[
+                            {
+                              height: 12,
+                              marginTop: 2,
+                              backgroundColor: `${draft.value.color}A0`,
+                              overflow: 'hidden',
+                            },
+                            dateFns.isSameDay(draft.value.start, day)
+                              ? {marginLeft: 5}
+                              : null,
+                            dateFns.isSameDay(draft.value.end, day)
+                              ? {marginRight: 5}
+                              : null,
+                          ]}>
+                          <Text
+                            style={{
+                              textAlignVertical: 'center',
+                              fontSize: 12,
+                              lineHeight: 12,
+                            }}>
+                            Hello World
+                          </Text>
+                        </View>,
                       );
                     } else {
                       result.push(
                         <View
-                          key={`blank-${day}-${i}`}
-                          style={{height: 2.6, marginTop: 1}}
+                          key={`schedule-${day}-${draft.index}`}
+                          style={[
+                            {
+                              height: 12,
+                              marginTop: 2,
+                              backgroundColor: `${draft.value.color}A0`,
+                            },
+                            dateFns.isSameDay(draft.value.start, day)
+                              ? {marginLeft: 5}
+                              : null,
+                            dateFns.isSameDay(draft.value.end, day)
+                              ? {marginRight: 5}
+                              : null,
+                          ]}
                         />,
                       );
                     }
-                  }
-                }
-                if (dateFns.isSameWeek(day, date)) {
-                  if (
-                    dateFns.isSameDay(draft.value.start, day) ||
-                    dateFns.isSameDay(dateFns.startOfWeek(date, draft), day)
-                  ) {
-                    result.push(
-                      <View
-                        key={`schedule-${day}-${draft.index}`}
-                        style={[
-                          {
-                            height: 12,
-                            marginTop: 1,
-                            backgroundColor: `${draft.value.color}A0`,
-                            overflow: 'hidden',
-                          },
-                          dateFns.isSameDay(draft.value.start, day)
-                            ? {marginLeft: 5}
-                            : null,
-                          dateFns.isSameDay(draft.value.end, day)
-                            ? {marginRight: 5}
-                            : null,
-                        ]}>
-                        <Text
-                          style={{
-                            textAlignVertical: 'center',
-                            fontSize: 12,
-                            lineHeight: 12,
-                          }}>
-                          Hello World
-                        </Text>
-                      </View>,
-                    );
                   } else {
                     result.push(
                       <View
                         key={`schedule-${day}-${draft.index}`}
                         style={[
                           {
-                            height: 12,
-                            marginTop: 1,
+                            height: 2.6,
+                            marginTop: 2,
                             backgroundColor: `${draft.value.color}A0`,
                           },
                           dateFns.isSameDay(draft.value.start, day)
@@ -320,81 +360,75 @@ const Month = ({date, scList, onSetDate}) => {
                       />,
                     );
                   }
-                } else {
-                  result.push(
-                    <View
-                      key={`schedule-${day}-${draft.index}`}
-                      style={[
-                        {
-                          height: 2.6,
-                          marginTop: 1,
-                          backgroundColor: `${draft.value.color}A0`,
-                        },
-                        dateFns.isSameDay(draft.value.start, day)
-                          ? {marginLeft: 5}
-                          : null,
-                        dateFns.isSameDay(draft.value.end, day)
-                          ? {marginRight: 5}
-                          : null,
-                      ]}
-                    />,
-                  );
-                }
-                return result;
-              })}
+                  return result;
+                })}
+              </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>,
+          </TouchableWithoutFeedback>,
+        );
+        stack = stack.filter((val) => !dateFns.isSameDay(day, val.value.end));
+        day = dateFns.addDays(day, 1);
+      }
+      rows.push(
+        <View
+          key={`week-${day}`}
+          style={[
+            styles.weekleyWrap,
+            dateFns.isSameWeek(date, dateFns.subDays(day, 1))
+              ? {flex: 2}
+              : null,
+          ]}>
+          {days}
+        </View>,
       );
-      stack = stack.filter((val) => !dateFns.isSameDay(day, val.value.end));
-      day = dateFns.addDays(day, 1);
+      days = [];
+      stack.forEach((value, index) => (value.index = index));
     }
-    rows.push(
-      <View
-        key={`week-${day}`}
-        style={[
-          styles.weekleyWrap,
-          dateFns.isSameWeek(date, dateFns.subDays(day, 1)) ? {flex: 2} : null,
-        ]}>
-        {days}
-      </View>,
-    );
-    days = [];
-    stack.forEach((value, index) => (value.index = index));
-  }
-
-  const onHandlerStateChange = (e) => {
-    if (e.nativeEvent.oldState === State.ACTIVE) {
-      if (e.nativeEvent.translationX > 150 || e.nativeEvent.velocityX > 800) {
-        Animated.spring(value, {
-          velocity: e.nativeEvent.velocityX,
-          tension: 0,
-          friction: 20,
-          toValue: Dimensions.get('window').width,
-          useNativeDriver: true,
-        }).start();
-      } else if (
-        e.nativeEvent.translationX < -150 ||
-        e.nativeEvent.velocityX < -800
-      ) {
-        Animated.spring(value, {
-          velocity: e.nativeEvent.velocityX,
-          tension: 0,
-          friction: 20,
-          toValue: Dimensions.get('window').width * -1,
-          useNativeDriver: true,
-        }).start();
-      } else
-        Animated.spring(value, {
-          velocity: 10,
-          tension: 0,
-          friction: 20,
-          toValue: 0,
-          useNativeDriver: true,
-        }).start();
-    }
-    console.log(value);
+    return rows;
   };
+
+  console.log('render');
+  const onHandlerStateChange = (e) => {
+    if (state === 0) {
+      if (e.nativeEvent.state === State.ACTIVE) {
+        if (isFullCalendar) {
+          e.nativeEvent.velocityY > 300 ? onSmallCalendar() : null;
+        } else {
+          e.nativeEvent.velocityY < -300 ? onFullCalendar() : null;
+        }
+        Math.abs(e.nativeEvent.velocityX) > 60 ? setState(1) : null;
+      }
+    } else {
+      if (e.nativeEvent.oldState === State.ACTIVE) {
+        if (e.nativeEvent.translationX > 150 || e.nativeEvent.velocityX > 800) {
+          value.setValue(-width);
+          onSetDate(dateFns.endOfMonth(dateFns.addMonths(date, -1)));
+        } else if (
+          e.nativeEvent.translationX < -150 ||
+          e.nativeEvent.velocityX < -800
+        ) {
+          value.setValue(width);
+          onSetDate(dateFns.startOfMonth(dateFns.addMonths(date, 1)));
+        } else {
+          Animated.spring(value, {
+            velocity: 10,
+            tension: 0,
+            friction: 20,
+            toValue: 0,
+            useNativeDriver: true,
+          }).start();
+        }
+        setState(0);
+      }
+    }
+  };
+
+  const transition = (
+    <Transition.Together>
+      <Transition.In type="fade" />
+      <Transition.Change durationMs={150} />
+    </Transition.Together>
+  );
 
   return (
     <Transitioning.View
@@ -407,14 +441,20 @@ const Month = ({date, scList, onSetDate}) => {
           [
             {
               nativeEvent: {
-                translationX: value,
+                translationX: state === 1 ? value : null,
               },
             },
           ],
           {useNativeDriver: true},
         )}>
-        <Animated.View style={[{flex: 6}, {transform: [{translateX: value}]}]}>
-          {rows}
+        <Animated.View
+          style={[
+            {flex: 1},
+            {
+              transform: [{translateX: value}],
+            },
+          ]}>
+          {GetMonth()}
         </Animated.View>
       </PanGestureHandler>
     </Transitioning.View>
@@ -425,7 +465,6 @@ export default Calendar;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
     backgroundColor: 'white',
     flex: 1,
     paddingBottom: 6,
@@ -434,6 +473,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // backgroundColor: 'tomato',
     flexDirection: 'row',
+    paddingHorizontal: 10,
   },
   weeklyText: {
     flex: 1,
