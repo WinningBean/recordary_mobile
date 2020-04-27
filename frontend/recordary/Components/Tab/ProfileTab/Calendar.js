@@ -5,11 +5,14 @@ import {
   View,
   Dimensions,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   Animated,
 } from 'react-native';
 
 import {Transition, Transitioning} from 'react-native-reanimated';
 import {PanGestureHandler, State} from 'react-native-gesture-handler';
+
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as dateFns from 'date-fns';
 
@@ -95,19 +98,36 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
     <View style={styles.container}>
       <View
         style={{
-          flex: 0.8,
-          justifyContent: 'center',
+          height: 40,
           flexDirection: 'row',
+          justifyContent: 'space-between',
         }}>
-        <Text
-          style={{fontSize: 16, textAlignVertical: 'center', color: '#333'}}>
-          {dateFns.format(currDate, 'MMM').toUpperCase()}
-        </Text>
-        <Text> </Text>
-        <Text
-          style={{fontSize: 16, textAlignVertical: 'center', color: '#333'}}>
-          {dateFns.format(currDate, 'yyyy')}
-        </Text>
+        <TouchableOpacity
+          onPress={() =>
+            setCurrDate(dateFns.endOfMonth(dateFns.subMonths(currDate, 1)))
+          }>
+          <MaterialCommunityIcons name="menu-left" size={40} color="gray" />
+        </TouchableOpacity>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}>
+          <Text style={{fontSize: 16, color: '#333'}}>
+            {dateFns.format(currDate, 'MMM').toUpperCase()}
+          </Text>
+          <Text> </Text>
+          <Text style={{fontSize: 16, color: '#333'}}>
+            {dateFns.format(currDate, 'yyyy')}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() =>
+            setCurrDate(dateFns.startOfMonth(dateFns.addMonths(currDate, 1)))
+          }>
+          <MaterialCommunityIcons name="menu-right" size={40} color="gray" />
+        </TouchableOpacity>
       </View>
       <View
         style={{
@@ -271,7 +291,7 @@ const Month = ({
                   const result = [];
                   if (index !== draft.index) {
                     for (let i = 0; i < draft.index - index; i++) {
-                      if (dateFns.isSameWeek(day, date)) {
+                      if (isFullCalendar || dateFns.isSameWeek(day, date)) {
                         result.push(
                           <View
                             key={`blank-${day}-${i}`}
@@ -288,7 +308,7 @@ const Month = ({
                       }
                     }
                   }
-                  if (dateFns.isSameWeek(day, date)) {
+                  if (isFullCalendar || dateFns.isSameWeek(day, date)) {
                     if (
                       dateFns.isSameDay(draft.value.start, day) ||
                       dateFns.isSameDay(dateFns.startOfWeek(date, draft), day)
@@ -374,7 +394,7 @@ const Month = ({
           key={`week-${day}`}
           style={[
             styles.weekleyWrap,
-            dateFns.isSameWeek(date, dateFns.subDays(day, 1))
+            isFullCalendar || dateFns.isSameWeek(date, dateFns.subDays(day, 1))
               ? {flex: 2}
               : null,
           ]}>

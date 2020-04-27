@@ -23,7 +23,7 @@ const ProfileTab = () => {
 const Profile = ({navigation}) => {
   const [content, setContent] = useState(`Hello
 World`);
-  const value = useRef(new Animated.Value(0.35)).current;
+  const value = useRef(new Animated.Value(40)).current;
   const [isFullCalendar, setIsFullCalender] = useState(false);
   const [height, setHeight] = useState(undefined);
   useLayoutEffect(() => {
@@ -61,9 +61,11 @@ World`);
     <View style={styles.container} onLayout={onLayout}>
       <Animated.View
         style={[
-          styles.section,
-          {height: height !== undefined ? height * 0.35 : null},
-          {transform: [{translateY: value}]},
+          // styles.section,
+          // {height: height !== undefined ? height * 0.35 : null},
+          {
+            flex: value,
+          },
         ]}>
         <View style={{flex: 1, justifyContent: 'center'}}>
           <View style={styles.profileInfo}>
@@ -145,7 +147,7 @@ World`);
           <View
             style={{
               flexDirection: 'row',
-              height: 50,
+              flex: 1,
               justifyContent: 'space-between',
               // backgroundColor: 'rgba(145,2,2,0.3)',
             }}>
@@ -182,24 +184,24 @@ World`);
           </View>
         </View>
       </Animated.View>
-      <View style={height !== undefined && {height: height * 0.65}}>
+      <View style={height !== undefined && {flex: 60}}>
         {height === undefined ? null : (
           <Calendar
             isFullCalendar={isFullCalendar}
             onFullCalendar={() => {
               setIsFullCalender(true);
               Animated.timing(value, {
-                toValue: -height * 0.35,
-                duration: 2000,
-                useNativeDriver: true,
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: false,
               }).start();
             }}
             onSmallCalendar={() => {
               setIsFullCalender(false);
               Animated.timing(value, {
-                toValue: 0,
-                duration: 2000,
-                useNativeDriver: true,
+                toValue: 40,
+                duration: 500,
+                useNativeDriver: false,
               }).start();
             }}
           />
@@ -217,7 +219,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
   },
   section: {
-    // flex: 0.45,
+    flex: 0.2,
     // backgroundColor: 'orange',
   },
   profileInfo: {
