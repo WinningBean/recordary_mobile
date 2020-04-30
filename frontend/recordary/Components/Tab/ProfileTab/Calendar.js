@@ -27,26 +27,55 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
       start: dateFns.addDays(new Date(), -5),
       end: dateFns.addDays(new Date(), -1),
       color: '#f1c40f',
+      ex: 'hello world',
     },
     {
       start: dateFns.addDays(new Date(), -4),
       end: new Date(),
       color: '#2ecc71',
+      ex: 'hello world',
     },
     {
       start: new Date(),
       end: dateFns.addDays(new Date(), 7),
       color: '#2ecc71',
+      ex: 'hello world',
     },
     {
       start: new Date(),
       end: dateFns.addDays(new Date(), 4),
       color: '#2ecc71',
+      ex: 'hello world',
     },
     {
       start: new Date(),
       end: new Date(),
       color: '#9b59b6',
+      ex: 'hello world',
+    },
+    {
+      start: new Date(),
+      end: new Date(),
+      color: '#9b59b6',
+      ex: 'hello world',
+    },
+    {
+      start: new Date(),
+      end: new Date(),
+      color: '#9b59b6',
+      ex: 'hello world',
+    },
+    {
+      start: new Date(),
+      end: new Date(),
+      color: '#9b59b6',
+      ex: 'hello world',
+    },
+    {
+      start: new Date(),
+      end: new Date(),
+      color: '#9b59b6',
+      ex: 'hello world',
     },
     {
       start: dateFns.addDays(new Date(), 1),
@@ -95,6 +124,7 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
     },
   ]);
   const [currDate, setCurrDate] = useState(new Date());
+  const [isClickDay, setIsClickDay] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -156,8 +186,38 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
         isFullCalendar={isFullCalendar}
         onFullCalendar={() => onFullCalendar()}
         onSmallCalendar={() => onSmallCalendar()}
+        onSetIsClickDay={() => setIsClickDay(true)}
       />
-      <Day />
+      {isClickDay ? (
+        <Day
+          currDate={currDate}
+          onSetIsClickDay={() => setIsClickDay(false)}
+          data={scList.filter((value) =>
+            dateFns.isWithinInterval(currDate, {
+              start: dateFns.startOfDay(value.start),
+              end: dateFns.endOfDay(value.end),
+            }),
+          )}
+          onSetData={(value, index) => {
+            var copyList = scList.slice();
+            copyList[index] = value;
+            setScList(copyList);
+          }}
+          onRegisterData={(value) => {
+            const draft = scList.slice().concat(value);
+            draft.sort((a, b) => {
+              if (dateFns.isSameDay(a.start, b.start)) {
+                if (dateFns.isSameDay(a.end, b.end)) {
+                  return 0;
+                }
+                return dateFns.differenceInDays(b.end, a.end);
+              }
+              return dateFns.differenceInDays(a.start, b.start);
+            });
+            setScList(draft);
+          }}
+        />
+      ) : null}
     </View>
   );
 };
@@ -169,6 +229,7 @@ const Month = ({
   isFullCalendar,
   onSmallCalendar,
   onFullCalendar,
+  onSetIsClickDay,
 }) => {
   const cellsRef = useRef();
   const today = new Date();
@@ -249,7 +310,12 @@ const Month = ({
         days.push(
           <TouchableWithoutFeedback
             key={`cell-${day}`}
-            onPress={() => onPressCell(currDay)}>
+            onPress={() => {
+              if (dateFns.isSameWeek(date, currDay) || isFullCalendar) {
+                onSetIsClickDay();
+              }
+              onPressCell(currDay);
+            }}>
             <View
               style={[
                 {

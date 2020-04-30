@@ -13,6 +13,7 @@ import WrapMain from 'Components/WrapMain';
 import Comment from 'Components/Tab/HomeTab/Comment';
 import Message from 'Components/Tab/ChatTab/Message';
 import Search from 'Components/Tab/ChatTab/Search';
+import Schedule from 'Components/Tab/ProfileTab/Schedule';
 
 import Setting from 'Components/Menu/Setting';
 import ProfileEdit from 'Components/Menu/ProfileEdit';
@@ -83,6 +84,14 @@ const App = () => {
                   cardStyleInterpolator:
                     CardStyleInterpolators.forHorizontalIOS,
                   headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="schedule"
+                component={Schedule}
+                options={{
+                  cardStyleInterpolator:
+                    CardStyleInterpolators.forHorizontalIOS,
                 }}
               />
             </>
