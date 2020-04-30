@@ -16,6 +16,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import * as dateFns from 'date-fns';
 
+import Day from './Day';
+
 const {event, Value} = Animated;
 
 const {width} = Dimensions.get('window');
@@ -155,6 +157,7 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
         onFullCalendar={() => onFullCalendar()}
         onSmallCalendar={() => onSmallCalendar()}
       />
+      <Day />
     </View>
   );
 };
