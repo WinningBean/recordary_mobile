@@ -344,7 +344,7 @@ const Schedule = ({navigation, route}) => {
           animated={true}
           animationType="fade"
           onRequestClose={() => setIsClickColor(false)}>
-          <TouchableWithoutFeedback onPress={() => onSetIsClickDay()}>
+          <TouchableWithoutFeedback onPress={() => setIsClickColor(false)}>
             <View style={styles.modalOverlay} />
           </TouchableWithoutFeedback>
           <View

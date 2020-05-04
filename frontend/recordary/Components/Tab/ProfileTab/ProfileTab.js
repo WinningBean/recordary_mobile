@@ -8,7 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import {createStackNavigator} from '@react-navigation/stack';
 
-import Calendar from 'Components/Tab/ProfileTab/Calendar';
+import Calendar from 'Containers/Tab/ProfileTab/Calendar';
 
 const Stack = createStackNavigator();
 

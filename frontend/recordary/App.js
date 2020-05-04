@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import 'react-native-gesture-handler';
 
@@ -18,19 +18,35 @@ import Schedule from 'Components/Tab/ProfileTab/Schedule';
 import Setting from 'Components/Menu/Setting';
 import ProfileEdit from 'Components/Menu/ProfileEdit';
 
-import Wrap from './Test';
+import Loading from 'Containers/Loading';
+
+import Store from './Store';
+
+import {Provider} from 'react-redux';
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
 
   return (
-    <>
+    <Provider store={Store}>
       <StatusBar backgroundColor={'transparent'} translucent={true} />
       <NavigationContainer>
         <Stack.Navigator initialRouteName="wrap">
-          {isLogin ? (
+          {!isLoading ? (
+            <Stack.Screen
+              name="loading"
+              component={Loading}
+              options={{
+                headerShown: false,
+              }}
+              initialParams={{
+                onLoading: () => setIsLoading(true),
+              }}
+            />
+          ) : isLogin ? (
             <>
               <Stack.Screen
                 name="wrap"
@@ -96,20 +112,22 @@ const App = () => {
               />
             </>
           ) : (
-            <Stack.Screen
-              name="login"
-              component={Login}
-              options={{
-                headerShown: false,
-              }}
-              initialParams={{
-                onLogin: () => setIsLogin(true),
-              }}
-            />
+            <>
+              <Stack.Screen
+                name="login"
+                component={Login}
+                options={{
+                  headerShown: false,
+                }}
+                initialParams={{
+                  onLogin: () => setIsLogin(true),
+                }}
+              />
+            </>
           )}
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </Provider>
   );
 };
 

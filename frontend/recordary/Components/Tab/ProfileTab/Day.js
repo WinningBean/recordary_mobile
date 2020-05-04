@@ -22,8 +22,16 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const {eq, event, Value, set} = Animated;
 
 const {width, height} = Dimensions.get('window');
-const Day = ({data, currDate, onSetIsClickDay, onSetData, onRegisterData}) => {
+const Day = ({
+  data,
+  currDate,
+  onSetIsClickDay,
+  onSetData,
+  onRegisterData,
+  onDeleteData,
+}) => {
   const navigation = useNavigation();
+  console.log(data);
   return (
     <Modal
       transparent
@@ -58,16 +66,24 @@ const Day = ({data, currDate, onSetIsClickDay, onSetData, onRegisterData}) => {
             </Text>
           </View>
           <ScrollView>
-            {data.map((value, index) => (
+            {data.map((value) => (
               <TouchableNativeFeedback
-                key={index}
+                key={value.index}
+                onLongPress={() => {
+                  Alert.alert(null, '일정을 삭제하시겠습니까', [
+                    {
+                      text: '아니오',
+                      style: 'cancel',
+                    },
+                    {text: '예', onPress: () => onDeleteData(value.index)},
+                  ]);
+                }}
                 onPress={() => {
-                  const currIndex = index;
                   onSetIsClickDay();
                   navigation.push('schedule', {
                     data: value,
                     onSave: (value) => {
-                      onSetData(value, currIndex);
+                      onSetData(value, value.index);
                     },
                   });
                 }}>

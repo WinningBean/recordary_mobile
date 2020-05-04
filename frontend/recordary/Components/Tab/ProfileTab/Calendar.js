@@ -14,6 +14,8 @@ import {PanGestureHandler, State} from 'react-native-gesture-handler';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import AsyncStorage from '@react-native-community/async-storage';
+
 import * as dateFns from 'date-fns';
 
 import Day from './Day';
@@ -21,110 +23,24 @@ import Day from './Day';
 const {event, Value} = Animated;
 
 const {width} = Dimensions.get('window');
-const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
-  const [scList, setScList] = useState([
-    {
-      start: dateFns.addDays(new Date(), -5),
-      end: dateFns.addDays(new Date(), -1),
-      color: '#f1c40f',
-      ex: 'hello world',
-    },
-    {
-      start: dateFns.addDays(new Date(), -4),
-      end: new Date(),
-      color: '#2ecc71',
-      ex: 'hello world',
-    },
-    {
-      start: new Date(),
-      end: dateFns.addDays(new Date(), 7),
-      color: '#2ecc71',
-      ex: 'hello world',
-    },
-    {
-      start: new Date(),
-      end: dateFns.addDays(new Date(), 4),
-      color: '#2ecc71',
-      ex: 'hello world',
-    },
-    {
-      start: new Date(),
-      end: new Date(),
-      color: '#9b59b6',
-      ex: 'hello world',
-    },
-    {
-      start: new Date(),
-      end: new Date(),
-      color: '#9b59b6',
-      ex: 'hello world',
-    },
-    {
-      start: new Date(),
-      end: new Date(),
-      color: '#9b59b6',
-      ex: 'hello world',
-    },
-    {
-      start: new Date(),
-      end: new Date(),
-      color: '#9b59b6',
-      ex: 'hello world',
-    },
-    {
-      start: new Date(),
-      end: new Date(),
-      color: '#9b59b6',
-      ex: 'hello world',
-    },
-    {
-      start: dateFns.addDays(new Date(), 1),
-      end: dateFns.addDays(new Date(), 3),
-      color: '#9b59b6',
-    },
-    {
-      start: dateFns.addDays(new Date(), 10),
-      end: dateFns.addDays(new Date(), 18),
-      color: '#9b59b6',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 13),
-      color: '#bdc3c7',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 13),
-      color: '#bdc3c7',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 13),
-      color: '#bdc3c7',
-    },
-    {
-      start: dateFns.addDays(new Date(), 13),
-      end: dateFns.addDays(new Date(), 30),
-      color: '#34495e',
-    },
-    {
-      start: dateFns.addDays(new Date(), 14),
-      end: dateFns.addDays(new Date(), 18),
-      color: '#34495e',
-    },
-    {
-      start: dateFns.addDays(new Date(), 14),
-      end: dateFns.addDays(new Date(), 18),
-      color: '#34495e',
-    },
-    {
-      start: dateFns.addDays(new Date(), 14),
-      end: dateFns.addDays(new Date(), 18),
-      color: '#3498db',
-    },
-  ]);
+const Calendar = ({
+  scList,
+  isFullCalendar,
+  onSmallCalendar,
+  onFullCalendar,
+  onSaveScList,
+}) => {
+  const [scListState, setScListState] = useState(scList);
   const [currDate, setCurrDate] = useState(new Date());
   const [isClickDay, setIsClickDay] = useState(false);
+
+  useEffect(() => {
+    console.log('render', scListState);
+    (async () => {
+      await AsyncStorage.setItem('scList', JSON.stringify(scListState));
+      onSaveScList(scListState);
+    })();
+  }, [scListState]);
 
   return (
     <View style={styles.container}>
@@ -180,7 +96,7 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
         <Text style={[styles.weeklyText, {color: '#8888FF'}]}>FRI</Text>
       </View>
       <Month
-        scList={scList}
+        scList={scListState}
         date={currDate}
         onSetDate={(value) => setCurrDate(value)}
         isFullCalendar={isFullCalendar}
@@ -192,19 +108,21 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
         <Day
           currDate={currDate}
           onSetIsClickDay={() => setIsClickDay(false)}
-          data={scList.filter((value) =>
+          data={scListState.list.filter((value) =>
             dateFns.isWithinInterval(currDate, {
               start: dateFns.startOfDay(value.start),
               end: dateFns.endOfDay(value.end),
             }),
           )}
-          onSetData={(value, index) => {
-            var copyList = scList.slice();
+          onSetData={(value) => {
+            var copyList = scListState.list.slice();
             copyList[index] = value;
-            setScList(copyList);
+            setScListState({index: scList.index + 1, copyList});
           }}
           onRegisterData={(value) => {
-            const draft = scList.slice().concat(value);
+            const draft = scListState.list
+              .slice()
+              .concat({...value, index: scListState.index});
             draft.sort((a, b) => {
               if (dateFns.isSameDay(a.start, b.start)) {
                 if (dateFns.isSameDay(a.end, b.end)) {
@@ -214,7 +132,13 @@ const Calendar = ({isFullCalendar, onSmallCalendar, onFullCalendar}) => {
               }
               return dateFns.differenceInDays(a.start, b.start);
             });
-            setScList(draft);
+            setScListState({index: scListState.index + 1, list: draft});
+          }}
+          onDeleteData={(index) => {
+            console.log(index);
+            var copyList = scListState.list.slice();
+            copyList = copyList.filter((value) => value.index !== index);
+            setScListState({...scList, list: copyList});
           }}
         />
       ) : null}
@@ -236,7 +160,6 @@ const Month = ({
 
   const value = useRef(new Value(0)).current;
   const [state, setState] = useState(0);
-  const velocityY = useRef(new Value(0)).current;
 
   useEffect(() => {
     console.log(state, 'state');
@@ -249,9 +172,6 @@ const Month = ({
     }).start();
   }, [date]);
 
-  // 0 main
-  // 1 pre
-  // 2 next
   const GetMonth = () => {
     const monthStart = dateFns.startOfMonth(date);
 
@@ -267,7 +187,7 @@ const Month = ({
     const rows = [];
     let day = startDate;
     var days = [];
-    const queueList = scList.slice();
+    const queueList = scList.list.slice();
 
     const onPressCell = (value) => {
       if (dateFns.isSameDay(value, date)) {
@@ -405,7 +325,7 @@ const Month = ({
                               fontSize: 12,
                               lineHeight: 12,
                             }}>
-                            Hello World
+                            {draft.value.ex}
                           </Text>
                         </View>,
                       );
@@ -476,7 +396,6 @@ const Month = ({
     return rows;
   };
 
-  console.log('render');
   const onHandlerStateChange = (e) => {
     if (state === 0) {
       if (e.nativeEvent.state === State.ACTIVE) {
