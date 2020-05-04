@@ -20,6 +20,27 @@ import * as dateFns from 'date-fns';
 
 import Day from './Day';
 
+const colorContrast = (hexColor) => {
+  var hexToDec = function (hexString) {
+    var decString = hexString.replace(/[^a-f0-9]/gi, '');
+    return parseInt(decString, 16);
+  };
+
+  var red = hexToDec(hexColor.substr(1, 2));
+  var green = hexToDec(hexColor.substr(3, 2));
+  var blue = hexToDec(hexColor.substr(5, 2));
+
+  var contrast = Math.sqrt(
+    red * red * 0.241 + green * green * 0.691 + blue * blue * 0.068,
+  );
+
+  if (contrast > 130) {
+    return '#000000';
+  } else {
+    return '#FFF';
+  }
+};
+
 const {event, Value} = Animated;
 
 const {width} = Dimensions.get('window');
@@ -116,8 +137,13 @@ const Calendar = ({
           )}
           onSetData={(value) => {
             var copyList = scListState.list.slice();
-            copyList[index] = value;
-            setScListState({index: scList.index + 1, copyList});
+            for (let i = 0; i < copyList.length; i++) {
+              if (value.index === copyList[i].index) {
+                copyList[i] = value;
+                break;
+              }
+            }
+            setScListState({...scListState, list: copyList});
           }}
           onRegisterData={(value) => {
             const draft = scListState.list
@@ -309,7 +335,7 @@ const Month = ({
                             {
                               height: 12,
                               marginTop: 2,
-                              backgroundColor: `${draft.value.color}A0`,
+                              backgroundColor: draft.value.color,
                               overflow: 'hidden',
                             },
                             dateFns.isSameDay(draft.value.start, day)
@@ -324,6 +350,8 @@ const Month = ({
                               textAlignVertical: 'center',
                               fontSize: 12,
                               lineHeight: 12,
+                              fontWeight: 'bold',
+                              color: colorContrast(draft.value.color),
                             }}>
                             {draft.value.ex}
                           </Text>
@@ -337,7 +365,7 @@ const Month = ({
                             {
                               height: 12,
                               marginTop: 2,
-                              backgroundColor: `${draft.value.color}A0`,
+                              backgroundColor: draft.value.color,
                             },
                             dateFns.isSameDay(draft.value.start, day)
                               ? {marginLeft: 5}
@@ -357,7 +385,7 @@ const Month = ({
                           {
                             height: 2.6,
                             marginTop: 2,
-                            backgroundColor: `${draft.value.color}A0`,
+                            backgroundColor: draft.value.color,
                           },
                           dateFns.isSameDay(draft.value.start, day)
                             ? {marginLeft: 5}

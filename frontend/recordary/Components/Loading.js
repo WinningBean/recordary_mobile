@@ -24,6 +24,7 @@ const Loading = ({onSaveInitData, route}) => {
           end: new Date(value.end),
         })),
       };
+      console.log(user, postList, scList);
       onSaveInitData(user, postList, scList);
       route.params.onLoading();
     } catch (error) {

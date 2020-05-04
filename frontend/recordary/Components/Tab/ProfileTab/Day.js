@@ -83,7 +83,7 @@ const Day = ({
                   navigation.push('schedule', {
                     data: value,
                     onSave: (value) => {
-                      onSetData(value, value.index);
+                      onSetData(value);
                     },
                   });
                 }}>
