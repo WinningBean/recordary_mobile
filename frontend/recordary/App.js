@@ -9,6 +9,7 @@ import {
 } from '@react-navigation/stack';
 
 import Login from 'Components/Login/Login';
+import Register from 'Components/Login/Register';
 import WrapMain from 'Components/WrapMain';
 import Comment from 'Components/Tab/HomeTab/Comment';
 import Message from 'Components/Tab/ChatTab/Message';
@@ -120,8 +121,23 @@ const App = () => {
                   headerShown: false,
                 }}
                 initialParams={{
-                  onLogin: () => setIsLogin(true),
+                  onLogin: (data) => {
+                    console.log(data);
+                    store.dispatch({type: 'SET_USER', user: data});
+                    setIsLogin(true);
+                  },
                 }}
+              />
+              <Stack.Screen
+                name="register"
+                options={{
+                  title: '회원가입',
+                  headerStyle: {
+                    backgroundColor: 'rgb(64, 114, 89)',
+                  },
+                  headerTintColor: 'white',
+                }}
+                component={Register}
               />
             </>
           )}

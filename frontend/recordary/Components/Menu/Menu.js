@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   TouchableOpacity,
+  TouchableNativeFeedback,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
@@ -57,25 +58,31 @@ const Menu = () => {
 
   const groupList = useMemo(() => {
     return data.group.map((value) => (
-      <View style={styles.box} key={value.nm}>
-        <View
-          style={{
-            width: 60,
-            height: 60,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <FastImage
-            source={{uri: value.pic}}
-            style={{width: 40, height: 40, borderRadius: 50}}
-            resizeMode="cover"
-          />
+      <TouchableNativeFeedback
+        key={value.nm}
+        onPress={() => {
+          navigation.push('search');
+        }}>
+        <View style={styles.box}>
+          <View
+            style={{
+              width: 60,
+              height: 60,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <FastImage
+              source={{uri: value.pic}}
+              style={{width: 40, height: 40, borderRadius: 50}}
+              resizeMode="cover"
+            />
+          </View>
+          <View style={{justifyContent: 'center'}}>
+            <Text style={{fontSize: 16}}>{value.nm}</Text>
+            <Text style={{fontSize: 13, color: 'gray'}}>{value.master}</Text>
+          </View>
         </View>
-        <View style={{justifyContent: 'center'}}>
-          <Text style={{fontSize: 16}}>{value.nm}</Text>
-          <Text style={{fontSize: 13, color: 'gray'}}>{value.master}</Text>
-        </View>
-      </View>
+      </TouchableNativeFeedback>
     ));
   }, [data]);
 

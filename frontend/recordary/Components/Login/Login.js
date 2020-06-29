@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,27 +9,48 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-const Login = ({route}) => {
-  console.log(route);
+import axios from 'axios';
+
+const Login = ({route, navigation}) => {
+  const [info, setInfo] = useState({id: '', pw: ''});
   return (
     <KeyboardAvoidingView style={styles.container}>
       <Text style={styles.title}>Recordary</Text>
       <View style={{marginTop: 20}}>
-        <TextInput style={styles.input} placeholder="아이디" />
+        <TextInput
+          style={styles.input}
+          placeholder="아이디"
+          onChangeText={(value) => setInfo({...info, id: value})}
+        />
         <TextInput
           style={styles.input}
           placeholder="비밀번호"
           secureTextEntry={true}
+          onChangeText={(value) => setInfo({...info, pw: value})}
         />
         <View
           style={[
             styles.buttonArea,
             {borderBottomColor: 'lightgray', borderBottomWidth: 1},
           ]}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.push('register')}>
             <Text style={styles.textStyle}>회원가입</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => route.params.onLogin()}>
+          <TouchableOpacity
+            onPress={async () => {
+              try {
+                const {data} = await axios.post(
+                  'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/login',
+                  {
+                    userId: info.id,
+                    userPw: info.pw,
+                  },
+                );
+                route.params.onLogin(data);
+              } catch (error) {
+                console.error(error);
+              }
+            }}>
             <Text style={styles.textStyle}>로그인</Text>
           </TouchableOpacity>
         </View>
