@@ -12,7 +12,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import AddPostTab from 'Components/Tab/AddPostTab/AddPostTab';
 import ActiviteTab from 'Components/Tab/ActiviteTab/ActiviteTab';
-import HomeTab from 'Components/Tab/HomeTab/HomeTab';
+import HomeTab from 'Containers/Tab/HomeTab/HomeTab';
 import ChatTab from 'Components/Tab/ChatTab/ChatTab';
 import ProfileTab from 'Components/Tab/ProfileTab/ProfileTab';
 

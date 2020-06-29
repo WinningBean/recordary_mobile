@@ -5,7 +5,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onSaveInitData: (user, postList, scList) => {
       dispatch({type: 'SET_USER', user: user});
-      dispatch({type: 'SET_POSTLIST', postList: postList});
       dispatch({type: 'SET_SCLIST', scList: scList});
     },
   };

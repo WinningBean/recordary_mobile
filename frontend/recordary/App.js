@@ -123,7 +123,7 @@ const App = () => {
                 initialParams={{
                   onLogin: (data) => {
                     console.log(data);
-                    store.dispatch({type: 'SET_USER', user: data});
+                    Store.dispatch({type: 'SET_USER', user: data});
                     setIsLogin(true);
                   },
                 }}
