@@ -4,12 +4,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Picker,
-  Image,
-  TextInput,
   ScrollView,
   Dimensions,
-  KeyboardAvoidingView,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -18,11 +14,9 @@ import {
 
 import Timeline from './Timeline';
 import OnlyPostExTimeline from './OnlyPostExTimeline';
-import TimelineMultiDay from './TimelineMultiDay';
-import PostShareTimeline from './PostShareTimeline';
 import TimelineOneDay from './TimelineOneDay';
+import Comment from './Comment';
 
-import * as dateFns from 'date-fns';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
