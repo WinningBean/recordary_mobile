@@ -55,7 +55,7 @@ const ProfileEdit = ({navigation, route}) => {
       <View style={{display: 'flex', alignItems: 'center', margin: 20}}>
         <TouchableOpacity onPress={showPicker}>
           <FastImage
-            source={{uri: currentUser.pic}}
+            source={{uri: currentUser.userPic}}
             style={{
               resizeMode: 'cover',
               width: Dimensions.get('window').width * 0.6,
@@ -76,7 +76,7 @@ const ProfileEdit = ({navigation, route}) => {
           alignItems: 'center',
         }}>
         <TextInput style={{fontSize: 20, color: 'gray'}} editable={false}>
-          {currentUser.id}({currentUser.nm})
+          {currentUser.userId}({currentUser.userNm})
         </TextInput>
       </View>
       <View
@@ -89,7 +89,7 @@ const ProfileEdit = ({navigation, route}) => {
           상태메시지
         </Text>
         <TextInput
-          defaultValue={currentUser.ex}
+          defaultValue={currentUser.userEx}
           multiline={true}
           maxLength={300}
           numberOfLines={2}

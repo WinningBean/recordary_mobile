@@ -178,7 +178,7 @@ const Menu = (props) => {
               <TouchableOpacity
                 onPress={() =>
                   navigation.push('profileEdit', {
-                    currentUser: user,
+                    currentUser: currUser,
                   })
                 }>
                 <MaterialIcons name="edit" size={30} />
