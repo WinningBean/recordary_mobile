@@ -6,6 +6,8 @@ const reducer = (state, action) => {
       isLogin: false,
       user: {},
       scList: [],
+      friendList: undefined,
+      groupList: undefined,
     };
   }
   switch (action.type) {
@@ -13,6 +15,16 @@ const reducer = (state, action) => {
       return {...state, user: action.user};
     case 'SET_SCLIST':
       return {...state, scList: action.scList};
+    case 'SAVE_FRIENDLIST':
+      return {
+        ...state,
+        friendList: action.friendList,
+      };
+    case 'SAVE_GROUPLIST':
+      return {
+        ...state,
+        groupList: action.groupList,
+      };
   }
   return state;
 };

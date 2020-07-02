@@ -54,7 +54,7 @@ const Menu = (props) => {
     }
   };
 
-  const groupList = useMemo(() => {
+  const groupList = () => {
     if (props.groupList === undefined) {
       getGroupList();
     } else {
@@ -86,12 +86,11 @@ const Menu = (props) => {
         </TouchableNativeFeedback>
       ));
     }
-  }, []);
+  };
 
-  const friendList = useMemo(() => {
+  const friendList = () => {
     if (props.friendList === undefined) {
       getFriendList();
-      return;
     } else {
       return props.friendList.map((value) => (
         <View
@@ -115,14 +114,14 @@ const Menu = (props) => {
               resizeMode="cover"
             />
           </View>
-          <View style={{justifyContent: 'center'}}>
+          <View style={{justifyContent: 'center', marginBottom: 5}}>
             <Text style={{fontSize: 16}}>{value.userId}</Text>
             <Text style={{fontSize: 13, color: 'gray'}}>{value.userNm}</Text>
           </View>
         </View>
       ));
     }
-  }, []);
+  };
 
   const changeClick = (isFriend) => {
     if (isFriend === isClickFriend) return;
@@ -222,7 +221,7 @@ const Menu = (props) => {
           ]}
         />
         <ScrollView style={{height: Dimensions.get('window').height * 0.8}}>
-          {isClickFriend ? friendList : groupList}
+          {isClickFriend ? friendList() : groupList()}
         </ScrollView>
       </View>
 
