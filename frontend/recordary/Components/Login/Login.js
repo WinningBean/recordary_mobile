@@ -40,7 +40,7 @@ const Login = ({route, navigation}) => {
             onPress={async () => {
               try {
                 const {data} = await axios.post(
-                  'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/login',
+                  'http://www.recordary.gq:8080/user/login',
                   {
                     userId: info.id,
                     userPw: info.pw,
@@ -48,7 +48,8 @@ const Login = ({route, navigation}) => {
                 );
                 route.params.onLogin(data);
               } catch (error) {
-                console.error(error);
+                Alert.alert('아이디와 패스워드를 확인해주세요');
+                // console.error(error);
               }
             }}>
             <Text style={styles.textStyle}>로그인</Text>

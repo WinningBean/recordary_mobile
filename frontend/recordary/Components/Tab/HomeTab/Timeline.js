@@ -25,7 +25,7 @@ export default function Timeline({postList, user}) {
       try {
         const mediaSrc = (
           await axios.get(
-            `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/media/${postList.mediaFK.mediaCd}`,
+            `http://www.recordary.gq:8080/media/${postList.mediaFK.mediaCd}`,
           )
         ).data;
         if (mediaSrc.length < 0) {
@@ -57,7 +57,7 @@ export default function Timeline({postList, user}) {
               }}
             />
             <Text style={{padding: 10, fontSize: 18}}>
-              {data.userFK.userNm}({data.userFK.userId})
+              {data.userFK.userId}({data.userFK.userNm})
             </Text>
           </View>
         ) : (
@@ -88,7 +88,7 @@ export default function Timeline({postList, user}) {
               }}
             />
             <Text style={{padding: 10, fontSize: 14, color: 'gray'}}>
-              {data.userFK.userNm}({data.userFK.userId})
+              {data.userFK.userId}({data.userFK.userNm})
             </Text>
           </View>
         )}

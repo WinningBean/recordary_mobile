@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableNativeFeedback,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
@@ -14,56 +15,93 @@ import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Transition, Transitioning} from 'react-native-reanimated';
+import axios from 'axios';
 
-const Menu = () => {
+const Menu = (props) => {
+  console.log(props);
   const navigation = useNavigation();
-
   const [isClickFriend, setIsClickFriend] = useState(true);
+  const [currUser, setCurrUser] = useState(props.user);
   const menuRef = useRef();
-  const data = useState({
-    currentUser: {
-      id: 'fornals222',
-      nm: '위성호',
-      pic: 'https://unsplash.it/400/400?image=1',
-      ex: 'ㅈ데렂덜ㄴ으뤌ㅇㅈ다루포여ㅑㄷ저ㅗㅠ허ㅑ대자러ㅑㄷ자ㅓ',
-    },
-    group: [
-      {
-        nm: '졸업작품',
-        pic: 'https://unsplash.it/400/400?image=5',
-        master: '위승빈',
-      },
-    ],
-    friend: [
-      {
-        nm: '홍길동',
-        id: 'hong1234',
-        pic: 'https://unsplash.it/400/400?image=2',
-        isLogin: true,
-      },
-      {
-        nm: '김길동',
-        id: 'iamkim486',
-        pic: 'https://unsplash.it/400/400?image=3',
-        isLogin: false,
-      },
-      {
-        nm: '위길동',
-        id: 'howareyou',
-        pic: 'https://unsplash.it/400/400?image=4',
-        isLogin: true,
-      },
-    ],
-  })[0];
+
+  const getGroupList = async () => {
+    try {
+      const {data} = await axios.get(
+        `http://www.recordary.gq:8080/group/group/${currUser.userCd}`,
+      );
+      if (data.length === 0) {
+        props.onSaveGroupList([]);
+      }
+      props.onSaveGroupList(data);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('서버에러로 인하여 데이터를 받아오는데 실패하였습니다.');
+    }
+  };
+
+  const getFriendList = async () => {
+    try {
+      const {data} = await axios.get(
+        `http://www.recordary.gq:8080/friends/${currUser.userCd}`,
+      );
+      if (data === '') {
+        props.onSaveFriendList([]);
+      }
+      props.onSaveFriendList(data);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('서버에러로 인하여 데이터를 받아오는데 실패하였습니다.');
+    }
+  };
 
   const groupList = useMemo(() => {
-    return data.group.map((value) => (
-      <TouchableNativeFeedback
-        key={value.nm}
-        onPress={() => {
-          navigation.push('search');
-        }}>
-        <View style={styles.box}>
+    if (props.groupList === undefined) {
+      getGroupList();
+    } else {
+      return props.groupList.map((value) => (
+        <TouchableNativeFeedback
+          key={value.groupCd}
+          onPress={() => {
+            navigation.push('search');
+          }}>
+          <View style={styles.box}>
+            <View
+              style={{
+                width: 60,
+                height: 60,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <FastImage
+                source={{uri: value.groupPic}}
+                style={{width: 40, height: 40, borderRadius: 50}}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={{justifyContent: 'center'}}>
+              <Text style={{fontSize: 16}}>{value.groupNm}</Text>
+              {/* <Text style={{fontSize: 13, color: 'gray'}}>{value.groupEx}</Text> */}
+            </View>
+          </View>
+        </TouchableNativeFeedback>
+      ));
+    }
+  }, []);
+
+  const friendList = useMemo(() => {
+    if (props.friendList === undefined) {
+      getFriendList();
+      return;
+    } else {
+      return props.friendList.map((value) => (
+        <View
+          style={[
+            styles.box,
+            value.isLogin
+              ? {borderLeftColor: 'green', borderLeftWidth: 3}
+              : null,
+          ]}
+          key={value.userCd}>
           <View
             style={{
               width: 60,
@@ -72,48 +110,19 @@ const Menu = () => {
               alignItems: 'center',
             }}>
             <FastImage
-              source={{uri: value.pic}}
+              source={{uri: value.userPic}}
               style={{width: 40, height: 40, borderRadius: 50}}
               resizeMode="cover"
             />
           </View>
           <View style={{justifyContent: 'center'}}>
-            <Text style={{fontSize: 16}}>{value.nm}</Text>
-            <Text style={{fontSize: 13, color: 'gray'}}>{value.master}</Text>
+            <Text style={{fontSize: 16}}>{value.userId}</Text>
+            <Text style={{fontSize: 13, color: 'gray'}}>{value.userNm}</Text>
           </View>
         </View>
-      </TouchableNativeFeedback>
-    ));
-  }, [data]);
-
-  const friendList = useMemo(() => {
-    return data.friend.map((value) => (
-      <View
-        style={[
-          styles.box,
-          value.isLogin ? {borderLeftColor: 'green', borderLeftWidth: 3} : null,
-        ]}
-        key={value.nm}>
-        <View
-          style={{
-            width: 60,
-            height: 60,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <FastImage
-            source={{uri: value.pic}}
-            style={{width: 40, height: 40, borderRadius: 50}}
-            resizeMode="cover"
-          />
-        </View>
-        <View style={{justifyContent: 'center'}}>
-          <Text style={{fontSize: 16}}>{value.nm}</Text>
-          <Text style={{fontSize: 13, color: 'gray'}}>{value.id}</Text>
-        </View>
-      </View>
-    ));
-  }, [data]);
+      ));
+    }
+  }, []);
 
   const changeClick = (isFriend) => {
     if (isFriend === isClickFriend) return;
@@ -142,8 +151,15 @@ const Menu = () => {
                 flexDirection: 'row',
               }}>
               <View>
+                {currUser.userPic === null
+                  ? setCurrUser({
+                      ...currUser,
+                      userPic:
+                        'https://recordary-springboot-upload.s3.ap-northeast-2.amazonaws.com/user/basic.png',
+                    })
+                  : null}
                 <FastImage
-                  source={{uri: data.currentUser.pic}}
+                  source={{uri: currUser.userPic}}
                   style={{
                     width: 60,
                     height: 60,
@@ -152,17 +168,18 @@ const Menu = () => {
                 />
               </View>
               <View style={{paddingLeft: 10}}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                  {data.currentUser.id}
+                <Text
+                  style={{fontSize: 20, fontWeight: 'bold', paddingLeft: 4}}>
+                  {currUser.userId}
                 </Text>
-                <Text style={{color: 'gray'}}>{data.currentUser.nm}</Text>
+                <Text style={{color: 'gray'}}> {currUser.userNm}</Text>
               </View>
             </View>
             <View style={{marginTop: 10}}>
               <TouchableOpacity
                 onPress={() =>
                   navigation.push('profileEdit', {
-                    currentUser: data.currentUser,
+                    currentUser: user,
                   })
                 }>
                 <MaterialIcons name="edit" size={30} />

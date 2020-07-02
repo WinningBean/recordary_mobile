@@ -87,7 +87,7 @@ const Comment = ({navigation, route}) => {
                   }}
                 />
                 <Text style={{padding: 10, fontSize: 20}}>
-                  {data.userFK.userNm}({data.userFK.userId})
+                  {data.userFK.userId}( {data.userFK.userNm})
                 </Text>
               </View>
 
@@ -163,7 +163,7 @@ const Comment = ({navigation, route}) => {
                 }}>
                 <View style={styles.flexRow}>
                   <Text style={{fontSize: 15, fontWeight: 'bold'}}>
-                    {value.userFK.userNm}(${value.userFK.userId})
+                    {value.userFK.userId}({value.userFK.userNm})
                   </Text>
                   <Text style={{fontSize: 15, paddingLeft: 10}}>
                     {value.commentContent}

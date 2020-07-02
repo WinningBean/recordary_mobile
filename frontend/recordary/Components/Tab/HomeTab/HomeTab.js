@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -24,7 +25,7 @@ import axios from 'axios';
 
 const Stack = createStackNavigator();
 
-const HomeTab = ({isLogin, user}) => {
+const HomeTab = ({user}) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -41,14 +42,11 @@ const HomeTab = ({isLogin, user}) => {
 const Home = ({navigation, route}) => {
   const [timeline, setTimeline] = useState([]);
   useEffect(() => {
-    // if(isLogin){
-
-    // }
     (async () => {
       try {
         const timeLineDataList = (
           await axios.get(
-            `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+            `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
           )
         ).data;
         if (timeLineDataList.length < 0) {

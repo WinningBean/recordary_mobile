@@ -19,7 +19,7 @@ import ProfileTab from 'Components/Tab/ProfileTab/ProfileTab';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Menu from 'Components/Menu/Menu';
+import Menu from 'Containers/Menu/Menu';
 
 const WrapDraw = createDrawerNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -39,7 +39,6 @@ const WrapMain = ({navigation}) => {
     </WrapDraw.Navigator>
   );
 };
-
 const MainComponent = ({navigation}) => {
   return (
     <BottomTab.Navigator
@@ -83,6 +82,7 @@ const MainComponent = ({navigation}) => {
               name="home"
               color={color}
               size={focused ? 32 : 26}
+              onPress={() => {}}
             />
           ),
         }}

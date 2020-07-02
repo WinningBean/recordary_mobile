@@ -37,7 +37,7 @@ export default function Timeline({postList, user}) {
               }}
             />
             <Text style={{padding: 10, fontSize: 18}}>
-              {data.userFK.userNm}({data.userFK.userId})
+              {data.userFK.userId}({data.userFK.userNm})
             </Text>
           </View>
         ) : (
@@ -68,7 +68,7 @@ export default function Timeline({postList, user}) {
               }}
             />
             <Text style={{padding: 10, fontSize: 14, color: 'gray'}}>
-              {data.userFK.userNm}({data.userFK.userId})
+              {data.userFK.userId}({data.userFK.userNm})
             </Text>
           </View>
         )}
