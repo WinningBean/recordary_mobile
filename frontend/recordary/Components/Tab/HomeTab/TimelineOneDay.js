@@ -173,7 +173,9 @@ export default function TimelineOneDay({postList, user}) {
 const styles = StyleSheet.create({
   post: {
     padding: 5,
-    margin: 10,
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 10,
     backgroundColor: 'white',
   },
   spaceBetween: {
