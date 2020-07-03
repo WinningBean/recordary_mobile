@@ -29,7 +29,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import {createStackNavigator} from '@react-navigation/stack';
 
-import Calendar from 'Containers/Tab/ProfileTab/Calendar';
+import Calendar from './Calendar';
 import axios from 'axios';
 
 const Stack = createStackNavigator();
@@ -60,6 +60,8 @@ World`);
   const [height, setHeight] = useState(undefined);
   const [info, setInfo] = useState(undefined);
   const [timeline, setTimeline] = useState([]);
+  const [scheduleList, setScheduleList] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -108,6 +110,37 @@ World`);
       } else {
         setTimeline(timeLineDataList);
       }
+
+      const monthStart = dateFns.startOfMonth(selectedDate);
+      const monthEnd = dateFns.endOfMonth(monthStart);
+      const startDate = dateFns.startOfWeek(monthStart);
+      const endDate = dateFns.endOfWeek(monthEnd);
+
+      console.log({
+        userCd: route.params.user.userCd,
+        frommDate: startDate.getTime(),
+        toDate: endDate.getTime(),
+      });
+
+      const scheduleData = (
+        await axios.post(
+          `http://www.recordary.gq:8080/schedule/showUserSchedule/${route.params.user.userCd}`,
+          {
+            userCd: route.params.user.userCd,
+            frommDate: startDate.getTime(),
+            toDate: endDate.getTime(),
+          },
+        )
+      ).data;
+      console.log('axios pass');
+
+      setScheduleList(
+        scheduleData.map((value) => ({
+          ...value,
+          scheduleStr: dateFns.parseISO(value.scheduleStr),
+          scheduleEnd: dateFns.parseISO(value.scheduleEnd),
+        })),
+      );
     } catch (error) {
       console.error(error);
       Alert.alert('서버에러로 인하여 데이터를 받아오는데 실패하였습니다.');
@@ -286,6 +319,10 @@ World`);
           <View style={height !== undefined && {flex: 60}}>
             {height === undefined ? null : (
               <Calendar
+                scheduleList={scheduleList}
+                setScheduleList={setScheduleList}
+                selectedDate={selectedDate}
+                setSelectedDate={(data) => setSelectedDate(data)}
                 isFullCalendar={isFullCalendar}
                 onFullCalendar={() => {
                   setIsFullCalender(true);

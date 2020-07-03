@@ -5,7 +5,6 @@ const reducer = (state, action) => {
     return {
       isLogin: false,
       user: {},
-      scList: [],
       friendList: undefined,
       groupList: undefined,
     };
@@ -15,8 +14,6 @@ const reducer = (state, action) => {
       return {...state, user: action.user};
     case 'SET_LOGIN':
       return {...state, isLogin: action.isLogin};
-    case 'SET_SCLIST':
-      return {...state, scList: action.scList};
     case 'SAVE_FRIENDLIST':
       return {
         ...state,

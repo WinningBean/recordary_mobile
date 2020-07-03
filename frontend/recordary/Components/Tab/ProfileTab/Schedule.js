@@ -34,11 +34,11 @@ const Schedule = ({navigation, route}) => {
     route.params.data !== undefined
       ? route.params.data
       : {
-          ex: '',
-          title: '',
-          start: dateFns.startOfDay(route.params.currDate),
-          end: dateFns.endOfDay(route.params.currDate),
-          color: 'rgb(64, 114, 89)',
+          scheduleNm: '',
+          scheduleEx: '',
+          scheduleStr: dateFns.startOfDay(route.params.selectedDate),
+          scheduleEnd: dateFns.endOfDay(route.params.selectedDate),
+          scheduleCol: 'rgb(64, 114, 89)',
         },
   );
   const [isClickStartDate, setIsClickStartDate] = useState(undefined);
@@ -64,9 +64,9 @@ const Schedule = ({navigation, route}) => {
         <View style={{flexDirection: 'row'}}>
           <TextInput
             style={{fontSize: 24, flex: 6}}
-            value={data.ex}
+            value={data.scheduleNm}
             placeholder="제목"
-            onChangeText={(value) => setData({...data, ex: value})}
+            onChangeText={(value) => setData({...data, scheduleNm: value})}
           />
           <View style={{flex: 1, alignItems: 'center'}}>
             <TouchableOpacity onPress={() => setIsClickColor(true)}>
@@ -75,7 +75,7 @@ const Schedule = ({navigation, route}) => {
                   marginTop: height * 0.03,
                   width: width * 0.06,
                   height: width * 0.06,
-                  backgroundColor: data.color,
+                  backgroundColor: data.scheduleCol,
                   borderRadius: 50,
                 }}
               />
@@ -87,10 +87,10 @@ const Schedule = ({navigation, route}) => {
             fontSize: 20,
             height: height * 0.16,
           }}
-          value={data.ex}
+          value={data.scheduleEx}
           placeholder="내용"
           multiline
-          onChangeText={(value) => setData({...data, ex: value})}
+          onChangeText={(value) => setData({...data, scheduleEx: value})}
         />
         <View
           style={{
@@ -104,13 +104,13 @@ const Schedule = ({navigation, route}) => {
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity onPress={() => setIsClickStartDate(true)}>
               <Text style={{fontSize: 18}}>
-                {dateFns.format(data.start, 'yyyy.M.d EEE')}
+                {dateFns.format(data.scheduleStr, 'yyyy.M.d EEE')}
               </Text>
             </TouchableOpacity>
             {isAllTime ? null : (
               <TouchableOpacity onPress={() => setIsClickStartTime(true)}>
                 <Text style={{fontSize: 18, marginLeft: 20}}>
-                  {dateFns.format(data.start, 'HH:mm')}
+                  {dateFns.format(data.scheduleStr, 'HH:mm')}
                 </Text>
               </TouchableOpacity>
             )}
@@ -128,13 +128,13 @@ const Schedule = ({navigation, route}) => {
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity onPress={() => setIsClickStartDate(false)}>
               <Text style={{fontSize: 18}}>
-                {dateFns.format(data.end, 'yyyy.M.d EEE')}
+                {dateFns.format(data.scheduleEnd, 'yyyy.M.d EEE')}
               </Text>
             </TouchableOpacity>
             {isAllTime ? null : (
               <TouchableOpacity onPress={() => setIsClickStartTime(false)}>
                 <Text style={{fontSize: 18, marginLeft: 20}}>
-                  {dateFns.format(data.end, 'HH:mm')}
+                  {dateFns.format(data.scheduleEnd, 'HH:mm')}
                 </Text>
               </TouchableOpacity>
             )}
@@ -153,8 +153,8 @@ const Schedule = ({navigation, route}) => {
               setIsAllTime(true);
               setData({
                 ...data,
-                start: dateFns.startOfDay(data.start),
-                end: dateFns.endOfDay(data.end),
+                start: dateFns.startOfDay(data.scheduleStr),
+                end: dateFns.endOfDay(data.scheduleEnd),
               });
             }}>
             <View

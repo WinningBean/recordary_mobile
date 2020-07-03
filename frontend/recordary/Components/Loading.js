@@ -11,29 +11,27 @@ const Loading = ({onSaveInitData, route}) => {
   const getStorageData = async () => {
     try {
       // AsyncStorage.clear();
-      var user = JSON.parse(await AsyncStorage.getItem('user'));
-      user = user === null ? {} : user;
+      // var user = JSON.parse(await AsyncStorage.getItem('user'));
+      // user = user === null ? {} : user;
 
-      var postList = JSON.parse(await AsyncStorage.getItem('postList'));
-      postList = postList === null ? [] : postList;
+      // var postList = JSON.parse(await AsyncStorage.getItem('postList'));
+      // postList = postList === null ? [] : postList;
 
-      var scList = JSON.parse(await AsyncStorage.getItem('scList'));
-      scList = scList === null ? {index: 0, list: []} : scList;
+      // var scList = JSON.parse(await AsyncStorage.getItem('scList'));
+      // scList = scList === null ? {index: 0, list: []} : scList;
 
-      scList = {
-        ...scList,
-        list: scList.list.map((value) => ({
-          ...value,
-          start: new Date(value.start),
-          end: new Date(value.end),
-        })),
-      };
-      console.log(user, postList, scList);
-      onSaveInitData(user, postList, scList);
-
-      Store.dispatch({type: 'SET_USER', user: data});
+      // scList = {
+      //   ...scList,
+      //   list: scList.list.map((value) => ({
+      //     ...value,
+      //     start: new Date(value.start),
+      //     end: new Date(value.end),
+      //   })),
+      // };
+      // console.log(user, postList, scList);
 
       const loginData = JSON.parse(await AsyncStorage.getItem('loginData'));
+      console.log(loginData);
 
       if (loginData === null) {
         // 로그인 데이터가 없으면 로그인창으로...
@@ -54,7 +52,7 @@ const Loading = ({onSaveInitData, route}) => {
         route.params.onLoading();
         return;
       } else {
-        Store.dispatch({type: 'SET_USER', user: data});
+        onSaveInitData(data);
         route.params.onSuccessLogin();
       }
     } catch (error) {

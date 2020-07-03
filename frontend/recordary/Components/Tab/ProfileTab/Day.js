@@ -24,7 +24,7 @@ const {eq, event, Value, set} = Animated;
 const {width, height} = Dimensions.get('window');
 const Day = ({
   data,
-  currDate,
+  selectedDate,
   onSetIsClickDay,
   onSetData,
   onRegisterData,
@@ -62,7 +62,7 @@ const Day = ({
               borderTopRightRadius: 20,
             }}>
             <Text style={{fontSize: height * 0.04}}>
-              {dateFns.format(currDate, 'd일')}
+              {dateFns.format(selectedDate, 'd일')}
             </Text>
           </View>
           <ScrollView>
@@ -104,24 +104,24 @@ const Day = ({
                         width: width * 0.03,
                         height: width * 0.03,
                         borderRadius: 50,
-                        backgroundColor: value.color,
+                        backgroundColor: value.scheduleCol,
                       }}
                     />
                   </View>
                   <View style={{flex: 1}}>
-                    <Text style={{fontWeight: 'bold'}}>{value.ex}</Text>
+                    <Text style={{fontWeight: 'bold'}}>{value.scheduleNm}</Text>
                     <Text style={{color: '#888'}}>
-                      {dateFns.isSameDay(currDate, value.start) &&
-                      dateFns.isSameDay(currDate, value.end)
+                      {dateFns.isSameDay(selectedDate, value.scheduleStr) &&
+                      dateFns.isSameDay(selectedDate, value.scheduleEnd)
                         ? `${
-                            dateFns.format(value.start, 'aa') === 'AM'
+                            dateFns.format(value.scheduleStr, 'aa') === 'AM'
                               ? '오전'
                               : '오후'
-                          } ${dateFns.format(value.start, 'h:mm')} - ${
-                            dateFns.format(value.end, 'aa') === 'AM'
+                          } ${dateFns.format(value.scheduleStr, 'h:mm')} - ${
+                            dateFns.format(value.scheduleEnd, 'aa') === 'AM'
                               ? '오전'
                               : '오후'
-                          } ${dateFns.format(value.end, 'h:mm')}`
+                          } ${dateFns.format(value.scheduleEnd, 'h:mm')}`
                         : '하루 종일'}
                     </Text>
                   </View>
@@ -134,7 +134,7 @@ const Day = ({
               onSetIsClickDay();
               navigation.push('schedule', {
                 data: undefined,
-                currDate: currDate,
+                selectedDate: selectedDate,
                 onRegister: (value) => onRegisterData(value),
               });
             }}

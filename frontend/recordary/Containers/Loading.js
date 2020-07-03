@@ -3,9 +3,8 @@ import Loading from 'Components/Loading';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSaveInitData: (user, postList, scList) => {
+    onSaveInitData: (user) => {
       dispatch({type: 'SET_USER', user: user});
-      dispatch({type: 'SET_SCLIST', scList: scList});
     },
   };
 };

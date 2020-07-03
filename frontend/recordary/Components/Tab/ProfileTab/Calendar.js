@@ -43,25 +43,31 @@ const colorContrast = (hexColor) => {
 
 const {event, Value} = Animated;
 
+// scheduleList : {
+//   list : [{start:, end:, nm, ex:, index : }] 스케줄 리스트
+//   index:
+// }
+
 const {width} = Dimensions.get('window');
 const Calendar = ({
-  scList,
+  scheduleList,
+  setScheduleList,
+  selectedDate,
+  setSelectedDate,
   isFullCalendar,
   onSmallCalendar,
   onFullCalendar,
   onSaveScList,
 }) => {
-  const [scListState, setScListState] = useState(scList);
-  const [currDate, setCurrDate] = useState(new Date());
   const [isClickDay, setIsClickDay] = useState(false);
 
-  useEffect(() => {
-    console.log('render', scListState);
-    (async () => {
-      await AsyncStorage.setItem('scList', JSON.stringify(scListState));
-      onSaveScList(scListState);
-    })();
-  }, [scListState]);
+  // useEffect(() => {
+  //   console.log('render', scListState);
+  //   (async () => {
+  //     await AsyncStorage.setItem('scList', JSON.stringify(scListState));
+  //     onSaveScList(scListState);
+  //   })();
+  // }, [scListState]);
 
   return (
     <View style={styles.container}>
@@ -73,7 +79,9 @@ const Calendar = ({
         }}>
         <TouchableOpacity
           onPress={() =>
-            setCurrDate(dateFns.endOfMonth(dateFns.subMonths(currDate, 1)))
+            setSelectedDate(
+              dateFns.endOfMonth(dateFns.subMonths(selectedDate, 1)),
+            )
           }>
           <MaterialCommunityIcons name="menu-left" size={40} color="gray" />
         </TouchableOpacity>
@@ -84,16 +92,18 @@ const Calendar = ({
             flexDirection: 'row',
           }}>
           <Text style={{fontSize: 16, color: '#333'}}>
-            {dateFns.format(currDate, 'MMM').toUpperCase()}
+            {dateFns.format(selectedDate, 'MMM').toUpperCase()}
           </Text>
           <Text> </Text>
           <Text style={{fontSize: 16, color: '#333'}}>
-            {dateFns.format(currDate, 'yyyy')}
+            {dateFns.format(selectedDate, 'yyyy')}
           </Text>
         </View>
         <TouchableOpacity
           onPress={() =>
-            setCurrDate(dateFns.startOfMonth(dateFns.addMonths(currDate, 1)))
+            setSelectedDate(
+              dateFns.startOfMonth(dateFns.addMonths(selectedDate, 1)),
+            )
           }>
           <MaterialCommunityIcons name="menu-right" size={40} color="gray" />
         </TouchableOpacity>
@@ -117,9 +127,9 @@ const Calendar = ({
         <Text style={[styles.weeklyText, {color: '#8888FF'}]}>FRI</Text>
       </View>
       <Month
-        scList={scListState}
-        date={currDate}
-        onSetDate={(value) => setCurrDate(value)}
+        scheduleList={scheduleList}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
         isFullCalendar={isFullCalendar}
         onFullCalendar={() => onFullCalendar()}
         onSmallCalendar={() => onSmallCalendar()}
@@ -127,44 +137,45 @@ const Calendar = ({
       />
       {isClickDay ? (
         <Day
-          currDate={currDate}
+          selectedDate={selectedDate}
           onSetIsClickDay={() => setIsClickDay(false)}
-          data={scListState.list.filter((value) =>
-            dateFns.isWithinInterval(currDate, {
-              start: dateFns.startOfDay(value.start),
-              end: dateFns.endOfDay(value.end),
+          data={scheduleList.filter((value) =>
+            dateFns.isWithinInterval(selectedDate, {
+              start: dateFns.startOfDay(value.scheduleStr),
+              end: dateFns.endOfDay(value.scheduleEnd),
             }),
           )}
           onSetData={(value) => {
-            var copyList = scListState.list.slice();
+            var copyList = scheduleList.slice();
             for (let i = 0; i < copyList.length; i++) {
-              if (value.index === copyList[i].index) {
+              if (value.scheduleCd === copyList[i].scheduleCd) {
                 copyList[i] = value;
                 break;
               }
             }
-            setScListState({...scListState, list: copyList});
+            setScheduleList(copyList);
           }}
           onRegisterData={(value) => {
-            const draft = scListState.list
-              .slice()
-              .concat({...value, index: scListState.index});
+            const draft = scheduleList.slice().concat(value);
             draft.sort((a, b) => {
-              if (dateFns.isSameDay(a.start, b.start)) {
-                if (dateFns.isSameDay(a.end, b.end)) {
+              if (dateFns.isSameDay(a.scheduleStr, b.scheduleStr)) {
+                if (dateFns.isSameDay(a.scheduleEnd, b.scheduleEnd)) {
                   return 0;
                 }
-                return dateFns.differenceInDays(b.end, a.end);
+                return dateFns.differenceInDays(b.scheduleEnd, a.scheduleEnd);
               }
-              return dateFns.differenceInDays(a.start, b.start);
+              return dateFns.differenceInDays(a.scheduleStr, b.scheduleStr);
             });
-            setScListState({index: scListState.index + 1, list: draft});
+            setScheduleList(draft);
           }}
-          onDeleteData={(index) => {
+          onDeleteData={(scheduleCd) => {
             console.log(index);
-            var copyList = scListState.list.slice();
-            copyList = copyList.filter((value) => value.index !== index);
-            setScListState({...scList, list: copyList});
+            const index = scheduleList.findIndex(
+              (value) => value.scheduleCd === scheduleCd,
+            );
+            var copyList = scheduleList.slice();
+            copyList[index].splice(index, 1);
+            setScheduleList(copyList);
           }}
         />
       ) : null}
@@ -173,9 +184,10 @@ const Calendar = ({
 };
 
 const Month = ({
-  date,
-  scList,
-  onSetDate,
+  selectedDate,
+  scheduleList,
+  setScheduleList,
+  setSelectedDate,
   isFullCalendar,
   onSmallCalendar,
   onFullCalendar,
@@ -196,10 +208,10 @@ const Month = ({
       toValue: 0,
       useNativeDriver: true,
     }).start();
-  }, [date]);
+  }, [selectedDate]);
 
   const GetMonth = () => {
-    const monthStart = dateFns.startOfMonth(date);
+    const monthStart = dateFns.startOfMonth(selectedDate);
 
     const monthEnd = dateFns.endOfMonth(monthStart);
     const startDate = dateFns.startOfWeek(monthStart);
@@ -213,14 +225,14 @@ const Month = ({
     const rows = [];
     let day = startDate;
     var days = [];
-    const queueList = scList.list.slice();
+    const queueList = scheduleList.slice();
 
     const onPressCell = (value) => {
-      if (dateFns.isSameDay(value, date)) {
+      if (dateFns.isSameDay(value, selectedDate)) {
         return;
       }
       cellsRef.current.animateNextTransition();
-      onSetDate(value);
+      setSelectedDate(value);
     };
 
     while (day <= endDate) {
@@ -228,8 +240,8 @@ const Month = ({
         while (
           queueList.length > 0 &&
           dateFns.isWithinInterval(day, {
-            start: dateFns.startOfDay(queueList[0].start),
-            end: dateFns.endOfDay(queueList[0].end),
+            start: dateFns.startOfDay(queueList[0].scheduleStr),
+            end: dateFns.endOfDay(queueList[0].scheduleEnd),
           })
         ) {
           if (
@@ -257,7 +269,7 @@ const Month = ({
           <TouchableWithoutFeedback
             key={`cell-${day}`}
             onPress={() => {
-              if (dateFns.isSameWeek(date, currDay) || isFullCalendar) {
+              if (dateFns.isSameWeek(selectedDate, currDay) || isFullCalendar) {
                 onSetIsClickDay();
               }
               onPressCell(currDay);
@@ -268,7 +280,7 @@ const Month = ({
                   flex: 1,
                   overflow: 'hidden',
                 },
-                dateFns.isSameDay(day, date)
+                dateFns.isSameDay(day, selectedDate)
                   ? {
                       borderWidth: 2,
                       borderRadius: 6,
@@ -306,7 +318,10 @@ const Month = ({
                   const result = [];
                   if (index !== draft.index) {
                     for (let i = 0; i < draft.index - index; i++) {
-                      if (isFullCalendar || dateFns.isSameWeek(day, date)) {
+                      if (
+                        isFullCalendar ||
+                        dateFns.isSameWeek(day, selectedDate)
+                      ) {
                         result.push(
                           <View
                             key={`blank-${day}-${i}`}
@@ -323,10 +338,13 @@ const Month = ({
                       }
                     }
                   }
-                  if (isFullCalendar || dateFns.isSameWeek(day, date)) {
+                  if (isFullCalendar || dateFns.isSameWeek(day, selectedDate)) {
                     if (
-                      dateFns.isSameDay(draft.value.start, day) ||
-                      dateFns.isSameDay(dateFns.startOfWeek(date, draft), day)
+                      dateFns.isSameDay(draft.value.scheduleStr, day) ||
+                      dateFns.isSameDay(
+                        dateFns.startOfWeek(selectedDate, draft),
+                        day,
+                      )
                     ) {
                       result.push(
                         <View
@@ -335,13 +353,13 @@ const Month = ({
                             {
                               height: 12,
                               marginTop: 2,
-                              backgroundColor: draft.value.color,
+                              backgroundColor: draft.value.scheduleCol,
                               overflow: 'hidden',
                             },
-                            dateFns.isSameDay(draft.value.start, day)
+                            dateFns.isSameDay(draft.value.scheduleStr, day)
                               ? {marginLeft: 5}
                               : null,
-                            dateFns.isSameDay(draft.value.end, day)
+                            dateFns.isSameDay(draft.value.scheduleEnd, day)
                               ? {marginRight: 5}
                               : null,
                           ]}>
@@ -351,9 +369,9 @@ const Month = ({
                               fontSize: 12,
                               lineHeight: 12,
                               fontWeight: 'bold',
-                              color: colorContrast(draft.value.color),
+                              color: colorContrast(draft.value.scheduleCol),
                             }}>
-                            {draft.value.ex}
+                            {draft.value.scheduleNm}
                           </Text>
                         </View>,
                       );
@@ -365,12 +383,12 @@ const Month = ({
                             {
                               height: 12,
                               marginTop: 2,
-                              backgroundColor: draft.value.color,
+                              backgroundColor: draft.value.scheduleCol,
                             },
-                            dateFns.isSameDay(draft.value.start, day)
+                            dateFns.isSameDay(draft.value.scheduleStr, day)
                               ? {marginLeft: 5}
                               : null,
-                            dateFns.isSameDay(draft.value.end, day)
+                            dateFns.isSameDay(draft.value.scheduleEnd, day)
                               ? {marginRight: 5}
                               : null,
                           ]}
@@ -385,12 +403,12 @@ const Month = ({
                           {
                             height: 2.6,
                             marginTop: 2,
-                            backgroundColor: draft.value.color,
+                            backgroundColor: draft.value.scheduleCol,
                           },
-                          dateFns.isSameDay(draft.value.start, day)
+                          dateFns.isSameDay(draft.value.scheduleStr, day)
                             ? {marginLeft: 5}
                             : null,
-                          dateFns.isSameDay(draft.value.end, day)
+                          dateFns.isSameDay(draft.value.scheduleEnd, day)
                             ? {marginRight: 5}
                             : null,
                         ]}
@@ -403,7 +421,9 @@ const Month = ({
             </View>
           </TouchableWithoutFeedback>,
         );
-        stack = stack.filter((val) => !dateFns.isSameDay(day, val.value.end));
+        stack = stack.filter(
+          (val) => !dateFns.isSameDay(day, val.value.scheduleEnd),
+        );
         day = dateFns.addDays(day, 1);
       }
       rows.push(
@@ -411,7 +431,8 @@ const Month = ({
           key={`week-${day}`}
           style={[
             styles.weekleyWrap,
-            isFullCalendar || dateFns.isSameWeek(date, dateFns.subDays(day, 1))
+            isFullCalendar ||
+            dateFns.isSameWeek(selectedDate, dateFns.subDays(day, 1))
               ? {flex: 2}
               : null,
           ]}>
@@ -438,13 +459,13 @@ const Month = ({
       if (e.nativeEvent.oldState === State.ACTIVE) {
         if (e.nativeEvent.translationX > 150 || e.nativeEvent.velocityX > 800) {
           value.setValue(-width);
-          onSetDate(dateFns.endOfMonth(dateFns.addMonths(date, -1)));
+          setSeletedDate(dateFns.endOfMonth(dateFns.addMonths(date, -1)));
         } else if (
           e.nativeEvent.translationX < -150 ||
           e.nativeEvent.velocityX < -800
         ) {
           value.setValue(width);
-          onSetDate(dateFns.startOfMonth(dateFns.addMonths(date, 1)));
+          setSeletedDate(dateFns.startOfMonth(dateFns.addMonths(date, 1)));
         } else {
           Animated.spring(value, {
             velocity: 10,
