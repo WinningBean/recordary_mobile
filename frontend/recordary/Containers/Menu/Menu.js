@@ -18,6 +18,9 @@ const mapDispatchToProps = (dispatch) => {
     onSaveGroupList: (data) => {
       dispatch({type: 'SAVE_GROUPLIST', groupList: data});
     },
+    onLogout: () => {
+      dispatch({type: 'SET_LOGIN', isLogin: false});
+    },
   };
 };
 

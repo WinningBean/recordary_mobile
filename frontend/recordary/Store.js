@@ -13,6 +13,8 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'SET_USER':
       return {...state, user: action.user};
+    case 'SET_LOGIN':
+      return {...state, isLogin: action.isLogin};
     case 'SET_SCLIST':
       return {...state, scList: action.scList};
     case 'SAVE_FRIENDLIST':

@@ -7,7 +7,10 @@ import {
   TextInput,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
+
+import AsyncStorage from '@react-native-community/async-storage';
 
 import axios from 'axios';
 
@@ -45,6 +48,18 @@ const Login = ({route, navigation}) => {
                     userId: info.id,
                     userPw: info.pw,
                   },
+                );
+                if (data === '') {
+                  Alert.alert('아이디와 패스워드를 확인해주세요');
+                  return;
+                }
+
+                await AsyncStorage.setItem(
+                  'loginData',
+                  JSON.stringify({
+                    userId: info.id,
+                    userPw: info.pw,
+                  }),
                 );
                 route.params.onLogin(data);
               } catch (error) {

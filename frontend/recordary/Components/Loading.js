@@ -3,6 +3,10 @@ import {Text, View} from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
+import Store from '../Store';
+
+import axios from 'axios';
+
 const Loading = ({onSaveInitData, route}) => {
   const getStorageData = async () => {
     try {
@@ -26,7 +30,33 @@ const Loading = ({onSaveInitData, route}) => {
       };
       console.log(user, postList, scList);
       onSaveInitData(user, postList, scList);
-      route.params.onLoading();
+
+      Store.dispatch({type: 'SET_USER', user: data});
+
+      const loginData = JSON.parse(await AsyncStorage.getItem('loginData'));
+
+      if (loginData === null) {
+        // 로그인 데이터가 없으면 로그인창으로...
+        route.params.onLoading();
+        return;
+      }
+
+      const {data} = await axios.post(
+        'http://www.recordary.gq:8080/user/login',
+        {
+          userId: loginData.userId,
+          userPw: loginData.userPw,
+        },
+      );
+      if (data === '') {
+        Alert.alert('로그인 토큰 에러');
+        AsyncStorage.clear(); // 로그인 데이터 삭제
+        route.params.onLoading();
+        return;
+      } else {
+        Store.dispatch({type: 'SET_USER', user: data});
+        route.params.onSuccessLogin();
+      }
     } catch (error) {
       console.error(error);
     }

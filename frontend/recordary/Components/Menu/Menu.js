@@ -17,8 +17,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Transition, Transitioning} from 'react-native-reanimated';
 import axios from 'axios';
 
+import AsyncStorage from '@react-native-community/async-storage';
+
+const window = Dimensions.get('window');
+
 const Menu = (props) => {
-  console.log(props);
+  console.log(props, 'isProps');
   const navigation = useNavigation();
   const [isClickFriend, setIsClickFriend] = useState(true);
   const [currUser, setCurrUser] = useState(props.user);
@@ -131,112 +135,117 @@ const Menu = (props) => {
 
   return (
     <View>
-      <View style={{paddingHorizontal: 18}}>
+      <View
+        style={{
+          height: window.height * 0.16,
+          backgroundColor: 'white',
+          // backgroundColor: 'lightgray',
+          justifyContent: 'center',
+          paddingHorizontal: 18,
+        }}>
         <View
           style={{
-            height: Dimensions.get('window').height * 0.16,
-            backgroundColor: 'white',
-            // backgroundColor: 'lightgray',
-            justifyContent: 'center',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}>
           <View
             style={{
-              display: 'flex',
               flexDirection: 'row',
-              justifyContent: 'space-between',
             }}>
-            <View
-              style={{
-                flexDirection: 'row',
-              }}>
-              <View>
-                {currUser.userPic === null
-                  ? setCurrUser({
-                      ...currUser,
-                      userPic:
-                        'https://recordary-springboot-upload.s3.ap-northeast-2.amazonaws.com/user/basic.png',
-                    })
-                  : null}
-                <FastImage
-                  source={{uri: currUser.userPic}}
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 50,
-                  }}
-                />
-              </View>
-              <View style={{paddingLeft: 10}}>
-                <Text
-                  style={{fontSize: 20, fontWeight: 'bold', paddingLeft: 4}}>
-                  {currUser.userId}
-                </Text>
-                <Text style={{color: 'gray'}}> {currUser.userNm}</Text>
-              </View>
-            </View>
-            <View style={{marginTop: 10}}>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.push('profileEdit', {
-                    currentUser: currUser,
+            <View>
+              {currUser.userPic === null
+                ? setCurrUser({
+                    ...currUser,
+                    userPic:
+                      'https://recordary-springboot-upload.s3.ap-northeast-2.amazonaws.com/user/basic.png',
                   })
-                }>
-                <MaterialIcons name="edit" size={30} />
-              </TouchableOpacity>
+                : null}
+              <FastImage
+                source={{uri: currUser.userPic}}
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 50,
+                }}
+              />
+            </View>
+            <View style={{paddingLeft: 10}}>
+              <Text style={{fontSize: 20, fontWeight: 'bold', paddingLeft: 4}}>
+                {currUser.userId}
+              </Text>
+              <Text style={{color: 'gray'}}> {currUser.userNm}</Text>
             </View>
           </View>
+          <View style={{marginTop: 10}}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.push('profileEdit', {
+                  currentUser: currUser,
+                })
+              }>
+              <MaterialIcons name="edit" size={30} />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            borderBottomColor: '#eeeeee',
-            borderBottomWidth: 1,
-            height: 30,
-          }}>
-          <TouchableOpacity
-            style={{flex: 1, height: 30, alignItems: 'center'}}
-            onPress={() => changeClick(false)}>
-            <Text>그룹</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{flex: 1, height: 30, alignItems: 'center'}}
-            onPress={() => changeClick(true)}>
-            <Text>친구</Text>
-          </TouchableOpacity>
-        </View>
-        <Transitioning.View
-          ref={menuRef}
-          transition={<Transition.Change />}
-          style={[
-            {
-              height: 1,
-              width: Dimensions.get('window').width * 0.31,
-              backgroundColor: 'black',
-            },
-            isClickFriend
-              ? {marginLeft: Dimensions.get('window').width * 0.31}
-              : null,
-          ]}
-        />
-        <ScrollView style={{height: Dimensions.get('window').height * 0.8}}>
-          {isClickFriend ? friendList() : groupList()}
-        </ScrollView>
       </View>
-
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          borderBottomColor: '#eeeeee',
+          borderBottomWidth: 1,
+          height: 30,
+        }}>
+        <TouchableOpacity
+          style={{flex: 1, height: 30, alignItems: 'center'}}
+          onPress={() => changeClick(false)}>
+          <Text>그룹</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{flex: 1, height: 30, alignItems: 'center'}}
+          onPress={() => changeClick(true)}>
+          <Text>친구</Text>
+        </TouchableOpacity>
+      </View>
+      <Transitioning.View
+        ref={menuRef}
+        transition={<Transition.Change />}
+        style={[
+          {
+            height: 1,
+            width: window.width * 0.35,
+            backgroundColor: 'black',
+          },
+          isClickFriend ? {marginLeft: window.width * 0.35} : null,
+        ]}
+      />
+      <ScrollView style={{height: window.height * 0.74, paddingHorizontal: 18}}>
+        {isClickFriend ? friendList() : groupList()}
+      </ScrollView>
       <View
         style={[
           styles.spaceBetween,
           {
-            backgroundColor: '#eee',
+            borderTopColor: '#eee',
+            borderTopWidth: 1,
+            height: window.height * 0.06,
           },
         ]}>
-        <Text style={{color: 'gray', marginLeft: 15}}>From.FairyPitta</Text>
+        {/* <Text style={{color: 'gray', marginLeft: 15}}>From.FairyPitta</Text> */}
         <TouchableOpacity
           style={{padding: 10}}
           onPress={() => navigation.push('setting')}>
           <MaterialIcons name="settings" size={25} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{padding: 10}}
+          onPress={() => {
+            AsyncStorage.clear();
+            props.onLogout();
+          }}>
+          <Text style={{fontSize: 16}}>로그아웃</Text>
         </TouchableOpacity>
       </View>
     </View>

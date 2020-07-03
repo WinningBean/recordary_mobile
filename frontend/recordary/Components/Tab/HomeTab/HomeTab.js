@@ -13,6 +13,8 @@ import {
   CardStyleInterpolators,
 } from '@react-navigation/stack';
 
+import axios from 'axios';
+
 import Timeline from './Timeline';
 import OnlyPostExTimeline from './OnlyPostExTimeline';
 import TimelineOneDay from './TimelineOneDay';
@@ -21,7 +23,6 @@ import Comment from './Comment';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
-import axios from 'axios';
 
 const Stack = createStackNavigator();
 
@@ -44,6 +45,9 @@ const Home = ({navigation, route}) => {
   useEffect(() => {
     (async () => {
       try {
+        console.log(
+          `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+        );
         const timeLineDataList = (
           await axios.get(
             `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
