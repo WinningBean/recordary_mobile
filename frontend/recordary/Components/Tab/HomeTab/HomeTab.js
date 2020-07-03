@@ -7,6 +7,8 @@ import {
   ScrollView,
   Dimensions,
   Alert,
+  FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -41,7 +43,9 @@ const HomeTab = ({user}) => {
 
 const Home = ({navigation, route}) => {
   const [timeline, setTimeline] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
+    setIsLoading(true);
     (async () => {
       try {
         const timeLineDataList = (
@@ -83,30 +87,53 @@ const Home = ({navigation, route}) => {
     });
   }, []);
 
+  const getMoreTimelineData = async () => {
+    try {
+      const moreTimeLineData = (
+        await axios.get(
+          `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+          {
+            params: {lastCd: timeline[timeline.length - 1].postCd},
+          },
+        )
+      ).data;
+      if (moreTimeLineData.length <= 0) {
+        return;
+      } else {
+        console.log(moreTimeLineData);
+        setTimeline(timeline.concat(moreTimeLineData));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      {timeline.map((value, index) => {
-        if (value.mediaFK !== null) {
+    <FlatList
+      keyExtractor={(val) => val.postCd}
+      data={timeline}
+      renderItem={({item}) => {
+        if (item.mediaFK !== null) {
+          return <Timeline postList={item} user={route.params.user} />;
+        } else if (item.scheduleFK !== null) {
+          return <TimelineOneDay postList={item} user={route.params.user} />;
+        } else if (item.postOriginFK === null) {
           return (
-            <View key={`${value.postCd}-${index}`}>
-              <Timeline postList={value} user={route.params.user} />
-            </View>
-          );
-        } else if (value.scheduleFK !== null) {
-          return (
-            <View key={`${value.postCd}-${index}`}>
-              <TimelineOneDay postList={value} user={route.params.user} />
-            </View>
-          );
-        } else if (value.postOriginFK === null) {
-          return (
-            <View key={`${value.postCd}-${index}`}>
-              <OnlyPostExTimeline postList={value} user={route.params.user} />
-            </View>
+            <OnlyPostExTimeline postList={item} user={route.params.user} />
           );
         } else return;
-      })}
-    </ScrollView>
+      }}
+      onEndReached={() => {
+        getMoreTimelineData();
+      }}
+      ListFooterComponent={() =>
+        isLoading ? (
+          <View style={styles.loader}>
+            <ActivityIndicator />
+          </View>
+        ) : null
+      }
+    />
   );
 };
 
@@ -150,5 +177,9 @@ const styles = StyleSheet.create({
     borderBottomColor: 'lightgray',
     borderBottomWidth: 1,
     height: 40,
+  },
+  loader: {
+    marginTop: 10,
+    alignItems: 'center',
   },
 });

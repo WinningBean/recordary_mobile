@@ -1,41 +1,45 @@
-import React from 'react';
-import {View, Dimensions, ScrollView, Modal} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Dimensions,
+  ScrollView,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
-const {width, height} = Dimensions.get('window');
+import Timeline from 'Components/Tab/HomeTab/Timeline';
 
-import FastImage from 'react-native-fast-image';
-
-const ClickPicture = ({imageList, onClose}) => {
+const ClickPicture = ({post, onClose, user}) => {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <Modal
       transparent
       animated={true}
       animationType="fade"
       onRequestClose={() => onClose()}>
-      <ScrollView
-        style={{height: height * (width / height)}}
-        horizontal
-        scrollEventThrottle={16}
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={width}
-        disableIntervalMomentum
-        contentContainerStyle={{width: width * imageList.length}}>
-        {imageList.map((value, index) => {
-          return (
-            <View
-              key={`click-img-${index}`}
-              style={{backgroundColor: '#000000dd', justifyContent: 'center'}}>
-              <FastImage
-                resizeMode={FastImage.resizeMode.cover}
-                source={{uri: value}}
-                style={{width: width, height: height * (width / height)}}
-              />
+      <View style={styles.modalContent}>
+        <TouchableWithoutFeedback onPress={() => onClose()}>
+          {post.mediaFK !== null ? (
+            <View style={{width: '100%', height: 'auto'}}>
+              <Timeline postList={post} user={user} />
             </View>
-          );
-        })}
-      </ScrollView>
+          ) : null}
+        </TouchableWithoutFeedback>
+      </View>
     </Modal>
   );
 };
 
 export default ClickPicture;
+
+const styles = StyleSheet.create({
+  modalContent: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,.5)',
+  },
+});
