@@ -45,27 +45,10 @@ const HomeTab = ({user}) => {
 const Home = ({navigation, route}) => {
   const [timeline, setTimeline] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
   useEffect(() => {
     setIsLoading(true);
-    (async () => {
-      try {
-        console.log(
-          `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
-        );
-        const timeLineDataList = (
-          await axios.get(
-            `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
-          )
-        ).data;
-        if (timeLineDataList.length < 0) {
-          return;
-        } else {
-          setTimeline(timeLineDataList);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    getFirstTimelineData();
   }, []);
 
   useLayoutEffect(() => {
@@ -90,6 +73,28 @@ const Home = ({navigation, route}) => {
       ),
     });
   }, []);
+
+  const getFirstTimelineData = async () => {
+    try {
+      console.log(
+        `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+      );
+      const timeLineDataList = (
+        await axios.get(
+          `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+        )
+      ).data;
+      if (timeLineDataList.length < 0) {
+        return;
+      } else {
+        setTimeline(timeLineDataList);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const getMoreTimelineData = async () => {
     try {
@@ -137,6 +142,11 @@ const Home = ({navigation, route}) => {
           </View>
         ) : null
       }
+      refreshing={refreshing}
+      onRefresh={() => {
+        setRefreshing(true);
+        getFirstTimelineData();
+      }}
     />
   );
 };
