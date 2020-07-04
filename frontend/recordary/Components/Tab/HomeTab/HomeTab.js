@@ -76,9 +76,6 @@ const Home = ({navigation, route}) => {
 
   const getFirstTimelineData = async () => {
     try {
-      console.log(
-        `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
-      );
       const timeLineDataList = (
         await axios.get(
           `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,

@@ -65,9 +65,10 @@ const Menu = (props) => {
       return props.groupList.map((value) => (
         <TouchableNativeFeedback
           key={value.groupCd}
-          onPress={() => {
-            navigation.push('search');
-          }}>
+          // onPress={() => {
+          //   navigation.push('search');
+          // }}
+        >
           <View style={styles.box}>
             <View
               style={{

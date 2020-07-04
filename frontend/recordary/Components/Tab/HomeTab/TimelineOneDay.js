@@ -10,11 +10,14 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import * as dateFns from 'date-fns';
+import {useNavigation} from '@react-navigation/native';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function TimelineOneDay({postList, user}) {
   const [data, setData] = useState(postList);
+  const navigation = useNavigation();
 
   return (
     <View
