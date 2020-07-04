@@ -52,8 +52,6 @@ const ProfileTab = ({user}) => {
 
 const Profile = ({navigation, route}) => {
   const [currUser, setCurrUser] = useState(route.params.user);
-  const [content, setContent] = useState(`Hello
-World`);
   const value = useRef(new Animated.Value(40)).current;
   const [isFullCalendar, setIsFullCalender] = useState(false);
   const [clickPicture, setClickPicture] = useState(null);
@@ -93,12 +91,12 @@ World`);
 
   const getUserInfo = async () => {
     try {
+      //info 저장 전 => 다른 유저일때 다시 작성할 것
       const {data} = await axios.get(
         `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/profile/${route.params.user.userId}`,
       );
       console.log(data);
       setInfo(data);
-
       //프로필 타임라인
       const timeLineDataList = (
         await axios.get(
@@ -110,7 +108,6 @@ World`);
       } else {
         setTimeline(timeLineDataList);
       }
-
       const monthStart = dateFns.startOfMonth(selectedDate);
       const monthEnd = dateFns.endOfMonth(monthStart);
       const startDate = dateFns.startOfWeek(monthStart);
@@ -205,7 +202,11 @@ World`);
                   }}>
                   <FastImage
                     resizeMode={FastImage.resizeMode.cover}
-                    source={{uri: currUser.userPic}}
+                    source={
+                      info !== undefined
+                        ? {uri: info.userInfo.userPic}
+                        : {uri: currUser.userPic}
+                    }
                     style={{height: 90, width: 90, borderRadius: 50}}
                   />
                 </View>
@@ -219,13 +220,23 @@ World`);
                     style={{
                       paddingBottom: 5,
                     }}>
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        textAlign: 'center',
-                      }}>
-                      {currUser.userId}({currUser.userNm})
-                    </Text>
+                    {info !== undefined ? (
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          textAlign: 'center',
+                        }}>
+                        {info.userInfo.userId}({info.userInfo.userNm})
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          textAlign: 'center',
+                        }}>
+                        {currUser.userId}({currUser.userNm})
+                      </Text>
+                    )}
                   </View>
                   <View
                     style={{
@@ -237,16 +248,34 @@ World`);
                       borderTopWidth: 1,
                       paddingTop: 5,
                     }}>
-                    <TouchableOpacity style={{flex: 1}}>
+                    <TouchableOpacity
+                      style={{flex: 1}}
+                      onPress={() =>
+                        navigation.push('ListComponent', {
+                          isFollow: true,
+                          userInfo: info.userInfo,
+                        })
+                      }>
                       <View style={{alignItems: 'center'}}>
                         <Text style={{fontSize: 14}}>팔로우</Text>
-                        <Text style={{fontSize: 16}}>20</Text>
+                        <Text style={{fontSize: 16}}>
+                          {info !== undefined ? info.followerCount : 0}
+                        </Text>
                       </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flex: 1}}>
+                    <TouchableOpacity
+                      style={{flex: 1}}
+                      onPress={() =>
+                        navigation.push('ListComponent', {
+                          isFollow: false,
+                          userInfo: info.userInfo,
+                        })
+                      }>
                       <View style={{alignItems: 'center', marginLeft: 10}}>
                         <Text style={{fontSize: 14}}>팔로잉</Text>
-                        <Text style={{fontSize: 16}}>20</Text>
+                        <Text style={{fontSize: 16}}>
+                          {info !== undefined ? info.followingCount : 0}
+                        </Text>
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -260,12 +289,10 @@ World`);
                       paddingLeft: 20,
                       borderRadius: 5,
                     }}>
-                    <Text
-                      style={[
-                        {fontSize: 14},
-                        currUser.userEx === null ? null : {marginVertical: 10},
-                      ]}>
-                      {currUser.userEx}
+                    <Text style={[{fontSize: 14}]}>
+                      {info !== undefined
+                        ? info.userInfo.userEx
+                        : currUser.userEx}
                     </Text>
                   </View>
                 </View>
@@ -357,7 +384,11 @@ World`);
                   }}>
                   <FastImage
                     resizeMode={FastImage.resizeMode.cover}
-                    source={{uri: currUser.userPic}}
+                    source={
+                      info !== undefined
+                        ? {uri: info.userInfo.userPic}
+                        : {uri: currUser.userPic}
+                    }
                     style={{height: 90, width: 90, borderRadius: 50}}
                   />
                 </View>
@@ -371,13 +402,23 @@ World`);
                     style={{
                       paddingBottom: 5,
                     }}>
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        textAlign: 'center',
-                      }}>
-                      {currUser.userId}({currUser.userNm})
-                    </Text>
+                    {info !== undefined ? (
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          textAlign: 'center',
+                        }}>
+                        {info.userInfo.userId}({info.userInfo.userNm})
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          textAlign: 'center',
+                        }}>
+                        {currUser.userId}({currUser.userNm})
+                      </Text>
+                    )}
                   </View>
                   <View
                     style={{
@@ -389,16 +430,34 @@ World`);
                       borderTopWidth: 1,
                       paddingTop: 5,
                     }}>
-                    <TouchableOpacity style={{flex: 1}}>
+                    <TouchableOpacity
+                      style={{flex: 1}}
+                      onPress={() =>
+                        navigation.push('ListComponent', {
+                          isFollow: true,
+                          userInfo: info.userInfo,
+                        })
+                      }>
                       <View style={{alignItems: 'center'}}>
                         <Text style={{fontSize: 14}}>팔로우</Text>
-                        <Text style={{fontSize: 16}}>20</Text>
+                        <Text style={{fontSize: 16}}>
+                          {info !== undefined ? info.followerCount : 0}
+                        </Text>
                       </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flex: 1}}>
+                    <TouchableOpacity
+                      style={{flex: 1}}
+                      onPress={() =>
+                        navigation.push('ListComponent', {
+                          isFollow: false,
+                          userInfo: info.userInfo,
+                        })
+                      }>
                       <View style={{alignItems: 'center', marginLeft: 10}}>
                         <Text style={{fontSize: 14}}>팔로잉</Text>
-                        <Text style={{fontSize: 16}}>20</Text>
+                        <Text style={{fontSize: 16}}>
+                          {info !== undefined ? info.followingCount : 0}
+                        </Text>
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -412,12 +471,10 @@ World`);
                       paddingLeft: 20,
                       borderRadius: 5,
                     }}>
-                    <Text
-                      style={[
-                        {fontSize: 14},
-                        currUser.userEx === null ? null : {marginVertical: 10},
-                      ]}>
-                      {currUser.userEx}
+                    <Text style={[{fontSize: 14}]}>
+                      {info !== undefined
+                        ? info.userInfo.userEx
+                        : currUser.userEx}
                     </Text>
                   </View>
                 </View>
