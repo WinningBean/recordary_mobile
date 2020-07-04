@@ -12,56 +12,47 @@ import {
 import * as dateFns from 'date-fns';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
+import produce from 'immer';
+
+import RecommentList from './RecommentList';
 
 const Comment = ({navigation, route}) => {
-  const [data, setData] = route.params.post;
-  const [user, setUser] = route.params.user;
-  // const [isClickList, setIsClickList] = useState(route.params.commentList.map(() => false));
+  const [data, setData] = useState(route.params.post);
+  const [user, setUser] = useState(route.params.user);
+  const [commentList, setCommentList] = useState(
+    route.params.post.commentList.map((value) => ({
+      ...value,
+      showRecommentClick: {recommentList: [], click: false},
+      updateClick: false,
+    })),
+  );
 
-  // const showRecommentList = (list, index) =>
-  //   list.map((value) => (
-  //     <View
-  //       style={{display: 'flex', flexDirection: 'row'}}
-  //       key={`대댓글-img${index}`}>
-  //       <Image
-  //         source={{
-  //           uri: value.user_pic,
-  //         }}
-  //         style={{
-  //           width: 40,
-  //           height: 40,
-  //           resizeMode: 'cover',
-  //           borderRadius: 50,
-  //           marginTop: 10,
-  //         }}
-  //       />
-  //       <View
-  //         style={{
-  //           display: 'flex',
-  //           paddingTop: 5,
-  //           paddingBottom: 5,
-  //           paddingLeft: 10,
-  //         }}>
-  //         <View style={styles.flexRow}>
-  //           <Text style={{fontSize: 15, fontWeight: 'bold'}}>
-  //             {value.user_id}
-  //           </Text>
-  //           <Text style={{fontSize: 15, paddingLeft: 10}}>
-  //             {value.user_comment}
-  //           </Text>
-  //         </View>
-
-  //         <View style={styles.flexRow}>
-  //           <TouchableOpacity style={{padding: 2}}>
-  //             <MaterialIcons name="thumb-up" size={15} />
-  //           </TouchableOpacity>
-  //           <TouchableOpacity style={{padding: 2}}>
-  //             <MaterialCommunityIcons name="comment-processing" size={15} />
-  //           </TouchableOpacity>
-  //         </View>
-  //       </View>
-  //     </View>
-  //   ));
+  const getRecommentList = async (value, index, bool) => {
+    try {
+      const recommentListData = (
+        await axios.get(
+          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/comment/sub/${value.commentCd}`,
+        )
+      ).data;
+      setCommentList(
+        commentList.map((val, listIndex) => {
+          if (index === listIndex) {
+            return produce(val, (draft) => {
+              draft.showRecommentClick.click = !bool;
+              draft.showRecommentClick.recommentList = recommentListData;
+            });
+          } else {
+            return produce(val, (draft) => {
+              draft.showRecommentClick.click = draft.showRecommentClick.click;
+            });
+          }
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View style={{flex: 1}}>
@@ -90,15 +81,18 @@ const Comment = ({navigation, route}) => {
                   {data.userFK.userId}( {data.userFK.userNm})
                 </Text>
               </View>
-
-              <View
-                style={{
-                  height: 30,
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}>
-                <Text style={{fontSize: 20}}>{data.postEx}</Text>
-              </View>
+              {data.postEx !== null ? (
+                <View
+                  style={{
+                    height: 40,
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{fontSize: 15, marginTop: 5, marginBottom: 10}}>
+                    {data.postEx}
+                  </Text>
+                </View>
+              ) : null}
             </View>
             {data.mediaFK === null ? null : (
               <View
@@ -138,87 +132,99 @@ const Comment = ({navigation, route}) => {
           )}
         </View>
         <View style={{paddingLeft: 5, marginTop: 5}}>
-          {data.commentList.map((value, index) => (
-            <View
-              style={{display: 'flex', flexDirection: 'row'}}
-              key={`${value.commentCd}-${index}`}>
-              <Image
-                source={{
-                  uri: value.userFK.userPic,
-                }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  resizeMode: 'cover',
-                  borderRadius: 50,
-                  marginTop: 10,
-                }}
-              />
-              <View
-                style={{
-                  display: 'flex',
-                  paddingTop: 5,
-                  paddingBottom: 5,
-                  paddingLeft: 10,
-                }}>
-                <View style={styles.flexRow}>
-                  <Text style={{fontSize: 15, fontWeight: 'bold'}}>
-                    {value.userFK.userId}({value.userFK.userNm})
-                  </Text>
-                  <Text style={{fontSize: 15, paddingLeft: 10}}>
-                    {value.commentContent}
-                  </Text>
-                </View>
-                <View style={styles.flexRow}>
-                  <TouchableOpacity style={{padding: 2}}>
-                    <MaterialIcons name="thumb-up" size={15} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={{padding: 2}}>
-                    <MaterialCommunityIcons
-                      name="comment-processing"
-                      size={15}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={{padding: 2}}
-                    // onPress={() =>
-                    //   setIsClickList(
-                    //     isClickList.map((val, reIndex) => {
-                    //       if (reIndex === index) {
-                    //         return !val;
-                    //       }
-                    //       return val;
-                    //     }),
-                    //   )
-                    // }
-                  >
-                    {value.reCommentCount > 0 ? (
-                      value.showRecommentClick.click === false ? (
+          {commentList.length > 0
+            ? commentList.map((value, index) => (
+                <View
+                  style={{display: 'flex', flexDirection: 'row'}}
+                  key={`${value.commentCd}-${index}`}>
+                  <Image
+                    source={{
+                      uri: value.userFK.userPic,
+                    }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      resizeMode: 'cover',
+                      borderRadius: 50,
+                      marginTop: 10,
+                    }}
+                  />
+                  <View
+                    style={{
+                      display: 'flex',
+                      paddingTop: 5,
+                      paddingBottom: 5,
+                      paddingLeft: 10,
+                    }}>
+                    <View style={{display: 'flex', flexDirection: 'row'}}>
+                      <View>
+                        <View>
+                          <Text
+                            style={{
+                              fontSize: 15,
+                              fontWeight: 'bold',
+                            }}>
+                            {value.userFK.userId}({value.userFK.userNm})
+                          </Text>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() =>
+                            user === undefined
+                              ? null
+                              : getRecommentList(
+                                  value,
+                                  index,
+                                  value.showRecommentClick.click,
+                                )
+                          }>
+                          {value.reCommentCount > 0 ? (
+                            value.showRecommentClick.click === false ? (
+                              <Text
+                                style={{
+                                  color: 'gray',
+                                }}>{`댓글 ${
+                                value.showRecommentClick.recommentList.length >
+                                0
+                                  ? value.showRecommentClick.recommentList
+                                      .length
+                                  : value.reCommentCount
+                              }개`}</Text>
+                            ) : (
+                              <Text>{`댓글 접기`}</Text>
+                            )
+                          ) : (
+                            <View style={{padding: 2}}>
+                              <MaterialCommunityIcons
+                                name="comment-processing"
+                                size={15}
+                              />
+                            </View>
+                          )}
+                        </TouchableOpacity>
+                      </View>
+                      <View>
                         <Text
                           style={{
-                            color: 'gray',
-                          }}>{`댓글 ${
-                          value.showRecommentClick.recommentList.length > 0
-                            ? value.showRecommentClick.recommentList.length
-                            : value.reCommentCount
-                        }개 모두 보기`}</Text>
-                      ) : (
-                        <Text>{`댓글 접기`}</Text>
-                      )
-                    ) : null}
-                  </TouchableOpacity>
-                  {/* <View>
-                    {value.recommentList.length > 0 &&
-                    isClickList[index] === true
-                      ? showRecommentList(value.recommentList, index)
-                      : null}
-                  </View> */}
+                            fontSize: 15,
+                            paddingLeft: 10,
+                            maxWidth: 290,
+                          }}>
+                          {value.commentContent}
+                        </Text>
+                      </View>
+                    </View>
+                    <View>
+                      {value.showRecommentClick.click === true ? (
+                        <RecommentList
+                          list={value.showRecommentClick.recommentList}
+                        />
+                      ) : null}
+                    </View>
+                    <View></View>
+                  </View>
                 </View>
-              </View>
-            </View>
-          ))}
+              ))
+            : null}
         </View>
       </ScrollView>
       <View style={[styles.spaceBetween, styles.commentWrite]}>

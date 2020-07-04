@@ -82,7 +82,6 @@ const MainComponent = ({navigation}) => {
               name="home"
               color={color}
               size={focused ? 32 : 26}
-              onPress={() => {}}
             />
           ),
         }}

@@ -47,7 +47,6 @@ const Home = ({navigation, route}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(true);
   useEffect(() => {
-    setIsLoading(true);
     getFirstTimelineData();
   }, []);
 
@@ -71,6 +70,16 @@ const Home = ({navigation, route}) => {
           </Text>
         </TouchableOpacity>
       ),
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('homeSearch');
+          }}>
+          <Text style={{padding: 10, marginTop: 5, marginRight: 5}}>
+            <MaterialIcons name="search" size={25} color="white" />
+          </Text>
+        </TouchableOpacity>
+      ),
     });
   }, []);
 
@@ -81,6 +90,7 @@ const Home = ({navigation, route}) => {
           `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/pagingTimeLine/${route.params.user.userCd}`,
         )
       ).data;
+      setIsLoading(true);
       if (timeLineDataList.length < 0) {
         return;
       } else {
@@ -106,7 +116,6 @@ const Home = ({navigation, route}) => {
       if (moreTimeLineData.length <= 0) {
         return;
       } else {
-        console.log(moreTimeLineData);
         setTimeline(timeline.concat(moreTimeLineData));
       }
     } catch (e) {
