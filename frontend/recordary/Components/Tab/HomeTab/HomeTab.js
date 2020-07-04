@@ -73,7 +73,7 @@ const Home = ({navigation, route}) => {
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('homeSearch');
+            navigation.navigate('homeSearch', {user: route.params.user});
           }}>
           <Text style={{padding: 10, marginTop: 5, marginRight: 5}}>
             <MaterialIcons name="search" size={25} color="white" />

@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
@@ -26,7 +27,17 @@ const ProfileEdit = ({navigation, route}) => {
         fontSize: 24,
       },
       headerRight: () => (
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            Alert.alert('프로필 수정', '프로필을 수정하시겠습니까?', [
+              {
+                text: '아니오',
+                onPress: () => console.log('No Pressed'),
+                style: 'cancel',
+              },
+              {text: '예', onPress: () => console.log('Yes Pressed')},
+            ])
+          }>
           <MaterialCommunityIcons
             style={{padding: 10, marginRight: 5}}
             name="check-circle-outline"

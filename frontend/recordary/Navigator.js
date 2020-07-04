@@ -64,7 +64,13 @@ const Navigator = ({isLogin, setIsLogin, setUser}) => {
                 tabBarVisible: false,
               }}
             />
-            <Stack.Screen name="profileEdit" component={ProfileEdit} />
+            <Stack.Screen
+              name="profileEdit"
+              component={ProfileEdit}
+              options={{
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+              }}
+            />
             <Stack.Screen
               name="comment"
               component={Comment}

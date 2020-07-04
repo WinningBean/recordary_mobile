@@ -10,6 +10,7 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  Alert,
 } from 'react-native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,7 +20,7 @@ import axios from 'axios';
 
 const window = Dimensions.get('window');
 
-const Search = ({navigation}) => {
+const homeSearch = ({navigation, route}) => {
   const [input, setInput] = useState('');
   const [isClickUser, setIsClickUser] = useState(true);
   const [searchedUser, setSearchedUser] = useState([]);
@@ -32,6 +33,23 @@ const Search = ({navigation}) => {
     swtich.current.animateNextTransition();
     setIsClickUser(isUser);
   };
+
+  // const showAlert = () => {
+  //   Alert.alert(
+  //     'Follow',
+  //     '팔로우 하시겠습니까?',
+  //     [
+  //       {
+  //         text: '아니오',
+  //         onPress: () => console.log('No Pressed'),
+  //         style: 'cancel',
+  //       },
+  //       {text: '예', onPress: () => console.log('Yes Pressed')},
+  //     ],
+  //     {cancelable: false},
+  //     // Alery 밖에 누르면 안닫힘
+  //   );
+  // };
 
   const userList = () => {
     return searchedUser.map((value, index) => (
@@ -53,7 +71,39 @@ const Search = ({navigation}) => {
           </Text>
         </View>
         {value.userFollowTarget && value.targetFollowUser ? (
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                'unFollow',
+                '팔로우를 취소하시겠습니까?',
+                [
+                  {
+                    text: '아니오',
+                    onPress: () => console.log('No Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: '예',
+                    onPress: () =>
+                      axios
+                        .delete(
+                          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/unFollow/${route.params.user.userCd}`,
+                          {
+                            params: {targetCd: value.userInfo.userCd},
+                          },
+                        )
+                        .then((unfollow) => {
+                          console.log(unfollow.data);
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                        }),
+                  },
+                ],
+                {cancelable: false},
+                // Alery 밖에 누르면 안닫힘
+              )
+            }>
             <MaterialCommunityIcons
               style={{padding: 10}}
               name="account-check"
@@ -62,7 +112,42 @@ const Search = ({navigation}) => {
             />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                'Follow',
+                '팔로우 하시겠습니까?',
+                [
+                  {
+                    text: '아니오',
+                    onPress: () => console.log('No Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: '예',
+                    onPress: () =>
+                      axios
+                        .post(
+                          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/follow/${route.params.user.userCd}`,
+                          JSON.stringify(value.userInfo.userCd),
+                          {
+                            headers: {
+                              Accept: 'application/json',
+                              'Content-Type': 'application/json',
+                            },
+                          },
+                        )
+                        .then((follow) => {
+                          console.log(follow.data);
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                        }),
+                  },
+                ],
+                {cancelable: false},
+              )
+            }>
             <MaterialIcons
               name="add"
               style={{padding: 10}}
@@ -195,7 +280,7 @@ const Search = ({navigation}) => {
   );
 };
 
-export default Search;
+export default homeSearch;
 
 const styles = StyleSheet.create({
   container: {

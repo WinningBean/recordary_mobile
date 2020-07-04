@@ -159,15 +159,19 @@ export default function Timeline({postList, user}) {
             bottom: 0,
             alignSelf: 'center',
           }}>
-          {mediaList.map((val, index) => (
-            <Text
-              key={index}
-              style={
-                index === active ? styles.pagingActiveText : styles.pagingText
-              }>
-              ⬤
-            </Text>
-          ))}
+          {mediaList.length > 1
+            ? mediaList.map((val, index) => (
+                <Text
+                  key={index}
+                  style={
+                    index === active
+                      ? styles.pagingActiveText
+                      : styles.pagingText
+                  }>
+                  ⬤
+                </Text>
+              ))
+            : null}
         </View>
       </View>
 
