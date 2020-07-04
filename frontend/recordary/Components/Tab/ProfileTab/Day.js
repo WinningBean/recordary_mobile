@@ -23,6 +23,7 @@ const {eq, event, Value, set} = Animated;
 
 const {width, height} = Dimensions.get('window');
 const Day = ({
+  isManager,
   data,
   selectedDate,
   onSetIsClickDay,
@@ -70,6 +71,9 @@ const Day = ({
               <TouchableNativeFeedback
                 key={value.scheduleCd}
                 onLongPress={() => {
+                  if (!isManager) {
+                    return;
+                  }
                   Alert.alert(null, '일정을 삭제하시겠습니까', [
                     {
                       text: '아니오',
@@ -79,6 +83,9 @@ const Day = ({
                   ]);
                 }}
                 onPress={() => {
+                  if (!isManager) {
+                    return;
+                  }
                   onSetIsClickDay();
                   navigation.push('schedule', {
                     data: value,
@@ -127,33 +134,35 @@ const Day = ({
               </TouchableNativeFeedback>
             ))}
           </ScrollView>
-          <TouchableOpacity
-            onPress={() => {
-              onSetIsClickDay();
-              navigation.push('schedule', {
-                data: undefined,
-                selectedDate: selectedDate,
-                onRegisterSchedule: onRegisterSchedule,
-              });
-            }}
-            style={{
-              position: 'absolute',
-              bottom: 30,
-              right: 20,
-              width: 50,
-              height: 50,
-            }}>
-            <View
+          {isManager ? (
+            <TouchableOpacity
+              onPress={() => {
+                onSetIsClickDay();
+                navigation.push('schedule', {
+                  data: undefined,
+                  selectedDate: selectedDate,
+                  onRegisterSchedule: onRegisterSchedule,
+                });
+              }}
               style={{
-                flex: 1,
-                borderRadius: 50,
-                backgroundColor: 'rgb(64, 114, 89)',
-                justifyContent: 'center',
-                alignItems: 'center',
+                position: 'absolute',
+                bottom: 30,
+                right: 20,
+                width: 50,
+                height: 50,
               }}>
-              <MaterialCommunityIcons name="plus" color="white" size={28} />
-            </View>
-          </TouchableOpacity>
+              <View
+                style={{
+                  flex: 1,
+                  borderRadius: 50,
+                  backgroundColor: 'rgb(64, 114, 89)',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <MaterialCommunityIcons name="plus" color="white" size={28} />
+              </View>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
     </Modal>

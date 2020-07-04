@@ -14,8 +14,6 @@ import {PanGestureHandler, State} from 'react-native-gesture-handler';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import AsyncStorage from '@react-native-community/async-storage';
-
 import * as dateFns from 'date-fns';
 
 import Day from './Day';
@@ -50,6 +48,7 @@ const {event, Value} = Animated;
 
 const {width} = Dimensions.get('window');
 const Calendar = ({
+  isManager,
   scheduleList,
   setScheduleList,
   selectedDate,
@@ -139,6 +138,7 @@ const Calendar = ({
       />
       {isClickDay ? (
         <Day
+          isManager={isManager}
           selectedDate={selectedDate}
           onSetIsClickDay={() => setIsClickDay(false)}
           data={scheduleList.filter((value) =>
@@ -253,7 +253,8 @@ const Month = ({
           <TouchableWithoutFeedback
             key={`cell-${day}`}
             onPress={() => {
-              if (dateFns.isSameWeek(selectedDate, currDay) || isFullCalendar) {
+              if (dateFns.isSameDay(selectedDate, currDay)) {
+                //  || isFullCalendar
                 onSetIsClickDay();
               }
               onPressCell(currDay);

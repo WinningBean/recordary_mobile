@@ -5,10 +5,12 @@ import {
   ScrollView,
   Modal,
   StyleSheet,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import Timeline from 'Components/Tab/HomeTab/Timeline';
+
+const {width, height} = Dimensions.get('window');
 
 const ClickPicture = ({post, onClose, user}) => {
   return (
@@ -17,10 +19,10 @@ const ClickPicture = ({post, onClose, user}) => {
       animated={true}
       animationType="fade"
       onRequestClose={() => onClose()}>
+      <TouchableWithoutFeedback onPress={() => onClose()}>
+        <View style={styles.modalOverlay} />
+      </TouchableWithoutFeedback>
       <View style={styles.modalContent}>
-        <TouchableOpacity onPress={() => onClose()}>
-          <View style={styles.modalOverlay} />
-        </TouchableOpacity>
         {post.mediaFK !== null ? (
           <View style={{width: '100%', height: 'auto'}}>
             <Timeline postList={post} user={user} />
@@ -39,7 +41,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,.5)',
+    marginVertical: height * 0.08,
   },
   modalOverlay: {
     position: 'absolute',
