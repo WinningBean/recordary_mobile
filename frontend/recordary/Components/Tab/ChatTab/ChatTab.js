@@ -26,7 +26,7 @@ const Chat = ({navigation}) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Chatting',
-      headerStyle: {backgroundColor: 'tomato'},
+      headerStyle: {backgroundColor: 'rgb(64,115,158)'},
       headerTintColor: 'white',
       headerTitleAlign: 'left',
       headerTitleStyle: {
@@ -199,7 +199,7 @@ const Chat = ({navigation}) => {
           style={[
             styles.item,
             value.isLogin
-              ? {borderLeftColor: 'green', borderLeftWidth: 8}
+              ? {borderLeftColor: 'rgb(64,115,158)', borderLeftWidth: 6}
               : {paddingLeft: 8},
           ]}
           key={index}>

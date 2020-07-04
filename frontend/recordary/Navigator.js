@@ -87,7 +87,7 @@ const Navigator = ({isLogin, setIsLogin, setUser}) => {
               component={Message}
               options={{
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-                headerStyle: {backgroundColor: 'tomato'},
+                headerStyle: {backgroundColor: 'rgb(64,115,158)'},
                 headerTintColor: 'white',
                 headerTitleStyle: {
                   fontWeight: 'bold',

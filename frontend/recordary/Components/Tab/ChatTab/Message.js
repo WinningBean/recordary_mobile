@@ -37,7 +37,11 @@ const Message = ({navigation, route}) => {
               <View
                 key={`${info.nm}-${index}`}
                 style={[styles.chatWrap, {flexDirection: 'row-reverse'}]}>
-                <Text style={[styles.chatText, {backgroundColor: '#FF6347B0'}]}>
+                <Text
+                  style={[
+                    styles.chatText,
+                    {backgroundColor: 'rgb(64,115,158)', color: 'white'},
+                  ]}>
                   {value.ex}
                 </Text>
               </View>
