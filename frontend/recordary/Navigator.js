@@ -11,9 +11,11 @@ import Login from 'Components/Login/Login';
 import Register from 'Components/Login/Register';
 import WrapMain from 'Components/WrapMain';
 import Comment from 'Components/Tab/HomeTab/Comment';
+import homeSearch from 'Components/Tab/HomeTab/homeSearch';
 import Message from 'Components/Tab/ChatTab/Message';
 import Search from 'Components/Tab/ChatTab/Search';
 import Schedule from 'Components/Tab/ProfileTab/Schedule';
+import ListComponent from 'Components/UI/ListComponent';
 
 import Setting from 'Components/Menu/Setting';
 import ProfileEdit from 'Components/Menu/ProfileEdit';
@@ -99,6 +101,26 @@ const Navigator = ({isLogin, setIsLogin, setUser}) => {
               component={Schedule}
               options={{
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+              }}
+            />
+            <Stack.Screen
+              name="ListComponent"
+              component={ListComponent}
+              options={{
+                title: 'ListComponent',
+                headerStyle: {backgroundColor: 'rgb(64, 114, 89)'},
+                headerTintColor: 'white',
+                headerTitleAlign: 'left',
+                tabBarVisible: false,
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+              }}
+            />
+            <Stack.Screen
+              name="homeSearch"
+              component={homeSearch}
+              options={{
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                headerShown: false,
               }}
             />
           </>

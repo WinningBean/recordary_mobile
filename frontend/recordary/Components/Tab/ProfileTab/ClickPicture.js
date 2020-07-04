@@ -6,13 +6,11 @@ import {
   Modal,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
 } from 'react-native';
 
 import Timeline from 'Components/Tab/HomeTab/Timeline';
 
 const ClickPicture = ({post, onClose, user}) => {
-  const [modalVisible, setModalVisible] = useState(false);
   return (
     <Modal
       transparent
@@ -20,9 +18,9 @@ const ClickPicture = ({post, onClose, user}) => {
       animationType="fade"
       onRequestClose={() => onClose()}>
       <View style={styles.modalContent}>
-        <TouchableWithoutFeedback onPress={() => onClose()}>
+        <TouchableOpacity onPress={() => onClose()}>
           <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
         {post.mediaFK !== null ? (
           <View style={{width: '100%', height: 'auto'}}>
             <Timeline postList={post} user={user} />

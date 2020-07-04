@@ -11,6 +11,8 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import * as dateFns from 'date-fns';
+import {useNavigation} from '@react-navigation/native';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
@@ -18,6 +20,7 @@ import axios from 'axios';
 
 export default function Timeline({postList, user}) {
   const [data, setData] = useState(postList);
+  const navigation = useNavigation();
 
   return (
     <View
