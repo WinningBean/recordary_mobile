@@ -67,7 +67,11 @@ export default function TimelineOneDay({postList, user}) {
                 borderRadius: 50,
               }}
             />
-            <Text style={{padding: 10, fontSize: 14, color: 'gray'}}>
+            <Text
+              style={{
+                padding: 10,
+                fontSize: 14,
+              }}>
               {data.userFK.userId}({data.userFK.userNm})
             </Text>
           </View>
@@ -96,19 +100,22 @@ export default function TimelineOneDay({postList, user}) {
       <View style={[{paddingLeft: 5}, styles.flexRow, styles.oneSchedule]}>
         <Text style={{fontSize: 16}}>{data.scheduleFK.scheduleNm}</Text>
       </View>
-      <View
-        style={[
-          {
-            paddingLeft: 5,
-            paddingTop: 10,
-            paddingBottom: 10,
-            borderBottomColor: 'lightgray',
-            borderBottomWidth: 1,
-          },
-          styles.flexRow,
-        ]}>
-        <Text>{data.scheduleFK.scheduleEx}</Text>
-      </View>
+      {data.scheduleFK.scheduleEx !== '' ? (
+        <View
+          style={[
+            {
+              paddingLeft: 5,
+              paddingTop: 10,
+              paddingBottom: 10,
+              borderBottomColor: 'lightgray',
+              borderBottomWidth: 1,
+            },
+            styles.flexRow,
+          ]}>
+          <Text>{data.scheduleFK.scheduleEx}</Text>
+        </View>
+      ) : null}
+
       <View style={[styles.spaceBetween, styles.oneSchedule]}>
         <Text>시작 날짜</Text>
         <Text>
