@@ -98,7 +98,7 @@ const Menu = (props) => {
         <TouchableNativeFeedback
           key={value.groupCd}
           onPress={() => {
-            navigation.jumpTo('profile', {user: value});
+            navigation.push('profile', {user: value});
           }}>
           <View
             style={[
@@ -138,7 +138,7 @@ const Menu = (props) => {
   };
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <View
         style={{
           height: window.height * 0.16,

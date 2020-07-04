@@ -38,7 +38,7 @@ const ProfileEdit = ({navigation, route}) => {
     });
   }, []);
 
-  const {currentUser} = route.params;
+  const [currentUser, setCurrentUser] = useState(route.params.currentUser);
 
   const showPicker = () => {
     const options = {
@@ -47,7 +47,18 @@ const ProfileEdit = ({navigation, route}) => {
       chooseFromLibraryButtonTitle: '갤러리에서 선택 ',
       cancelButtonTitle: '취소',
     };
-    ImagePicker.showImagePicker(options, () => {});
+    ImagePicker.showImagePicker(options, (res) => {
+      console.log('res = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picter');
+      } else if (res.error) {
+        console.log('image-picker Errkr : ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button : ', res.customButton);
+      } else {
+        setCurrentUser({...currentUser, userPic: res.uri});
+      }
+    });
   };
 
   return (

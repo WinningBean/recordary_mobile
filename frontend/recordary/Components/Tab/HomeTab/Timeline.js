@@ -22,6 +22,7 @@ import axios from 'axios';
 export default function Timeline({postList, user}) {
   const [data, setData] = useState(postList);
   const [mediaList, setMediaList] = useState([]);
+  const [active, setActive] = useState(0);
   const navigation = useNavigation();
   useEffect(() => {
     (async () => {
@@ -126,20 +127,50 @@ export default function Timeline({postList, user}) {
           {data.postEx}
         </Text>
       </View>
-      <ScrollView
-        horizontal={true}
-        pagingEnabled={true}
-        showsHorizontalScrollIndicator={false}>
-        {mediaList.map((val, index) => (
-          <Image
-            key={`img-${index}`}
-            source={{
-              uri: val,
-            }}
-            style={styles.postImage}
-          />
-        ))}
-      </ScrollView>
+      <View>
+        <ScrollView
+          horizontal={true}
+          pagingEnabled={true}
+          onScroll={(e) => {
+            const slide = Math.ceil(
+              e.nativeEvent.contentOffset.x /
+                e.nativeEvent.layoutMeasurement.width,
+            );
+            if (slide !== active) {
+              setActive(slide);
+            }
+          }}
+          showsHorizontalScrollIndicator={false}>
+          {mediaList.map((val, index) => (
+            <Image
+              key={`img-${index}`}
+              source={{
+                uri: val,
+              }}
+              style={styles.postImage}
+            />
+          ))}
+        </ScrollView>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            position: 'absolute',
+            bottom: 0,
+            alignSelf: 'center',
+          }}>
+          {mediaList.map((val, index) => (
+            <Text
+              key={index}
+              style={
+                index === active ? styles.pagingActiveText : styles.pagingText
+              }>
+              ⬤
+            </Text>
+          ))}
+        </View>
+      </View>
+
       <View style={styles.flexRow}>
         <TouchableOpacity style={{padding: 5}}>
           <MaterialCommunityIcons name="thumb-up" size={25} />
@@ -224,5 +255,12 @@ const styles = StyleSheet.create({
   groupBorder: {
     borderTopColor: 'tomato',
     borderTopWidth: 3,
+  },
+  pagingText: {color: '#888', marginBottom: 7, marginLeft: 2, marginRight: 2},
+  pagingActiveText: {
+    color: 'white',
+    marginBottom: 6,
+    marginLeft: 2,
+    marginRight: 2,
   },
 });
