@@ -26,8 +26,8 @@ const Day = ({
   data,
   selectedDate,
   onSetIsClickDay,
-  onSetData,
-  onRegisterData,
+  onModify,
+  onRegisterSchedule,
   onDeleteData,
 }) => {
   const navigation = useNavigation();
@@ -68,23 +68,21 @@ const Day = ({
           <ScrollView>
             {data.map((value) => (
               <TouchableNativeFeedback
-                key={value.index}
+                key={value.scheduleCd}
                 onLongPress={() => {
                   Alert.alert(null, '일정을 삭제하시겠습니까', [
                     {
                       text: '아니오',
                       style: 'cancel',
                     },
-                    {text: '예', onPress: () => onDeleteData(value.index)},
+                    {text: '예', onPress: () => onDeleteData(value.scheduleCd)},
                   ]);
                 }}
                 onPress={() => {
                   onSetIsClickDay();
                   navigation.push('schedule', {
                     data: value,
-                    onSave: (value) => {
-                      onSetData(value);
-                    },
+                    onModify: onModify,
                   });
                 }}>
                 <View
@@ -135,7 +133,7 @@ const Day = ({
               navigation.push('schedule', {
                 data: undefined,
                 selectedDate: selectedDate,
-                onRegister: (value) => onRegisterData(value),
+                onRegisterSchedule: onRegisterSchedule,
               });
             }}
             style={{

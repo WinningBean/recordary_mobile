@@ -17,14 +17,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Transition, Transitioning} from 'react-native-reanimated';
 import axios from 'axios';
 
-import AsyncStorage from '@react-native-community/async-storage';
-
 const window = Dimensions.get('window');
 
 const Menu = (props) => {
   console.log(props, 'isProps');
   const navigation = useNavigation();
-  const [isClickFriend, setIsClickFriend] = useState(true);
+  const [isClickFriend, setIsClickFriend] = useState(false);
   const [currUser, setCurrUser] = useState(props.user);
   const menuRef = useRef();
 
@@ -66,7 +64,7 @@ const Menu = (props) => {
         <TouchableNativeFeedback
           key={value.groupCd}
           onPress={() => {
-            navigation.push('search');
+            // navigation.push('profile',  {user: user});
           }}>
           <View style={styles.box}>
             <View
@@ -97,32 +95,38 @@ const Menu = (props) => {
       getFriendList();
     } else {
       return props.friendList.map((value) => (
-        <View
-          style={[
-            styles.box,
-            value.isLogin
-              ? {borderLeftColor: 'green', borderLeftWidth: 3}
-              : null,
-          ]}
-          key={value.userCd}>
+        <TouchableNativeFeedback
+          key={value.groupCd}
+          onPress={() => {
+            navigation.jumpTo('profile', {user: value});
+          }}>
           <View
-            style={{
-              width: 60,
-              height: 60,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <FastImage
-              source={{uri: value.userPic}}
-              style={{width: 40, height: 40, borderRadius: 50}}
-              resizeMode="cover"
-            />
+            style={[
+              styles.box,
+              value.isLogin
+                ? {borderLeftColor: 'green', borderLeftWidth: 3}
+                : null,
+            ]}
+            key={value.userCd}>
+            <View
+              style={{
+                width: 60,
+                height: 60,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <FastImage
+                source={{uri: value.userPic}}
+                style={{width: 40, height: 40, borderRadius: 50}}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={{justifyContent: 'center', marginBottom: 5}}>
+              <Text style={{fontSize: 16}}>{value.userId}</Text>
+              <Text style={{fontSize: 13, color: 'gray'}}>{value.userNm}</Text>
+            </View>
           </View>
-          <View style={{justifyContent: 'center', marginBottom: 5}}>
-            <Text style={{fontSize: 16}}>{value.userId}</Text>
-            <Text style={{fontSize: 13, color: 'gray'}}>{value.userNm}</Text>
-          </View>
-        </View>
+        </TouchableNativeFeedback>
       ));
     }
   };
@@ -233,19 +237,11 @@ const Menu = (props) => {
             height: window.height * 0.06,
           },
         ]}>
-        {/* <Text style={{color: 'gray', marginLeft: 15}}>From.FairyPitta</Text> */}
+        <Text style={{color: 'gray', marginLeft: 15}}>From.FairyPitta</Text>
         <TouchableOpacity
           style={{padding: 10}}
           onPress={() => navigation.push('setting')}>
           <MaterialIcons name="settings" size={25} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{padding: 10}}
-          onPress={() => {
-            AsyncStorage.clear();
-            props.onLogout();
-          }}>
-          <Text style={{fontSize: 16}}>로그아웃</Text>
         </TouchableOpacity>
       </View>
     </View>

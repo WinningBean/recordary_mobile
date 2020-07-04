@@ -34,7 +34,7 @@ const WrapMain = ({navigation}) => {
       drawerStyle={{
         width: Dimensions.get('window').width * 0.7,
       }}
-      drawerContent={() => <Menu />}>
+      drawerContent={(option) => <Menu option={option} />}>
       <WrapDraw.Screen name="main-draw" component={MainComponent} />
     </WrapDraw.Navigator>
   );
@@ -42,7 +42,7 @@ const WrapMain = ({navigation}) => {
 const MainComponent = ({navigation}) => {
   return (
     <BottomTab.Navigator
-      initialRouteName="home"
+      initialRouteName="profile"
       tabBarOptions={{
         activeTintColor: 'rgb(64, 114, 89)',
         showLabel: false,
@@ -82,7 +82,6 @@ const MainComponent = ({navigation}) => {
               name="home"
               color={color}
               size={focused ? 32 : 26}
-              onPress={() => {}}
             />
           ),
         }}

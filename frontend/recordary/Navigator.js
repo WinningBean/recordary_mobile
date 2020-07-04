@@ -17,7 +17,6 @@ import Schedule from 'Components/Tab/ProfileTab/Schedule';
 
 import Setting from 'Components/Menu/Setting';
 import ProfileEdit from 'Components/Menu/ProfileEdit';
-
 import Loading from 'Containers/Loading';
 
 const Stack = createStackNavigator();

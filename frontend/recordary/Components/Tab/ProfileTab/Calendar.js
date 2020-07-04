@@ -54,10 +54,12 @@ const Calendar = ({
   setScheduleList,
   selectedDate,
   setSelectedDate,
+  onModify,
+  onRegisterSchedule,
+  onDeleteData,
   isFullCalendar,
   onSmallCalendar,
   onFullCalendar,
-  onSaveScList,
 }) => {
   const [isClickDay, setIsClickDay] = useState(false);
 
@@ -145,38 +147,9 @@ const Calendar = ({
               end: dateFns.endOfDay(value.scheduleEnd),
             }),
           )}
-          onSetData={(value) => {
-            var copyList = scheduleList.slice();
-            for (let i = 0; i < copyList.length; i++) {
-              if (value.scheduleCd === copyList[i].scheduleCd) {
-                copyList[i] = value;
-                break;
-              }
-            }
-            setScheduleList(copyList);
-          }}
-          onRegisterData={(value) => {
-            const draft = scheduleList.slice().concat(value);
-            draft.sort((a, b) => {
-              if (dateFns.isSameDay(a.scheduleStr, b.scheduleStr)) {
-                if (dateFns.isSameDay(a.scheduleEnd, b.scheduleEnd)) {
-                  return 0;
-                }
-                return dateFns.differenceInDays(b.scheduleEnd, a.scheduleEnd);
-              }
-              return dateFns.differenceInDays(a.scheduleStr, b.scheduleStr);
-            });
-            setScheduleList(draft);
-          }}
-          onDeleteData={(scheduleCd) => {
-            console.log(index);
-            const index = scheduleList.findIndex(
-              (value) => value.scheduleCd === scheduleCd,
-            );
-            var copyList = scheduleList.slice();
-            copyList[index].splice(index, 1);
-            setScheduleList(copyList);
-          }}
+          onModify={onModify}
+          onRegisterSchedule={onRegisterSchedule}
+          onDeleteData={onDeleteData}
         />
       ) : null}
     </View>
@@ -225,7 +198,19 @@ const Month = ({
     const rows = [];
     let day = startDate;
     var days = [];
-    const queueList = scheduleList.slice();
+    const queueList = scheduleList
+      // .filter(
+      //   (value) =>
+      //     dateFns.isWithinInterval(value.scheduleStr, {
+      //       start: startDate,
+      //       end: endDate,
+      //     }) ||
+      //     dateFns.isWithinInterval(value.scheduleEnd, {
+      //       start: startDate,
+      //       end: endDate,
+      //     }),
+      // )
+      .slice();
 
     const onPressCell = (value) => {
       if (dateFns.isSameDay(value, selectedDate)) {
@@ -234,7 +219,6 @@ const Month = ({
       cellsRef.current.animateNextTransition();
       setSelectedDate(value);
     };
-
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
         while (
@@ -348,7 +332,7 @@ const Month = ({
                     ) {
                       result.push(
                         <View
-                          key={`schedule-${day}-${draft.index}`}
+                          key={`schedule-${day}-${draft.scheduleCd}`}
                           style={[
                             {
                               height: 12,
@@ -459,13 +443,17 @@ const Month = ({
       if (e.nativeEvent.oldState === State.ACTIVE) {
         if (e.nativeEvent.translationX > 150 || e.nativeEvent.velocityX > 800) {
           value.setValue(-width);
-          setSeletedDate(dateFns.endOfMonth(dateFns.addMonths(date, -1)));
+          setSelectedDate(
+            dateFns.endOfMonth(dateFns.addMonths(selectedDate, -1)),
+          );
         } else if (
           e.nativeEvent.translationX < -150 ||
           e.nativeEvent.velocityX < -800
         ) {
           value.setValue(width);
-          setSeletedDate(dateFns.startOfMonth(dateFns.addMonths(date, 1)));
+          setSelectedDate(
+            dateFns.startOfMonth(dateFns.addMonths(selectedDate, 1)),
+          );
         } else {
           Animated.spring(value, {
             velocity: 10,

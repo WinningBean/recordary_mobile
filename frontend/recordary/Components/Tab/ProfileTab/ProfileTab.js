@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect, useRef, useEffect} from 'react';
+import React, {useRef, useState, useLayoutEffect, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -87,7 +87,6 @@ World`);
   }, []);
 
   useEffect(() => {
-    console.log('profileTab');
     getUserInfo();
   }, []);
 
@@ -112,15 +111,11 @@ World`);
       }
 
       const monthStart = dateFns.startOfMonth(selectedDate);
-      const monthEnd = dateFns.endOfMonth(monthStart);
+      const monthEnd = dateFns.endOfMonth(selectedDate);
       const startDate = dateFns.startOfWeek(monthStart);
       const endDate = dateFns.endOfWeek(monthEnd);
 
-      console.log({
-        userCd: route.params.user.userCd,
-        frommDate: startDate.getTime(),
-        toDate: endDate.getTime(),
-      });
+      console.log(selectedDate, startDate, endDate);
 
       const scheduleData = (
         await axios.post(
@@ -322,7 +317,142 @@ World`);
                 scheduleList={scheduleList}
                 setScheduleList={setScheduleList}
                 selectedDate={selectedDate}
-                setSelectedDate={(data) => setSelectedDate(data)}
+                setSelectedDate={(value) => {
+                  if (!dateFns.isSameMonth(value, selectedDate)) {
+                    const monthStart = dateFns.startOfMonth(value);
+                    const monthEnd = dateFns.endOfMonth(selectedDate);
+                    const startDate = dateFns.startOfWeek(monthStart);
+                    const endDate = dateFns.endOfWeek(monthEnd);
+
+                    console.log(selectedDate, startDate, endDate);
+
+                    axios
+                      .post(
+                        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/schedule/showUserSchedule/${route.params.user.userCd}`,
+                        {
+                          userCd: route.params.user.userCd,
+                          frommDate: startDate.getTime(),
+                          toDate: endDate.getTime(),
+                        },
+                      )
+                      .then(({data}) => {
+                        setScheduleList(
+                          data.map((value) => ({
+                            ...value,
+                            scheduleStr: dateFns.parseISO(value.scheduleStr),
+                            scheduleEnd: dateFns.parseISO(value.scheduleEnd),
+                          })),
+                        );
+                      });
+                  }
+                  setSelectedDate(value);
+                }}
+                onRegisterSchedule={async (value) => {
+                  try {
+                    const scCd = (
+                      await axios.post(
+                        'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/schedule/',
+                        {
+                          tabCd: undefined,
+                          // groupCd: type === 2 || type === 3 ? data.groupCd : null,
+                          userCd: currUser.userCd,
+                          scheduleNm: value.scheduleNm,
+                          scheduleEx: value.scheduleEx,
+                          scheduleStr: value.scheduleStr.getTime(),
+                          scheduleEnd: value.scheduleEnd.getTime(),
+                          scheduleMember: [],
+                          scheduleCol: value.scheduleCol,
+                          schedulePublicState: value.schedulePublicState,
+                        },
+                      )
+                    ).data;
+
+                    await axios.post(
+                      `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
+                      {
+                        userCd: currUser.userCd,
+                        // groupCd: type === 2 || type === 3 ? data.groupCd : null,
+                        postOriginCd: null,
+                        scheduleCd: scCd,
+                        mediaCd: null,
+                        postEx: value.scheduleEx,
+                        postPublicState: value.schedulePublicState,
+                        postScheduleShareState: false,
+                      },
+                    );
+
+                    const draft = scheduleList
+                      .slice()
+                      .concat({...value, scheduleCd: scCd});
+                    draft.sort((a, b) => {
+                      if (dateFns.isSameDay(a.scheduleStr, b.scheduleStr)) {
+                        if (dateFns.isSameDay(a.scheduleEnd, b.scheduleEnd)) {
+                          return 0;
+                        }
+                        return dateFns.differenceInDays(
+                          b.scheduleEnd,
+                          a.scheduleEnd,
+                        );
+                      }
+                      return dateFns.differenceInDays(
+                        a.scheduleStr,
+                        b.scheduleStr,
+                      );
+                    });
+
+                    setScheduleList(draft);
+                  } catch (error) {
+                    console.error(error);
+                    Alert.alert('일정 생성에 실패하였습니다.');
+                  }
+                }}
+                onModify={(value) => {
+                  axios
+                    .post(
+                      `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/schedule/update/${value.scheduleCd}`,
+                      {
+                        // groupCd: type === 0 ? null : props.info.groupCd,
+                        TabCodeFK: null,
+                        scheduleNm: value.scheduleNm,
+                        scheduleEx: value.scheduleEx,
+                        scheduleStr: value.scheduleStr.getTime(),
+                        scheduleEnd: value.scheduleEnd.getTime(),
+                        scheduleCol: value.scheduleCol,
+                        schedulePublicState: value.schedulePublicState,
+                      },
+                    )
+                    .then(() => {
+                      var copyList = scheduleList.slice();
+                      for (let i = 0; i < copyList.length; i++) {
+                        if (value.scheduleCd === copyList[i].scheduleCd) {
+                          copyList[i] = value;
+                          break;
+                        }
+                      }
+                      setScheduleList(copyList);
+                    })
+                    .catch(() => {
+                      Alert.alert('일정 수정에 실패하였습니다.');
+                    });
+                }}
+                onDeleteData={(scheduleCd) => {
+                  console.log(scheduleCd);
+                  axios
+                    .delete(
+                      `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/schedule/${scheduleCd}`,
+                    )
+                    .then(() => {
+                      const index = scheduleList.findIndex(
+                        (value) => value.scheduleCd === scheduleCd,
+                      );
+                      var copyList = scheduleList.slice();
+                      copyList.splice(index, 1);
+                      setScheduleList(copyList);
+                    })
+                    .catch(() => {
+                      Alert.alert('일정 삭제에 실패하였습니다.');
+                    });
+                }}
                 isFullCalendar={isFullCalendar}
                 onFullCalendar={() => {
                   setIsFullCalender(true);

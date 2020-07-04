@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   StatusBar,
+  Picker,
   Dimensions,
   TouchableOpacity,
   TouchableNativeFeedback,
@@ -39,6 +40,7 @@ const Schedule = ({navigation, route}) => {
           scheduleStr: dateFns.startOfDay(route.params.selectedDate),
           scheduleEnd: dateFns.endOfDay(route.params.selectedDate),
           scheduleCol: 'rgb(64, 114, 89)',
+          schedulePublicState: 0,
         },
   );
   const [isClickStartDate, setIsClickStartDate] = useState(undefined);
@@ -46,7 +48,7 @@ const Schedule = ({navigation, route}) => {
   const [isAllTime, setIsAllTime] = useState(true);
   const [isClickColor, setIsClickColor] = useState(false);
   const colorRef = useRef();
-  console.log(route.params.data);
+  console.log(data);
   return (
     <View style={styles.container}>
       <View
@@ -192,6 +194,28 @@ const Schedule = ({navigation, route}) => {
           paddingHorizontal: 20,
           borderRadius: 30,
         }}>
+        <View style={{paddingHorizontal: 10}}>
+          <Picker
+            mode="dropdown"
+            selectedValue={
+              data.schedulePublicState === 0
+                ? '전체 공개'
+                : data.schedulePublicState === 1
+                ? '팔로워만'
+                : data.schedulePublicState === 2
+                ? '친구만'
+                : '나만 보기'
+            }
+            onValueChange={(itemValue, itemIndex) => {
+              console.log(itemIndex);
+              setData({...data, schedulePublicState: itemIndex});
+            }}>
+            <Picker.Item label="전체 공개" value="전체 공개" />
+            <Picker.Item label="팔로워만" value="팔로워만" />
+            <Picker.Item label="친구만" value="친구만" />
+            <Picker.Item label="나만 보기" value="나만 보기" />
+          </Picker>
+        </View>
         <TouchableNativeFeedback>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View
@@ -246,9 +270,9 @@ const Schedule = ({navigation, route}) => {
         <TouchableNativeFeedback
           onPress={() => {
             if (route.params.data === undefined) {
-              route.params.onRegister(data);
+              route.params.onRegisterSchedule(data);
             } else {
-              route.params.onSave(data);
+              route.params.onModify(data);
             }
             navigation.goBack();
           }}>
@@ -264,7 +288,7 @@ const Schedule = ({navigation, route}) => {
         } else if (isClickStartDate) {
           return (
             <DateTimePicker
-              value={data.start}
+              value={data.scheduleStr}
               mode="date"
               display="default"
               is24Hour={true}
@@ -273,7 +297,7 @@ const Schedule = ({navigation, route}) => {
                 if (event.type !== 'dismissed') {
                   setData({
                     ...data,
-                    start: isAllTime
+                    scheduleStr: isAllTime
                       ? dateFns.startOfDay(selectedDate)
                       : selectedDate,
                   });
@@ -284,7 +308,7 @@ const Schedule = ({navigation, route}) => {
         } else {
           return (
             <DateTimePicker
-              value={data.end}
+              value={data.scheduleEnd}
               mode="date"
               display="default"
               is24Hour={true}
@@ -293,7 +317,7 @@ const Schedule = ({navigation, route}) => {
                 if (event.type !== 'dismissed') {
                   setData({
                     ...data,
-                    end: isAllTime
+                    scheduleEnd: isAllTime
                       ? dateFns.startOfDay(selectedDate)
                       : selectedDate,
                   });
@@ -309,14 +333,14 @@ const Schedule = ({navigation, route}) => {
         } else if (isClickStartTime) {
           return (
             <DateTimePicker
-              value={data.start}
+              value={data.scheduleStr}
               mode="time"
               display="default"
               is24Hour={true}
               onChange={(event, selectedDate) => {
                 setIsClickStartTime(undefined);
                 if (event.type !== 'dismissed') {
-                  setData({...data, start: selectedDate});
+                  setData({...data, scheduleStr: selectedDate});
                 }
               }}
             />
@@ -324,14 +348,14 @@ const Schedule = ({navigation, route}) => {
         } else {
           return (
             <DateTimePicker
-              value={data.end}
+              value={data.scheduleEnd}
               mode="time"
               display="default"
               is24Hour={true}
               onChange={(event, selectedDate) => {
                 setIsClickStartTime(undefined);
                 if (event.type !== 'dismissed') {
-                  setData({...data, end: selectedDate});
+                  setData({...data, scheduleEnd: selectedDate});
                 }
               }}
             />
@@ -366,7 +390,7 @@ const Schedule = ({navigation, route}) => {
                 defaultColor={data.color}
                 onColorSelected={(color) => {
                   setIsClickColor(false);
-                  setData({...data, color: color});
+                  setData({...data, scheduleCol: color});
                 }}
                 style={{flex: 6}}
                 ref={colorRef}

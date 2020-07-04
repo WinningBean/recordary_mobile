@@ -11,7 +11,11 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Setting = ({navigation}) => {
+import {connect} from 'react-redux';
+
+import AsyncStorage from '@react-native-community/async-storage';
+
+const Setting = ({navigation, onLogout}) => {
   return (
     <View style={styles.container}>
       <ScrollView style={{height: Dimensions.get('window').height * 0.8}}>
@@ -45,7 +49,11 @@ const Setting = ({navigation}) => {
             <Text style={{marginLeft: 10, fontSize: 17}}>도움말</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            AsyncStorage.clear();
+            onLogout();
+          }}>
           <View style={[styles.listStyle, styles.flexRow]}>
             <MaterialCommunityIcons name="logout" size={25} />
             <Text style={{marginLeft: 10, fontSize: 17}}>로그아웃</Text>
@@ -71,7 +79,15 @@ const Setting = ({navigation}) => {
   );
 };
 
-export default Setting;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onLogout: () => {
+      dispatch({type: 'SET_LOGIN', isLogin: false});
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Setting);
 
 const styles = StyleSheet.create({
   container: {
