@@ -77,11 +77,11 @@ const Home = ({navigation, route}) => {
   const getFirstTimelineData = async () => {
     try {
       console.log(
-        `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/pagingTimeLine/${route.params.user.userCd}`,
       );
       const timeLineDataList = (
         await axios.get(
-          `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/pagingTimeLine/${route.params.user.userCd}`,
         )
       ).data;
       if (timeLineDataList.length < 0) {
@@ -100,7 +100,7 @@ const Home = ({navigation, route}) => {
     try {
       const moreTimeLineData = (
         await axios.get(
-          `http://www.recordary.gq:8080/post/pagingTimeLine/${route.params.user.userCd}`,
+          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/pagingTimeLine/${route.params.user.userCd}`,
           {
             params: {lastCd: timeline[timeline.length - 1].postCd},
           },

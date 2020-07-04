@@ -94,7 +94,7 @@ World`);
   const getUserInfo = async () => {
     try {
       const {data} = await axios.get(
-        `http://www.recordary.gq:8080/user/profile/${route.params.user.userId}`,
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/profile/${route.params.user.userId}`,
       );
       console.log(data);
       setInfo(data);
@@ -102,7 +102,7 @@ World`);
       //프로필 타임라인
       const timeLineDataList = (
         await axios.get(
-          `http://www.recordary.gq:8080/post/user/${route.params.user.userCd}`,
+          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/user/${route.params.user.userCd}`,
         )
       ).data;
       if (timeLineDataList.length < 0) {
@@ -124,7 +124,7 @@ World`);
 
       const scheduleData = (
         await axios.post(
-          `http://www.recordary.gq:8080/schedule/showUserSchedule/${route.params.user.userCd}`,
+          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/schedule/showUserSchedule/${route.params.user.userCd}`,
           {
             userCd: route.params.user.userCd,
             frommDate: startDate.getTime(),
@@ -152,7 +152,7 @@ World`);
   //     try {
   //       const timeLineDataList = (
   //         await axios.get(
-  //           `http://www.recordary.gq:8080/post/user/${route.params.user.userCd}`,
+  //           `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/user/${route.params.user.userCd}`,
   //         )
   //       ).data;
   //       if (timeLineDataList.length < 0) {
