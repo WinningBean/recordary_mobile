@@ -115,7 +115,6 @@ const Navigator = ({isLogin, setIsLogin, setUser}) => {
               component={ListComponent}
               options={{
                 title: 'ListComponent',
-                headerStyle: {backgroundColor: 'rgb(64, 114, 89)'},
                 headerTintColor: 'white',
                 headerTitleAlign: 'left',
                 tabBarVisible: false,

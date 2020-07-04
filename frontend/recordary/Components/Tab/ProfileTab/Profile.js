@@ -196,25 +196,6 @@ const Profile = ({navigation, route}) => {
     }
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const timeLineDataList = (
-  //         await axios.get(
-  //           `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/user/${route.params.user.userCd}`,
-  //         )
-  //       ).data;
-  //       if (timeLineDataList.length < 0) {
-  //         return;
-  //       } else {
-  //         setTimeline(timeLineDataList);
-  //       }
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   })();
-  // }, []);
-
   const [type, setType] = useState(0);
   // 0 캘린더
   // 1 타임라인
@@ -298,7 +279,14 @@ const Profile = ({navigation, route}) => {
                     }}>
                     {info === undefined ? null : route.params.isGroup ===
                       true ? (
-                      <TouchableOpacity style={{flex: 1}}>
+                      <TouchableOpacity
+                        style={{flex: 1}}
+                        onPress={() =>
+                          navigation.push('ListComponent', {
+                            isGroup: true,
+                            userInfo: info.memberList,
+                          })
+                        }>
                         <View style={{alignItems: 'center'}}>
                           <Text style={{fontSize: 14}}>그룹 멤버</Text>
                           <Text style={{fontSize: 16}}>
@@ -313,6 +301,7 @@ const Profile = ({navigation, route}) => {
                           onPress={() =>
                             navigation.push('ListComponent', {
                               isFollow: true,
+                              isGroup: false,
                               userInfo: info.userInfo,
                             })
                           }>
@@ -328,6 +317,7 @@ const Profile = ({navigation, route}) => {
                           onPress={() =>
                             navigation.push('ListComponent', {
                               isFollow: false,
+                              isGroup: false,
                               userInfo: info.userInfo,
                             })
                           }>
@@ -649,7 +639,14 @@ const Profile = ({navigation, route}) => {
                     }}>
                     {info === undefined ? null : route.params.isGroup ===
                       true ? (
-                      <TouchableOpacity style={{flex: 1}}>
+                      <TouchableOpacity
+                        style={{flex: 1}}
+                        onPress={() =>
+                          navigation.push('ListComponent', {
+                            isGroup: true,
+                            groupList: info,
+                          })
+                        }>
                         <View style={{alignItems: 'center'}}>
                           <Text style={{fontSize: 14}}>그룹 멤버</Text>
                           <Text style={{fontSize: 16}}>
@@ -664,6 +661,7 @@ const Profile = ({navigation, route}) => {
                           onPress={() =>
                             navigation.push('ListComponent', {
                               isFollow: true,
+                              isGroup: false,
                               userInfo: info.userInfo,
                             })
                           }>
@@ -679,6 +677,7 @@ const Profile = ({navigation, route}) => {
                           onPress={() =>
                             navigation.push('ListComponent', {
                               isFollow: false,
+                              isGroup: false,
                               userInfo: info.userInfo,
                             })
                           }>
