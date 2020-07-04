@@ -28,7 +28,7 @@ export default function Timeline({postList, user}) {
       try {
         const mediaSrc = (
           await axios.get(
-            `http://www.recordary.gq:8080/media/${postList.mediaFK.mediaCd}`,
+            `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/media/${postList.mediaFK.mediaCd}`,
           )
         ).data;
         if (mediaSrc.length < 0) {

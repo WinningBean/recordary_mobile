@@ -19,12 +19,13 @@ const ClickPicture = ({post, onClose, user}) => {
       onRequestClose={() => onClose()}>
       <View style={styles.modalContent}>
         <TouchableOpacity onPress={() => onClose()}>
-          {post.mediaFK !== null ? (
-            <View style={{width: '100%', height: 'auto'}}>
-              <Timeline postList={post} user={user} />
-            </View>
-          ) : null}
+          <View style={styles.modalOverlay} />
         </TouchableOpacity>
+        {post.mediaFK !== null ? (
+          <View style={{width: '100%', height: 'auto'}}>
+            <Timeline postList={post} user={user} />
+          </View>
+        ) : null}
       </View>
     </Modal>
   );
@@ -39,5 +40,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,.5)',
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#000000aa',
   },
 });

@@ -40,7 +40,7 @@ const Loading = ({onSaveInitData, route}) => {
       }
 
       const {data} = await axios.post(
-        'http://www.recordary.gq:8080/user/login',
+        'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/login',
         {
           userId: loginData.userId,
           userPw: loginData.userPw,

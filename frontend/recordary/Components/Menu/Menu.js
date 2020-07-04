@@ -31,7 +31,7 @@ const Menu = (props) => {
   const getGroupList = async () => {
     try {
       const {data} = await axios.get(
-        `http://www.recordary.gq:8080/group/group/${currUser.userCd}`,
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/group/group/${currUser.userCd}`,
       );
       if (data.length === 0) {
         props.onSaveGroupList([]);
@@ -46,7 +46,7 @@ const Menu = (props) => {
   const getFriendList = async () => {
     try {
       const {data} = await axios.get(
-        `http://www.recordary.gq:8080/friends/${currUser.userCd}`,
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/friends/${currUser.userCd}`,
       );
       if (data === '') {
         props.onSaveFriendList([]);
