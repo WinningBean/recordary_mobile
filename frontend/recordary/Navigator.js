@@ -18,6 +18,7 @@ import Schedule from 'Components/Tab/ProfileTab/Schedule';
 import ListComponent from 'Components/UI/ListComponent';
 
 import Setting from 'Components/Menu/Setting';
+import Profile from 'Components/Tab/ProfileTab/Profile';
 import ProfileEdit from 'Components/Menu/ProfileEdit';
 import Loading from 'Containers/Loading';
 
@@ -121,6 +122,14 @@ const Navigator = ({isLogin, setIsLogin, setUser}) => {
               options={{
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                 headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="otherProfile"
+              component={Profile}
+              options={{
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                // headerShown: false,
               }}
             />
           </>

@@ -64,7 +64,11 @@ const Menu = (props) => {
         <TouchableNativeFeedback
           key={value.groupCd}
           onPress={() => {
-            // navigation.push('profile',  {user: user});
+            navigation.push('otherProfile', {
+              group: value,
+              user: props.user,
+              isGroup: true,
+            });
           }}>
           <View style={styles.box}>
             <View
@@ -98,7 +102,7 @@ const Menu = (props) => {
         <TouchableNativeFeedback
           key={value.groupCd}
           onPress={() => {
-            navigation.push('profile', {user: value});
+            navigation.push('otherProfile', {user: value, isGroup: false});
           }}>
           <View
             style={[
