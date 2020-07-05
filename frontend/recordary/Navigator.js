@@ -24,9 +24,10 @@ import Loading from 'Containers/Loading';
 
 const Stack = createStackNavigator();
 
-const Navigator = ({isLogin, setIsLogin, setUser}) => {
+const Navigator = ({isLogin, user, setIsLogin, setUser}) => {
   const [isLoadFinish, setIsLoadFinish] = useState(false);
   return (
+    // <>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="wrap">
         {!isLoadFinish ? (
@@ -168,6 +169,8 @@ const Navigator = ({isLogin, setIsLogin, setUser}) => {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+    //   {isLogin ? <WebSock user={user} /> : null}
+    // </>
   );
 };
 

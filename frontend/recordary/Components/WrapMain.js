@@ -42,7 +42,7 @@ const WrapMain = ({navigation}) => {
 const MainComponent = ({navigation}) => {
   return (
     <BottomTab.Navigator
-      initialRouteName="profile"
+      initialRouteName="home"
       tabBarOptions={{
         activeTintColor: 'rgb(64, 114, 89)',
         showLabel: false,

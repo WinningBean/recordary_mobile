@@ -22,6 +22,7 @@
     "babel-plugin-module-resolver": "^4.0.0",
     "date-fns": "^2.12.0",
     "immer": "^7.0.5",
+    "net": "^1.0.2",
     "react": "16.11.0",
     "react-native": "0.62.1",
     "react-native-color-picker": "^0.5.2",
@@ -36,7 +37,9 @@
     "react-native-screens": "^2.4.0",
     "react-native-vector-icons": "^6.6.0",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "sockjs-client": "^1.4.0",
+    "stompjs": "^2.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

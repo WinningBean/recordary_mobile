@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState, useRef} from 'react';
+import React, {useLayoutEffect, useState, useRef, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,18 +12,29 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 
+import axios from 'axios';
+
 const {width} = Dimensions.get('window');
 
 const Message = ({navigation, route}) => {
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: route.params.nm,
+      title: route.params.info.targetNm,
     });
   }, []);
 
+  useEffect(() => {
+    axios
+      .post(
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/room/enter/${route.params.info.roomCd}`,
+      )
+      .then(({data}) => {
+        setMessage(data);
+      });
+  }, []);
+
   const scrollViewRef = useRef();
-  const [message, setMessage] = useState(route.params.message);
-  const info = useState({nm: route.params.nm, pic: route.params.pic})[0];
+  const [message, setMessage] = useState([]);
 
   return (
     <KeyboardAvoidingView style={{flex: 1}}>
@@ -32,30 +43,35 @@ const Message = ({navigation, route}) => {
         ref={scrollViewRef}
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd(true)}>
         {message.map((value, index) => {
-          if (value.isMyMessage) {
+          if (value.sendUser.userCd === route.params.user.userCd) {
             return (
               <View
-                key={`${info.nm}-${index}`}
+                key={`${value.sendUser.userCd}-${index}`}
                 style={[styles.chatWrap, {flexDirection: 'row-reverse'}]}>
                 <Text
                   style={[
                     styles.chatText,
                     {backgroundColor: 'rgb(64,115,158)', color: 'white'},
                   ]}>
-                  {value.ex}
+                  {value.content}
                 </Text>
               </View>
             );
           }
           return (
             <View
-              key={`${info.nm}-${index}`}
+              key={`${value.sendUser.userCd}-${index}`}
               style={[styles.chatWrap, {flexDirection: 'row'}]}>
-              <FastImage source={{uri: info.pic}} style={styles.chatPic} />
+              <FastImage
+                source={{uri: value.sendUser.userPic}}
+                style={styles.chatPic}
+              />
               <View>
-                <Text style={{paddingLeft: 4, paddingTop: 6}}>{info.nm}</Text>
+                <Text style={{paddingLeft: 4, paddingTop: 6}}>
+                  {value.sendUser.userNm}
+                </Text>
                 <Text style={[styles.chatText, {backgroundColor: 'lightgray'}]}>
-                  {value.ex}
+                  {value.content}
                 </Text>
               </View>
             </View>
