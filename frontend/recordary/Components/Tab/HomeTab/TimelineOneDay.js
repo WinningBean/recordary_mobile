@@ -14,7 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import axios from 'axios';
 export default function TimelineOneDay({postList, user}) {
   const [data, setData] = useState(postList);
   const navigation = useNavigation();
@@ -135,8 +135,61 @@ export default function TimelineOneDay({postList, user}) {
         </Text>
       </View>
       <View style={styles.flexRow}>
-        <TouchableOpacity style={{padding: 5}}>
-          <MaterialCommunityIcons name="thumb-up" size={25} />
+        <TouchableOpacity
+          style={{padding: 5}}
+          onPress={async () => {
+            try {
+              if (data.currentUserLikePost === false) {
+                const like = (
+                  await axios.post(
+                    `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/${data.postCd}/like`,
+                    JSON.stringify(user.userCd),
+                    {
+                      headers: {'Content-Type': 'application/json'},
+                    },
+                  )
+                ).data;
+                console.log(like);
+                if (like) {
+                  setData({
+                    ...data,
+                    currentUserLikePost: true,
+                    postLikeCount: data.postLikeCount + 1,
+                    postLikeFirstUser:
+                      data.postLikeFirstUser === null
+                        ? user
+                        : data.postLikeFirstUser,
+                  });
+                }
+              } else {
+                const unLike = (
+                  await axios.delete(
+                    `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/${data.postCd}/unLike`,
+                    {params: {userCd: user.userCd}},
+                  )
+                ).data;
+                setData({
+                  ...data,
+                  currentUserLikePost: false,
+                  postLikeCount: data.postLikeCount - 1,
+                  postLikeFirstUser:
+                    data.postLikeFirstUser.userCd === user.userCd
+                      ? null
+                      : data.postLikeForstUser,
+                  // data.postLikeFirstUser.userCd === props.user.userCd ? 다음 사람의 데이터...ㅠ : data.postLikeForstUser,
+                });
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          }}>
+          <MaterialCommunityIcons
+            name="thumb-up"
+            size={25}
+            style={
+              data.currentUserLikePost ? {color: 'rgb(64, 114, 89)'} : null
+            }
+          />
         </TouchableOpacity>
         {data.postLikeCount < 1 ? (
           <Text>첫번째 좋아요를 눌러주세욤</Text>

@@ -13,6 +13,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 
 export default function ListComponent({navigation, route}) {
+  console.log(route.params.userInfo);
   const [userList, setUserList] = useState([]);
 
   useLayoutEffect(() => {
@@ -40,6 +41,7 @@ export default function ListComponent({navigation, route}) {
     const {data} = await axios.get(
       `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/follower/${route.params.userInfo.userCd}`,
     );
+    console.log(data);
     setUserList(data);
   };
   const getFollowingList = async () => {
@@ -49,7 +51,7 @@ export default function ListComponent({navigation, route}) {
     setUserList(data);
   };
   const getGroupMemberList = async () => {
-    setUserList(route.params.userInfo.map(() => {}));
+    setUserList(route.params.userInfo);
   };
 
   return (

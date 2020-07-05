@@ -7,7 +7,10 @@ import {
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
@@ -34,7 +37,47 @@ const Message = ({navigation, route}) => {
   }, []);
 
   const scrollViewRef = useRef();
+  const textInputRef = useRef();
   const [message, setMessage] = useState([]);
+  const [input, setInput] = useState('');
+
+  const sendMessage = () => {
+    if (input === '') {
+      return;
+    }
+    console.log('sendMessage');
+    axios
+      .post(
+        'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/chat/sendMessage',
+        {
+          roomCd: route.params.info.roomCd,
+          userCd: route.params.user.userCd,
+          userNm: route.params.user.userNm,
+          content: input,
+        },
+      )
+      .then(() => {
+        console.log('sendMessage2', route.params.user);
+
+        console.log({
+          sendUser: route.params.user,
+          content: input,
+          crateChat: new Date(),
+        });
+        setMessage(
+          message.concat({
+            sendUser: route.params.user,
+            content: input,
+            crateChat: new Date(),
+          }),
+        );
+
+        textInputRef.current.clear();
+      })
+      .finally(() => {
+        setInput('');
+      });
+  };
 
   return (
     <KeyboardAvoidingView style={{flex: 1}}>
@@ -78,12 +121,45 @@ const Message = ({navigation, route}) => {
           );
         })}
       </ScrollView>
-      <TextInput
-        style={styles.keyboard}
-        onFocus={() =>
-          setTimeout(() => scrollViewRef.current.scrollToEnd(true), 400)
-        }
-      />
+      <View
+        style={[
+          {
+            paddingLeft: 5,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          },
+          styles.chatWrite,
+        ]}>
+        <View style={styles.flexRow}>
+          <Image
+            source={{
+              uri: route.params.user.userPic,
+            }}
+            style={styles.chatCurrImg}
+          />
+          <TextInput
+            autoFocus={true}
+            style={{
+              height: 40,
+              paddingLeft: 10,
+              flex: 1,
+            }}
+            ref={textInputRef}
+            maxLength={200}
+            onFocus={() =>
+              setTimeout(() => scrollViewRef.current.scrollToEnd(true), 400)
+            }
+            onChangeText={(value) => setInput(value)}
+            onSubmitEditing={sendMessage}
+          />
+          <TouchableOpacity
+            style={{padding: 5, width: 40}}
+            onPress={sendMessage}>
+            <MaterialIcons name="subdirectory-arrow-left" size={25} />
+          </TouchableOpacity>
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -117,5 +193,27 @@ const styles = StyleSheet.create({
   keyboard: {
     height: 60,
     backgroundColor: 'white',
+  },
+  spaceBetween: {
+    paddingLeft: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  flexRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chatCurrImg: {
+    width: 30,
+    height: 30,
+    resizeMode: 'cover',
+    borderRadius: 50,
+  },
+  chatWrite: {
+    backgroundColor: 'white',
+    height: 50,
   },
 });

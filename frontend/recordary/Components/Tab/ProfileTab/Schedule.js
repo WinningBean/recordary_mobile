@@ -25,7 +25,7 @@ const {width, height} = Dimensions.get('window');
 const Schedule = ({navigation, route}) => {
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: '',
+      title: '일정 추가',
       headerTintColor: 'white',
       headerStyle: {backgroundColor: 'rgb(64, 114, 89)', elevation: 0.1},
     });
@@ -55,8 +55,8 @@ const Schedule = ({navigation, route}) => {
         style={{
           height: height * 0.4,
           backgroundColor: 'white',
-          borderBottomLeftRadius: 30,
-          borderBottomRightRadius: 30,
+          // borderBottomLeftRadius: 30,
+          // borderBottomRightRadius: 30,
           borderTopWidth: 0,
           borderColor: '#ddd',
           borderWidth: 1,
@@ -165,6 +165,7 @@ const Schedule = ({navigation, route}) => {
                 alignItems: 'center',
                 height: height * 0.04,
                 backgroundColor: isAllTime ? '#eee' : null,
+                marginTop: 10,
               }}>
               <Text>하루 종일</Text>
             </View>
@@ -178,8 +179,9 @@ const Schedule = ({navigation, route}) => {
                 alignItems: 'center',
                 height: height * 0.04,
                 backgroundColor: !isAllTime ? '#eee' : null,
+                marginTop: 10,
               }}>
-              <Text>시간</Text>
+              <Text>시간 설정</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -192,7 +194,7 @@ const Schedule = ({navigation, route}) => {
           borderColor: '#ddd',
           borderWidth: 1,
           paddingHorizontal: 20,
-          borderRadius: 30,
+          // borderRadius: 30,
         }}>
         <View style={{paddingHorizontal: 10}}>
           <Picker

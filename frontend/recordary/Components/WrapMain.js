@@ -13,7 +13,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import AddPostTab from 'Components/Tab/AddPostTab/AddPostTab';
 import ActiviteTab from 'Components/Tab/ActiviteTab/ActiviteTab';
 import HomeTab from 'Containers/Tab/HomeTab/HomeTab';
-import ChatTab from 'Components/Tab/ChatTab/ChatTab';
+import ChatTab from 'Containers/Tab/ChatTab/ChatTab';
 import ProfileTab from 'Containers/Tab/ProfileTab/ProfileTab';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';

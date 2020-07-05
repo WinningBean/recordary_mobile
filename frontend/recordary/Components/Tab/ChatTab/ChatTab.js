@@ -15,10 +15,16 @@ import WebSock from 'Components/WebSock';
 
 const Stack = createStackNavigator();
 
-const ChatTab = () => {
+const ChatTab = ({user}) => {
   return (
     <Stack.Navigator initialRouteName="chat">
-      <Stack.Screen name="chat" component={Chat} />
+      <Stack.Screen
+        name="chat"
+        component={Chat}
+        initialParams={{
+          user: user,
+        }}
+      />
     </Stack.Navigator>
   );
 };
