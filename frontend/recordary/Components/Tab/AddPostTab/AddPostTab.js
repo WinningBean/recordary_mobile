@@ -57,61 +57,73 @@ const AddPost = ({navigation, route}) => {
           />
         </TouchableOpacity>
       ),
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() =>
-            Alert.alert(
-              '게시물 추가',
-              '게시물을 추가하시겠습니까?',
-              [
-                {
-                  text: '아니오',
-                  onPress: () => console.log('NoPress'),
-                  style: 'cancel',
-                },
-                {
-                  text: '예',
-                  onPress: async () => {
-                    console.log(post.postEx);
-                    try {
-                      if (post.postEx !== null) {
-                        const postData = (
-                          await axios.post(
-                            `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
-                            post,
-                          )
-                        ).data;
-                        console.log(postData);
-                      }
-                    } catch (e) {
-                      console.log(e);
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            )
-          }>
-          <MaterialCommunityIcons
-            style={{padding: 10}}
-            name="check-circle-outline"
-            size={34}
-            color="white"
-          />
-        </TouchableOpacity>
-      ),
+      // headerRight: () => (
+      //   <TouchableOpacity
+      //     onPress={() =>
+      //       Alert.alert(
+      //         '게시물 추가',
+      //         '게시물을 추가하시겠습니까?',
+      //         [
+      //           {
+      //             text: '아니오',
+      //             onPress: () => console.log(postEx),
+      //             style: 'cancel',
+      //           },
+      //           {
+      //             text: '예',
+      //             onPress: async () => {
+      //               try {
+      //                 if (postEx !== null) {
+      //                   const postData = (
+      //                     await axios.post(
+      //                       `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
+      //                       {
+      //                         userCd: route.params.user.userCd,
+      //                         groupCd: null,
+      //                         postOriginCd: null,
+      //                         scheduleCd: null,
+      //                         mediaCd: null,
+      //                         postEx: postEx,
+      //                         postPublicState: 0,
+      //                         postScheduleShareState: false,
+      //                       },
+      //                     )
+      //                   ).data;
+      //                   console.log(postData);
+      //                 } else {
+      //                   console.log('else + ' + postEx);
+      //                 }
+      //               } catch (e) {
+      //                 console.log(e);
+      //               }
+      //             },
+      //           },
+      //         ],
+      //         {cancelable: false},
+      //       )
+      //     }>
+      //     <MaterialCommunityIcons
+      //       style={{padding: 10}}
+      //       name="check-circle-outline"
+      //       size={34}
+      //       color="white"
+      //     />
+      //   </TouchableOpacity>
+      // ),
     });
   }, []);
-  const [post, setPost] = useState({
-    userCd: route.params.user.userCd,
-    groupCd: null,
-    postOriginCd: null,
-    scheduleCd: null,
-    mediaCd: null,
-    postEx: null,
-    postPublicState: 0,
-    postScheduleShareState: false,
-  });
+  // const [post, setPost] = useState({
+  //   userCd: route.params.user.userCd,
+  //   groupCd: null,
+  //   postOriginCd: null,
+  //   scheduleCd: null,
+  //   mediaCd: null,
+  //   postEx: null,
+  //   postPublicState: 0,
+  //   postScheduleShareState: false,
+  // });
+  //postEx예시
+  const [postEx, setPostEx] = useState(null);
 
   const [selectedValue, setSelectedValue] = useState('그룹 미선택');
   const [selectedPublic, setSelectedPublic] = useState('전체공개');
@@ -136,6 +148,10 @@ const AddPost = ({navigation, route}) => {
     const currentDate = selectedDate || date;
     setEndShow(false);
     setEndDate(currentDate);
+  };
+  const handleChange = (e) => {
+    console.log(e);
+    setPostEx(e);
   };
 
   return (
@@ -239,9 +255,7 @@ const AddPost = ({navigation, route}) => {
         autoFocus={true}
         multiline={true}
         maxLength={2000}
-        onChangeText={(value) => {
-          setPost({...post, postEx: value});
-        }}
+        onChangeText={handleChange}
       />
       {isScheduleClick === true ? (
         <>
@@ -338,6 +352,53 @@ const AddPost = ({navigation, route}) => {
       ) : null}
       <TouchableOpacity style={styles.addTag}>
         <Text>게시물을 함께할 사람 태그하기</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.addTag}
+        onPress={() =>
+          Alert.alert(
+            '게시물 추가',
+            '게시물을 추가하시겠습니까?',
+            [
+              {
+                text: '아니오',
+                onPress: () => console.log(postEx),
+                style: 'cancel',
+              },
+              {
+                text: '예',
+                onPress: async () => {
+                  try {
+                    if (postEx !== null) {
+                      const postData = (
+                        await axios.post(
+                          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
+                          {
+                            userCd: route.params.user.userCd,
+                            groupCd: null,
+                            postOriginCd: null,
+                            scheduleCd: null,
+                            mediaCd: null,
+                            postEx: postEx,
+                            postPublicState: 0,
+                            postScheduleShareState: false,
+                          },
+                        )
+                      ).data;
+                      console.log(postData);
+                    } else {
+                      console.log('else + ' + postEx);
+                    }
+                  } catch (e) {
+                    console.log(e);
+                  }
+                },
+              },
+            ],
+            {cancelable: false},
+          )
+        }>
+        <Text>추가</Text>
       </TouchableOpacity>
     </KeyboardAwareScrollView>
   );

@@ -333,24 +333,31 @@ const Profile = ({navigation, route}) => {
                   </View>
                 </View>
               </View>
-              <View style={styles.profileContent}>
-                <View style={{flex: 2}}>
+              {info === undefined ? null : route.params.isGroup ? (
+                info.groupEx === null ? null : (
+                  <View style={styles.profileContent}>
+                    <View
+                      style={{
+                        flex: 1,
+                        paddingLeft: 20,
+                        borderRadius: 5,
+                      }}>
+                      <Text style={[{fontSize: 14}]}>{info.groupEx}</Text>
+                    </View>
+                  </View>
+                )
+              ) : info.userInfo.userEx === null ? null : (
+                <View style={styles.profileContent}>
                   <View
                     style={{
                       flex: 1,
                       paddingLeft: 20,
                       borderRadius: 5,
                     }}>
-                    <Text style={[{fontSize: 14}]}>
-                      {info === undefined
-                        ? null
-                        : route.params.isGroup === true
-                        ? info.groupEx
-                        : info.userInfo.userEx}
-                    </Text>
+                    <Text style={[{fontSize: 14}]}>{info.userInfo.userEx}</Text>
                   </View>
                 </View>
-              </View>
+              )}
             </View>
             <View style={[styles.section, {backgroundColor: 'white'}]}>
               <View
@@ -585,7 +592,11 @@ const Profile = ({navigation, route}) => {
       ) : (
         <ScrollView>
           <View style={{height: height * 0.4}}>
-            <View style={{flex: 1, justifyContent: 'center'}}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+              }}>
               <View style={styles.profileInfo}>
                 <View
                   style={{
@@ -693,24 +704,31 @@ const Profile = ({navigation, route}) => {
                   </View>
                 </View>
               </View>
-              <View style={styles.profileContent}>
-                <View style={{flex: 2}}>
+              {info === undefined ? null : route.params.isGroup ? (
+                info.groupEx === null ? null : (
+                  <View style={styles.profileContent}>
+                    <View
+                      style={{
+                        flex: 1,
+                        paddingLeft: 20,
+                        borderRadius: 5,
+                      }}>
+                      <Text style={[{fontSize: 14}]}>{info.groupEx}</Text>
+                    </View>
+                  </View>
+                )
+              ) : info.userInfo.userEx === null ? null : (
+                <View style={styles.profileContent}>
                   <View
                     style={{
                       flex: 1,
                       paddingLeft: 20,
                       borderRadius: 5,
                     }}>
-                    <Text style={[{fontSize: 14}]}>
-                      {info === undefined
-                        ? null
-                        : route.params.isGroup === true
-                        ? info.groupEx
-                        : info.userInfo.userEx}
-                    </Text>
+                    <Text style={[{fontSize: 14}]}>{info.userInfo.userEx}</Text>
                   </View>
                 </View>
-              </View>
+              )}
             </View>
             <View style={[styles.section, {backgroundColor: 'white'}]}>
               <View

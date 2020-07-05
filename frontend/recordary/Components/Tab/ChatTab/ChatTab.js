@@ -101,15 +101,29 @@ const Chat = ({navigation}) => {
           <View style={{paddingLeft: 10}}>
             <View style={[styles.itemContent, {justifyContent: 'flex-end'}]}>
               <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-                {value.targetNm}
+                {value.isGroup
+                  ? value.targetNm
+                  : `${value.targetId}(${value.targetNm})`}
               </Text>
             </View>
             <View
               style={[
                 styles.itemContent,
-                {justifyContent: 'flex-start', paddingTop: 5},
+                {
+                  justifyContent: 'flex-start',
+                  paddingTop: 5,
+                },
               ]}>
-              <Text style={{fontSize: 16}}>{value.lastChat}</Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  width: 270,
+                  overflow: 'hidden',
+                  height: 20,
+                  textOverflow: 'ellipsis',
+                }}>
+                {value.lastChat}
+              </Text>
             </View>
           </View>
         </View>
