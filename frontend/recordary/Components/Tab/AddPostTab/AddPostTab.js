@@ -8,27 +8,32 @@ import {
   Image,
   TextInput,
   Modal,
+  Alert,
 } from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
-import HomeTab from 'Components/Tab/HomeTab/HomeTab';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as dateFns from 'date-fns';
-
+import axios from 'axios';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
 const Stack = createStackNavigator();
 
-const AddPostTab = () => {
+const AddPostTab = ({user}) => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="addPost" component={AddPost} />
+      <Stack.Screen
+        name="addPost"
+        component={AddPost}
+        initialParams={{
+          user: user,
+        }}
+      />
     </Stack.Navigator>
   );
 };
 
-const AddPost = ({navigation}) => {
+const AddPost = ({navigation, route}) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: '게시물 추가',
@@ -53,7 +58,40 @@ const AddPost = ({navigation}) => {
         </TouchableOpacity>
       ),
       headerRight: () => (
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            Alert.alert(
+              '게시물 추가',
+              '게시물을 추가하시겠습니까?',
+              [
+                {
+                  text: '아니오',
+                  onPress: () => console.log('NoPress'),
+                  style: 'cancel',
+                },
+                {
+                  text: '예',
+                  onPress: async () => {
+                    console.log(post.postEx);
+                    try {
+                      if (post.postEx !== null) {
+                        const postData = (
+                          await axios.post(
+                            `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
+                            post,
+                          )
+                        ).data;
+                        console.log(postData);
+                      }
+                    } catch (e) {
+                      console.log(e);
+                    }
+                  },
+                },
+              ],
+              {cancelable: false},
+            )
+          }>
           <MaterialCommunityIcons
             style={{padding: 10}}
             name="check-circle-outline"
@@ -64,6 +102,16 @@ const AddPost = ({navigation}) => {
       ),
     });
   }, []);
+  const [post, setPost] = useState({
+    userCd: route.params.user.userCd,
+    groupCd: null,
+    postOriginCd: null,
+    scheduleCd: null,
+    mediaCd: null,
+    postEx: null,
+    postPublicState: 0,
+    postScheduleShareState: false,
+  });
 
   const [selectedValue, setSelectedValue] = useState('그룹 미선택');
   const [selectedPublic, setSelectedPublic] = useState('전체공개');
@@ -113,8 +161,7 @@ const AddPost = ({navigation}) => {
         <View style={styles.flexRow}>
           <Image
             source={{
-              uri:
-                'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUTEBIVFhUXFxcVFRYVFhcVFRUVFRUXFhcVFxUYHSggGB0lHRUYITEhJSkrLi4vFx8zODMtNygtLisBCgoKDg0OGhAQFy0dHx8tLSstLS0tLS0tLS0rLS0tLS0tKy0tLS0tLS0tLS0tLSstLS0rLS0tLSstLS0tLS0tLf/AABEIAKsBJgMBIgACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAABgECBAUHAwj/xAA6EAACAQIDBAkDAwIGAwEAAAAAAQIDEQQFIRIxQVEGImFxgZGhwfATMrEHctFCUjNigrLh8RWiwiP/xAAZAQEBAQEBAQAAAAAAAAAAAAAAAQIDBAX/xAAhEQEBAAIDAQACAwEAAAAAAAAAAQIRAyExEkFxIlHRBP/aAAwDAQACEQMRAD8A9AAZZAAAAAAoVAFCoAAAAACgAFGzT5nm6hdJ/PYo28ppb2kWzrxSvdW5nOcwzWc2+s/N2Mag6koyalKyWqu7O5dJ9JhjelUE7U9bceZ4U+lLb1S+eBCXJmVhp/N5r5jH1XQMJntOX3dXte7zNrGSeq3HOYzt9vijNwGa1KT6stOT3Pw4MlxamSdA1+V5tTr6LSS3xe/vT4o2BltUAEQAAAAAUKgAAAAAAAAAAAAAAAAAAAAAAAAAUZRsqYGa436UNPulpH3fgVWNm+YbN4xfeQ/H1G9fjM2tiVvb9d7Zrq8k02/4+dxuTTnbtq6rdyRZRh1LDzva9lbXnzt3GDgstdR7rcl2c2S7Luj7ilo787+zMZZR04+O+oHPDtOz9S6EODVvnJ+xPc36Otx6q1S1XPxInXwmzpJPx4PsfAuOcqZ8NxeEZ2XM8pVUn2FajT048PnExZs25VlyquLU4uzWqa335rtJ30dzlYmGtlUjpNc+Ul2P0Zz2lK62X4GRlGOdCtGotydpLnB/cvfwJYuN06iCkJppSi7ppNPmnqmXGHVQAEQAAAAAAAAAAAAAGCrKFAAEAAAAAAAAAoypRgUZBOlOa3qyS3R6q8NZev4JtiKyhGUnuim/I5JjKu1Nvm2/U1EyXPEtu5scClJJb2/RGmW8mfQzKXUne2i+fO4Z3UXjx3klHRbJtNqS+d/ImuGwSXD0LcBhVFJJGyhGxxnb13rqNbicGuRHM2yCM7tLv7SYV0Yk4IWErlGcdFmk3T8no1+2Xs/Qi9alJPrKzTtLhpwZ3DGUU0QXpFlibulrqu9b/Y1hnrqufJxSzcQSpo7/AD5/AqPX54l+Phsv5vPG90eh40+6GY7bo/Te+nu/Y93k7ryJCc66K4z6deN3pLqvx3etjotjnXSXoABFAAQAAAAAAAAAAAAAAAAAAAAAAAACjKhFGj6WV9nDy7dDmjJ106r2go/N6IG5cjUZvrYZNl8q9WNOPHf2I7ZkuXQoU1GKSstWc2/TfD3rbT+WOpYjB7dlKTUeKW+Xe+Ry5L3p6OGax29JZzQh90185cyxdKsNeynd9hi18LhIrrqOn9zb876GDFYObtTUP9L/AI0M7kdfm1IoZlCp9rKzkYmBwsF9qL8fLZRNmmLj8bCH3MjWZZjQkvuXzgZqwzrt33HhjMowtP72m+TbLNLd/hz3PIRd3B3V/wCfniaaDJTn0Kab+nud17reRVPU9GN6eHkmq96FSz0Oq5diPqUoT5xT9DkqZ0PoXiNrD2/tk156kyTFvypQqZbUKlCpAAAAAAAAAAAAAAAAUAAAABAAAAqihSbsm+woimaKnUxMFV1htx2lzSl9vju8TV9I8JVrV3VlT2YqFPZjBWUYPaUdP9MvI98znrfja/jZv8ktxWXPFxw7hezpRTSbWl7+Ot+HEzldWV248frGxrv06wtpvs3nRMVRk4PYte2lyJ9EcJ9KpUja1reTJtRZzt3XXHHUQHF9GpTjVVdynUnGShK14U29zjDhyb367zRZb0frRrTq1lFTekfpWSvp1tyStbdxuzr9WimtUY8MDG+5Gt3WkuONu6xckoPZvLki/pDBfTuuRsvppGvz1XpS7ifhd7qMP6kaM3RV56KHY5NLa8E2/BEI6R5DWlWtFJ007wm/8TrWb+o9XJpppW0sTvJK21Gz4GdiMMnwEys8LhMvXJMywmw2o3tv3WS7EaGW9nT+lWBiqbaRzKousdsMtx5ubD5q1smP6f19akO6XsQ5m+6FVtnEJc4te/sarlHRipRFUYbVABAAAAAAAAAAAAAAAAUAAQAAAAAAx8xdqcu2y83b3MpIw82l1F3r0u/YoheZvrNrddeV2joXQLFKrhabi+tTTpS5prR3XFNWa7znWKd14X9b+xs/06liFiK30bOMYynUi5KKko32LX43e/lfeM8dxvjz+cv2nMIuGKd7daCem7STRIKEiBYXpbTxOJhCMJRcIvrSstrVJpJPtuTjDSujhZZ69cyl8bODuim1Y8qUi6Ubm2KTrXMLM6kXB9ZbvItzfLJVoOnGo4KSs5R0kk+MXwZoM5yKf0nTpVpWjFJuXWk+2797kqzTU5JXtWlG+jbt4MlU3ZETybJ5RnBydlBWV3eUnzkyTYqaSMtRGulNa8JI5XX0k+8nfSnE2TIPi1q+87cfjzf9F3Y85/PybDIamzWg/wDN+dDCmtF3IyMFpJPtOleeOr09xceGDleCfYj3MNqgAgAAAAAAAAAAAAAAAAAAAAAAAKKpmrz+qlBeL9GbNEd6V1rQtxtbzv8AwBG3P7f2+xg4bESjNuMpRbdrxbjo9LacNTJrP7e5L/1Nanq/nE3GK2GXz+jVp1P7ZNS7no/Q7RlVdSgnfgcZqxuu9bXs/YmfQHPLr6E31orq34xXDw08GjnyT8u/Dlrp0eEj0VexhU6p5Yyi6kXHacbret67jlt6NNdn3TKlRk4R601v5R7yPV+mvVbsus7dm7gWY/o1Tg+td8dp6u/NmrxuHg1K9TTttfuM7fR4+Hj+f46v7t/xs8s6SRqO25/k2WKxehA8vwm3Vi43UYu9917EkzHEqMPArx8sky6RnpJibtmgr6xv2L+PY9M3xO1Jnk3/APnHuf8AuPRjNR87ku6uSvBeK+eZkYVamPQfUa7UZWHZph0fKpXpx7vZGaavIal6Ue42ZhtUqUKkAAAAAAAAAAAAAAAAAAAAAAABRUhPTLE6qN+Ppa38kwr1dlNnOOkte9Sz38fS/q2WJfFmJWl180MLZ1fzejPrvSK/b+GYUN77f4Nxms2jU6i7DKySpsYmD7bPs0t87jW4eXUkjJoPrwlzcfN2XuzOXjWF7jr+DxT0U9/B8zaU7M1GVwVWjG/Kz53R6bc6ejvJc+PiuJ5XurbTwUZLramjx+S0btqC8j3lnMUt5qsdnKs7GiRrMfQhT3ETz3H6WuZeb5k5N637FqRTGzbd2axm3Lky1GFVnd3M1/4cfH1uYMVqZr+1fODZ3eTJbQ3S7l+TIoy0RjYfj84l1KehUT3opXvDZ5XXv7khRBOimL2amzzs/K915P0J0mYrcXlS1FSKqACAAAAAAAAAAAAAAAAAAUAqUYZ4V6rS03lGPjZ3ulwOaZnW26rfC7t5s6Fm9X6dGXNp+b1b9DmdTezWLOTaTlpB/t/DMSL/AAetap9q5W/2/wDJ4behpir6MrRl3P8ANjLf9HfF+X/Ri0qd7LtS8t/qbLA0fqVopbkZyuo6cc3XWejf2Lt/7NtWpXNdk9LZil2I3CPNHsvqP47Ap30InmmASOh4imrEdzPDJhr1Cf8Ax+m40Ga4W12dCrYdWIvn2G6rN43tzzx3ENoxuzNqq0V4v0SPGjStIysRHT0/k9Dx1j4db+73Rat7R6YePqix/cGWZk9bZqx7Xbz0/J0rC1bxT7Dk+007rnp4M6Vk+J26cWtz99fneZreLbouR4qRepGWnoC1MqQVAAAAAAAAAYKAARAAYAoCkmWuoVXojCxM0pK+4uo46Em1CcW1vSkm14Iws3qNRvy8PUI1HSLE3hKctLRagu92u1z39ySITCLf5f5Zus7xrmlF6Nu8uN9dPD+DS1J2VufyxuMXuqud2X0Y3a7N3ez1wOXVazX04Sl3Rb8CfdGP0+rStKqvprt+63YuZSRociyKpWkowjdvf/lXb2sleXdGXQxDjPilJdvCXr+To+S5JSw0NmnG3N8W+bfE98wyuFWzeko/bJb43396fFGcsNx1wymNailRsj3iek6FSH3K6/uju8VvRZFp7meezT0S7eVbcarF0rm2qI8JYe5GojeJpmlzbAtwehL8ThbMu/8ACzqR+3ZXOXst4kt8MrJO3JcXl+zd9t/c1lb7fnI6Vm+VRhSnZXfXjJ8WrLZf5OcY2Gz1f3fm3senGWevJyavjxoLWPd7GPP7jKpqziY+JjabNOLwqP8AJL+hmMvBwf8AT8/H4IdLj84nrhMXOm9qnJxfYStR1raKOpY51hukuITu57XY0rPySKV+kFeTvttfttZd3Immvp0iNQ9YSOb4XpDXj/Xdf5kn67yU5Fn0az2ZLZnwtul3cn2EsXaRgoipkAAAAAFWiheyhRSxVIqXRAski09Kp5oDwxNRRTlJpJJtt7klq2zmnSDP54iTim1TT0itNrlKXN9nAlHT6rJUEk2lKaUu1bMnbzSOeM1IlelOo4tON01uadmjZ1s9rzjszm91r2V339pqEXvgaZq+U78WW3XeKulrFsQO0fo1j6VahKhJR+tRd1fe6Mno0uyTcX/p5nTIwsfNXQHFzp5jhXTk4uVWFOVv6oTdpRfNNH0wjUVVIqEVRVUaPCrhYS3xXv5mQWSJo21OZUaNGnOrUm4QhFyk73SSV29TTdB8+oZjSnOClGdOVp05NXSd9iWnBpeDTRoP1yxU44ajCMmozq2ml/Uoxckn2X1IH+lOMqU8zw8YSaVRyp1FwlDYlKzXfFPwMfOO/GvvL+30HCjFbor38xVWjL5ljOjNqG5/h7xkl2+W09fx5nHc9js1Jp/LpM7piVec092y/wAs4x04glXdv7f/AKZip+GmpVNV2P2KZirT7/8Agx6b3GRmX9Pc/YMxgyKFZ7yhFVTKXBbEKvVRmzyTENVYu/Ffk1LPfBPrrvCux0pXSfNXLzByaTdGNzPiYVRgqygAAAf/2Q==',
+              uri: route.params.user.userPic,
             }}
             style={{
               width: 50,
@@ -123,7 +170,9 @@ const AddPost = ({navigation}) => {
               borderRadius: 50,
             }}
           />
-          <Text style={{padding: 10, fontSize: 20}}>이지은</Text>
+          <Text style={{padding: 10, fontSize: 20}}>
+            {route.params.user.userNm}
+          </Text>
         </View>
         <View style={styles.flexRow}>
           <TouchableOpacity
@@ -185,13 +234,14 @@ const AddPost = ({navigation}) => {
           maxHeight: 200,
           borderBottomColor: 'lightgray',
           borderBottomWidth: 1,
-          // borderTopColor: 'lightgray',
-          // borderTopWidth: 1,
         }}
         placeholder="내용을 입력하세요"
         autoFocus={true}
         multiline={true}
         maxLength={2000}
+        onChangeText={(value) => {
+          setPost({...post, postEx: value});
+        }}
       />
       {isScheduleClick === true ? (
         <>
