@@ -59,7 +59,6 @@ const ProfileEdit = ({navigation, route}) => {
       cancelButtonTitle: '취소',
     };
     ImagePicker.showImagePicker(options, (res) => {
-      console.log('res = ', res);
       if (res.didCancel) {
         console.log('User cancelled image picter');
       } else if (res.error) {
@@ -68,6 +67,7 @@ const ProfileEdit = ({navigation, route}) => {
         console.log('User tapped custom button : ', res.customButton);
       } else {
         setCurrentUser({...currentUser, userPic: res.uri});
+        console.log(res.data);
       }
     });
   };
