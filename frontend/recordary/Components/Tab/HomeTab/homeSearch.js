@@ -101,7 +101,6 @@ const homeSearch = ({navigation, route}) => {
                   },
                 ],
                 {cancelable: false},
-                // Alery 밖에 누르면 안닫힘
               )
             }>
             <MaterialCommunityIcons

@@ -10,7 +10,7 @@ import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
-import AddPostTab from 'Components/Tab/AddPostTab/AddPostTab';
+import AddPostTab from 'Containers/Tab/AddPostTab/AddPostTab';
 import ActiviteTab from 'Components/Tab/ActiviteTab/ActiviteTab';
 import HomeTab from 'Containers/Tab/HomeTab/HomeTab';
 import ChatTab from 'Components/Tab/ChatTab/ChatTab';
