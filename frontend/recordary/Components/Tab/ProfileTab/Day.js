@@ -48,7 +48,7 @@ const Day = ({
             width: width * 0.8,
             height: height * 0.7,
             backgroundColor: 'white',
-            borderRadius: 20,
+            // borderRadius: 20,
             position: 'relative',
           }}>
           <View
@@ -59,8 +59,8 @@ const Day = ({
               marginHorizontal: 12,
               paddingHorizontal: 10,
               paddingTop: height * 0.04,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
+              // borderTopLeftRadius: 20,
+              // borderTopRightRadius: 20,
             }}>
             <Text style={{fontSize: height * 0.04}}>
               {dateFns.format(selectedDate, 'd일')}

@@ -20,6 +20,7 @@ import RecommentList from './RecommentList';
 const Comment = ({navigation, route}) => {
   const [data, setData] = useState(route.params.post);
   const [user, setUser] = useState(route.params.user);
+  const [writtenComment, setWrittenComment] = useState(undefined);
   const [commentList, setCommentList] = useState(
     route.params.post.commentList.map((value) => ({
       ...value,
@@ -237,12 +238,50 @@ const Comment = ({navigation, route}) => {
           />
           <TextInput
             autoFocus={true}
-            style={{height: 40, paddingLeft: 10}}
+            style={{paddingLeft: 10}}
             placeholder="댓글을 입력하세요..."
             maxLength={200}
+            multiline={true}
+            onChangeText={(value) => setWrittenComment(value)}
           />
         </View>
-        <TouchableOpacity style={{padding: 5}}>
+        <TouchableOpacity
+          style={{padding: 5}}
+          onPress={async (e) => {
+            if (writtenComment !== undefined) {
+              try {
+                const data = (
+                  await axios.post(
+                    'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/comment/',
+                    {
+                      userCd: user.userCd,
+                      postCd: route.params.post.postCd,
+                      commentContent: writtenComment,
+                      commentOriginCd: null,
+                    },
+                  )
+                ).data;
+                console.log(data);
+                setCommentList(
+                  commentList.concat({
+                    commentCd: data,
+                    commentContent: writtenComment,
+                    reCommentCount: 0,
+                    userFK: {
+                      userCd: user.userCd,
+                      userId: user.userId,
+                      userNm: user.userNm,
+                      userPic: user.userPic,
+                    },
+                    showRecommentClick: {recommentList: [], click: false},
+                    updateClick: false,
+                  }),
+                );
+              } catch (e) {
+                console.log(e);
+              }
+            } else return null;
+          }}>
           <MaterialIcons name="subdirectory-arrow-left" size={25} />
         </TouchableOpacity>
       </View>
