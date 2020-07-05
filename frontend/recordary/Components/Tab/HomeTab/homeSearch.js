@@ -12,7 +12,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
-
+import produce from 'immer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Transition, Transitioning} from 'react-native-reanimated';
@@ -70,7 +70,7 @@ const homeSearch = ({navigation, route}) => {
             {value.userInfo.userId}({value.userInfo.userNm})
           </Text>
         </View>
-        {value.userFollowTarget && value.targetFollowUser ? (
+        {value.userFollowTarget ? (
           <TouchableOpacity
             onPress={() =>
               Alert.alert(
@@ -176,7 +176,8 @@ const homeSearch = ({navigation, route}) => {
           />
           <Text style={{padding: 10, fontSize: 18}}>{value.groupNm}</Text>
         </View>
-        {value.groupState === true ? (
+        {console.log(value)}
+        {/* {value.groupState === true ? (
           <TouchableOpacity>
             <MaterialCommunityIcons
               style={{padding: 10}}
@@ -194,7 +195,7 @@ const homeSearch = ({navigation, route}) => {
               color="black"
             />
           </TouchableOpacity>
-        )}
+        )} */}
       </View>
     ));
   };

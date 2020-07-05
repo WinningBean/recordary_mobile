@@ -8,6 +8,7 @@ import {
   Dimensions,
   Alert,
   FlatList,
+  Image,
   ActivityIndicator,
 } from 'react-native';
 import {
@@ -52,10 +53,16 @@ const Home = ({navigation, route}) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Recordary',
+      title: (
+        <Image
+          style={{height: 30, width: 100}}
+          resizeMode="cover"
+          source={require('../../../Static/logo.png')}
+        />
+      ),
       headerStyle: {backgroundColor: 'rgb(64, 114, 89)'},
       headerTintColor: 'white',
-      headerTitleAlign: 'left',
+      headerTitleAlign: 'center',
       headerTitleStyle: {
         fontWeight: 'bold',
         fontSize: 24,

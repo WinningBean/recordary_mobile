@@ -21,7 +21,7 @@ export default function ListComponent({navigation, route}) {
       title: route.params.isGroup
         ? '그룹 멤버'
         : route.params.isFollow
-        ? '팔로우'
+        ? '팔로워'
         : '팔로잉',
       headerStyle: {
         backgroundColor: route.params.isGroup ? 'tomato' : 'rgb(64, 114, 89)',

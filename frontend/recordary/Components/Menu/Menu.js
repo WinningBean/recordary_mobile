@@ -21,7 +21,6 @@ import axios from 'axios';
 const window = Dimensions.get('window');
 
 const Menu = (props) => {
-  console.log(props, 'isProps');
   const navigation = useNavigation();
   const [isClickFriend, setIsClickFriend] = useState(false);
   const [currUser, setCurrUser] = useState(props.user);
@@ -140,6 +139,11 @@ const Menu = (props) => {
     if (isFriend === isClickFriend) return;
     menuRef.current.animateNextTransition();
     setIsClickFriend(isFriend);
+    if (isFriend) {
+      getFriendList();
+    } else {
+      getGroupList();
+    }
   };
 
   return (

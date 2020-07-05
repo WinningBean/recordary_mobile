@@ -58,50 +58,7 @@ const AddPost = ({navigation, route}) => {
         </TouchableOpacity>
       ),
       // headerRight: () => (
-      //   <TouchableOpacity
-      //     onPress={() =>
-      //       Alert.alert(
-      //         '게시물 추가',
-      //         '게시물을 추가하시겠습니까?',
-      //         [
-      //           {
-      //             text: '아니오',
-      //             onPress: () => console.log(postEx),
-      //             style: 'cancel',
-      //           },
-      //           {
-      //             text: '예',
-      //             onPress: async () => {
-      //               try {
-      //                 if (postEx !== null) {
-      //                   const postData = (
-      //                     await axios.post(
-      //                       `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
-      //                       {
-      //                         userCd: route.params.user.userCd,
-      //                         groupCd: null,
-      //                         postOriginCd: null,
-      //                         scheduleCd: null,
-      //                         mediaCd: null,
-      //                         postEx: postEx,
-      //                         postPublicState: 0,
-      //                         postScheduleShareState: false,
-      //                       },
-      //                     )
-      //                   ).data;
-      //                   console.log(postData);
-      //                 } else {
-      //                   console.log('else + ' + postEx);
-      //                 }
-      //               } catch (e) {
-      //                 console.log(e);
-      //               }
-      //             },
-      //           },
-      //         ],
-      //         {cancelable: false},
-      //       )
-      //     }>
+      //   <TouchableOpacity>
       //     <MaterialCommunityIcons
       //       style={{padding: 10}}
       //       name="check-circle-outline"

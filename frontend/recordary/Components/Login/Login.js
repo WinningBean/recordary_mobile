@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
@@ -18,8 +19,12 @@ const Login = ({route, navigation}) => {
   const [info, setInfo] = useState({id: '', pw: ''});
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <Text style={styles.title}>Recordary</Text>
-      <View style={{marginTop: 20}}>
+      <Image
+        style={{height: 70, width: 260}}
+        resizeMode="cover"
+        source={require('../../Static/logo.png')}
+      />
+      <View style={{marginTop: 10}}>
         <TextInput
           style={styles.input}
           placeholder="아이디"
@@ -84,11 +89,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgb(64, 114, 89)',
   },
-  title: {
-    fontSize: 50,
-    fontWeight: 'bold',
-    color: 'white',
-  },
+  // title: {
+  //   fontSize: 50,
+  //   fontWeight: 'bold',
+  //   color: 'white',
+  // },
   input: {
     width: Dimensions.get('window').width * 0.6,
     height: 40,
