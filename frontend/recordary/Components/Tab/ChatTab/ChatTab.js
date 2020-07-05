@@ -13,15 +13,21 @@ import FastImage from 'react-native-fast-image';
 
 const Stack = createStackNavigator();
 
-const ChatTab = () => {
+const ChatTab = ({user}) => {
   return (
     <Stack.Navigator initialRouteName="chat">
-      <Stack.Screen name="chat" component={Chat} />
+      <Stack.Screen
+        name="chat"
+        component={Chat}
+        initialParams={{
+          user: user,
+        }}
+      />
     </Stack.Navigator>
   );
 };
 
-const Chat = ({navigation}) => {
+const Chat = ({navigation, route}) => {
   useState;
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -192,6 +198,7 @@ const Chat = ({navigation}) => {
             nm: value.nm,
             message: value.message,
             pic: value.pic,
+            user: route.params.user,
           })
         }
         key={`chatlist-${value.id}`}>

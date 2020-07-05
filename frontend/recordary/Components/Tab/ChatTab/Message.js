@@ -7,7 +7,10 @@ import {
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
@@ -22,6 +25,7 @@ const Message = ({navigation, route}) => {
   }, []);
 
   const scrollViewRef = useRef();
+  const [currUser, setCurrUser] = useState(route.params.user);
   const [message, setMessage] = useState(route.params.message);
   const info = useState({nm: route.params.nm, pic: route.params.pic})[0];
 
@@ -62,12 +66,27 @@ const Message = ({navigation, route}) => {
           );
         })}
       </ScrollView>
-      <TextInput
-        style={styles.keyboard}
-        onFocus={() =>
-          setTimeout(() => scrollViewRef.current.scrollToEnd(true), 400)
-        }
-      />
+      <View style={[styles.spaceBetween, styles.chatWrite]}>
+        <View style={styles.flexRow}>
+          <Image
+            source={{
+              uri: currUser.userPic,
+            }}
+            style={styles.chatCurrImg}
+          />
+          <TextInput
+            autoFocus={true}
+            style={{height: 40, paddingLeft: 10}}
+            maxLength={200}
+            onFocus={() =>
+              setTimeout(() => scrollViewRef.current.scrollToEnd(true), 400)
+            }
+          />
+        </View>
+        <TouchableOpacity style={{padding: 5}}>
+          <MaterialIcons name="subdirectory-arrow-left" size={25} />
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -101,5 +120,29 @@ const styles = StyleSheet.create({
   keyboard: {
     height: 60,
     backgroundColor: 'white',
+  },
+  spaceBetween: {
+    paddingLeft: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  flexRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chatCurrImg: {
+    width: 30,
+    height: 30,
+    resizeMode: 'cover',
+    borderRadius: 50,
+  },
+  chatWrite: {
+    backgroundColor: 'white',
+    height: 50,
+    marginLeft: 5,
+    marginRight: 5,
   },
 });
