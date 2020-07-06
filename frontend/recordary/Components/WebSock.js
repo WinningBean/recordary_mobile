@@ -6,67 +6,30 @@ import SockJs from 'sockjs-client';
 
 import axios from 'axios';
 
-const WebSock = ({user, setChatData, setUser}) => {
-  // const [client, setClient] = useState(null);
+const WebSock = ({user, onSetChatData, onSaveNewChat}) => {
+  const [client, setClient] = useState(null);
 
-  // const setWebSock = (data) => {
-  //   var sock = new SockJs(
-  //     'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/ws-stomp',
-  //   );
-  //   // var sock = new WebSocket(
-  //   //   'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/ws-stomp',
-  //   // );
-  //   var client = Stomp.over(sock);
-  //   console.log('webpass');
-  //   client.connect({}, function () {
-  //     data.forEach((value) => {
-  //       if (value.isGroup) {
-  //         client.subscribe(
-  //           `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/queue/chat/${value.roomCd}`,
-  //           function (response) {
-  //             console.log('response');
-  //             console.log(JSON.parse(response.body));
-  //             const draft = data.slice();
-  //             const json = JSON.parse(response.body);
-  //             const index = draft.findIndex(
-  //               (object) => object.roomCd === value.roomCd,
-  //             );
-  //             if (draft[index].chatList === null) {
-  //               console.log('draft');
-  //             } else {
-  //               draft[index].chatList.push(json);
-  //             }
-  //             ++draft[index].noticeCount;
-  //             draft[index].lastChat = json.content;
-  //             setInfo(draft);
-  //           },
-  //         );
-  //       } else {
-  //         client.subscribe(
-  //           `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/topic/chat/${value.roomCd}`,
-  //           function (response) {
-  //             console.log('response');
-  //             console.log(JSON.parse(response.body));
-  //             const draft = data.slice();
-  //             const json = JSON.parse(response.body);
-  //             const index = draft.findIndex(
-  //               (object) => object.roomCd === value.roomCd,
-  //             );
-  //             if (draft[index].chatList === null) {
-  //               console.log('draft');
-  //             } else {
-  //               draft[index].chatList.push(json);
-  //             }
-  //             ++draft[index].noticeCount;
-  //             draft[index].lastChat = json.content;
-  //             setInfo(draft);
-  //           },
-  //         );
-  //       }
-  //     });
-  //     setClient(client);
-  //   });
-  // };
+  const setWebSock = (data) => {
+    var sock = new SockJs(
+      'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/ws-stomp',
+    );
+    var client = Stomp.over(sock);
+    console.log('webpass');
+    client.connect({}, function () {
+      data.forEach((value, index) => {
+        if (value.isGroup) {
+          client.subscribe(`/queue/chat/${value.roomCd}`, function (response) {
+            onSaveNewChat(JSON.parse(response.body), index);
+          });
+        } else {
+          client.subscribe(`/topic/chat/${value.roomCd}`, function (response) {
+            onSaveNewChat(JSON.parse(response.body), index);
+          });
+        }
+      });
+      setClient(client);
+    });
+  };
 
   const getInfo = () => {
     axios
@@ -74,10 +37,8 @@ const WebSock = ({user, setChatData, setUser}) => {
         `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/room/list/${user.userCd}`,
       )
       .then(({data}) => {
-        console.log(data, 'real data');
-        setChatData(data);
-        setUser(user);
-        // setWebSock(data);
+        setWebSock(data);
+        onSetChatData(data.map((value) => ({...value, count: 0})));
       });
   };
 
@@ -94,7 +55,14 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    onSetChatData: (chatData) => {
+      dispatch({type: 'SET_CHATDATA', chatData: chatData});
+    },
+    onSaveNewChat: (newChat, index) => {
+      dispatch({type: 'SAVE_NEWCHAT', newChat: newChat, newChatIndex: index});
+    },
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WebSock);

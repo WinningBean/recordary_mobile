@@ -15,33 +15,57 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 
+import {connect} from 'react-redux';
+
 import axios from 'axios';
 
 const {width} = Dimensions.get('window');
 
-const Message = ({navigation, route}) => {
+const Message = ({
+  navigation,
+  route,
+  user,
+  chatData,
+  onSetChatData,
+  onSetChatZeroCount,
+}) => {
+  const info = chatData[route.params.index];
+  const message =
+    chatData[route.params.index].chatList === null
+      ? []
+      : chatData[route.params.index].chatList;
+
+  console.log(message);
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: route.params.info.targetNm,
+      title: info.targetNm,
     });
   }, []);
 
   useEffect(() => {
+    if (chatData[route.params.index].chatList !== null) {
+      return;
+    }
     axios
       .post(
-        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/room/enter/${route.params.info.roomCd}`,
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/room/enter/${info.roomCd}`,
       )
       .then(({data}) => {
-        setMessage(data);
+        const copyList = chatData.slice();
+        copyList[route.params.index].chatList = data;
+        onSetChatData(copyList);
       });
+    return () => {
+      onSetChatZeroCount(route.params.index);
+    };
   }, []);
 
   const scrollViewRef = useRef();
   const textInputRef = useRef();
-  const [message, setMessage] = useState([]);
   const [input, setInput] = useState('');
 
-  const sendMessage = () => {
+  const sendMessage = (e) => {
     if (input === '') {
       return;
     }
@@ -50,28 +74,13 @@ const Message = ({navigation, route}) => {
       .post(
         'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/chat/sendMessage',
         {
-          roomCd: route.params.info.roomCd,
-          userCd: route.params.user.userCd,
-          userNm: route.params.user.userNm,
+          roomCd: info.roomCd,
+          userCd: user.userCd,
+          userNm: user.userNm,
           content: input,
         },
       )
       .then(() => {
-        console.log('sendMessage2', route.params.user);
-
-        console.log({
-          sendUser: route.params.user,
-          content: input,
-          crateChat: new Date(),
-        });
-        setMessage(
-          message.concat({
-            sendUser: route.params.user,
-            content: input,
-            crateChat: new Date(),
-          }),
-        );
-
         textInputRef.current.clear();
       })
       .finally(() => {
@@ -86,7 +95,7 @@ const Message = ({navigation, route}) => {
         ref={scrollViewRef}
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd(true)}>
         {message.map((value, index) => {
-          if (value.sendUser.userCd === route.params.user.userCd) {
+          if (value.sendUser.userCd === user.userCd) {
             return (
               <View
                 key={`${value.sendUser.userCd}-${index}`}
@@ -134,7 +143,7 @@ const Message = ({navigation, route}) => {
         <View style={styles.flexRow}>
           <Image
             source={{
-              uri: route.params.user.userPic,
+              uri: user.userPic,
             }}
             style={styles.chatCurrImg}
           />
@@ -164,7 +173,25 @@ const Message = ({navigation, route}) => {
   );
 };
 
-export default Message;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    chatData: state.chatData,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSetChatData: (chatData) => {
+      dispatch({type: 'SET_CHATDATA', chatData: chatData});
+    },
+    onSetChatZeroCount: (chatIndex) => {
+      dispatch({type: 'SET_CHATZEROCOUNT', chatIndex: chatIndex});
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Message);
 
 const styles = StyleSheet.create({
   chatContainer: {
