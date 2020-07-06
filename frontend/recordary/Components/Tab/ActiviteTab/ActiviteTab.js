@@ -179,6 +179,7 @@ const Activite = ({navigation, route}) => {
 
   return (
     <FlatList
+      style={styles.container}
       keyExtractor={(value, index) => `${value.createTime}-${index}`}
       data={noticeList}
       ListEmptyComponent={() => (
@@ -272,6 +273,7 @@ export default connect(mapStateToProps)(ActiviteTab);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'rgb(230,230,230)',
   },
   notifyBox: {
     padding: 5,

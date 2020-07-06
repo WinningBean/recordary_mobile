@@ -864,6 +864,7 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'rgb(230,230,230)',
   },
   section: {
     flex: 0.2,
