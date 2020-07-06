@@ -21,6 +21,7 @@ import axios from 'axios';
 import Timeline from './Timeline';
 import OnlyPostExTimeline from './OnlyPostExTimeline';
 import TimelineOneDay from './TimelineOneDay';
+import TimelineMultiDay from './TimelineMultiDay';
 import Comment from './Comment';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -132,6 +133,7 @@ const Home = ({navigation, route}) => {
 
   return (
     <FlatList
+      style={styles.container}
       keyExtractor={(val) => val.postCd}
       data={timeline}
       renderItem={({item}) => {
@@ -139,11 +141,13 @@ const Home = ({navigation, route}) => {
           return <Timeline postList={item} user={route.params.user} />;
         } else if (item.scheduleFK !== null) {
           return <TimelineOneDay postList={item} user={route.params.user} />;
+        } else if (item.shareScheduleList.length > 0) {
+          return <TimelineMultiDay postList={item} user={route.params.user} />;
         } else if (item.postOriginFK === null) {
           return (
             <OnlyPostExTimeline postList={item} user={route.params.user} />
           );
-        } else return;
+        } else return null;
       }}
       onEndReached={() => {
         getMoreTimelineData();

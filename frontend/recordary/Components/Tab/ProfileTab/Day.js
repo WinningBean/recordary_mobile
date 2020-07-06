@@ -130,6 +130,28 @@ const Day = ({
                         : '하루 종일'}
                     </Text>
                   </View>
+                  <View
+                    style={
+                      value.tabCd === null
+                        ? {
+                            backgroundColor: 'rgb(255,197,0)',
+                            margin: 5,
+                            padding: 5,
+                            height: 30,
+                            width: 50,
+                          }
+                        : {
+                            backgroundColor: value.tabCol,
+                            margin: 5,
+                            padding: 5,
+                            height: 30,
+                            width: 50,
+                          }
+                    }>
+                    <Text style={{textAlign: 'center'}}>
+                      {value.tabCd === null ? 'All' : value.tabNm}
+                    </Text>
+                  </View>
                 </View>
               </TouchableNativeFeedback>
             ))}

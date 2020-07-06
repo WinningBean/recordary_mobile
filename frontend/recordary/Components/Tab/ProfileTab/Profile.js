@@ -19,6 +19,8 @@ import ClickPicture from './ClickPicture';
 import Timeline from 'Components/Tab/HomeTab/Timeline';
 import OnlyPostExTimeline from 'Components/Tab/HomeTab/OnlyPostExTimeline';
 import TimelineOneDay from 'Components/Tab/HomeTab/TimelineOneDay';
+import TimelineMultiDay from 'Components/Tab/HomeTab/TimelineMultiDay';
+
 import Comment from 'Components/Tab/HomeTab/Comment';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -789,6 +791,15 @@ const Profile = ({navigation, route}) => {
                     <TimelineOneDay postList={value} user={route.params.user} />
                   </View>
                 );
+              } else if (value.shareScheduleList.length > 0) {
+                return (
+                  <View key={`${value.postCd}-${index}`}>
+                    <TimelineMultiDay
+                      postList={value}
+                      user={route.params.user}
+                    />
+                  </View>
+                );
               } else if (value.postOriginFK === null) {
                 return (
                   <View key={`${value.postCd}-${index}`}>
@@ -798,7 +809,7 @@ const Profile = ({navigation, route}) => {
                     />
                   </View>
                 );
-              } else return;
+              } else return null;
             })
           ) : (
             <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>

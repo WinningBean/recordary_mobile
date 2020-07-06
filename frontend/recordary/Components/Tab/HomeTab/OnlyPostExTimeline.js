@@ -144,10 +144,9 @@ export default function Timeline({postList, user}) {
                   ...data,
                   currentUserLikePost: false,
                   postLikeCount: data.postLikeCount - 1,
-                  postLikeFirstUser:
-                    data.postLikeFirstUser.userCd === user.userCd
-                      ? null
-                      : data.postLikeForstUser,
+                  postLikeFirstUser: (await axios.get(`/post/${data.postCd}`))
+                    .data.postLikeFirstUser,
+                  // data.postLikeFirstUser.userCd === props.user.userCd ? null : data.postLikeForstUser,
                   // data.postLikeFirstUser.userCd === props.user.userCd ? 다음 사람의 데이터...ㅠ : data.postLikeForstUser,
                 });
               }
