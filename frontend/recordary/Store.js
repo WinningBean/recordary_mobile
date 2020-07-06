@@ -7,8 +7,10 @@ const reducer = (state, action) => {
       user: {},
       friendList: undefined,
       groupList: undefined,
+      chatData: [],
     };
   }
+  var copyList = undefined;
   switch (action.type) {
     case 'SET_USER':
       return {...state, user: action.user};
@@ -23,6 +25,29 @@ const reducer = (state, action) => {
       return {
         ...state,
         groupList: action.groupList,
+      };
+    case 'SET_CHATDATA':
+      return {
+        ...state,
+        chatData: action.chatData,
+      };
+    case 'SAVE_NEWCHAT':
+      copyList = state.chatData.slice();
+      if (copyList[action.newChatIndex].chatList !== null) {
+        copyList[action.newChatIndex].chatList.push(action.newChat);
+      }
+      copyList[action.newChatIndex].lastChat = action.newChat.content;
+      ++copyList[action.newChatIndex].count;
+      return {
+        ...state,
+        chatData: copyList,
+      };
+    case 'SET_CHATZEROCOUNT':
+      copyList = state.chatData.slice();
+      copyList[action.chatIndex].count = 0;
+      return {
+        ...state,
+        chatData: copyList,
       };
   }
   return state;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -28,6 +28,7 @@ const Comment = ({navigation, route}) => {
       updateClick: false,
     })),
   );
+  const textInputRef = useRef();
 
   const getRecommentList = async (value, index, bool) => {
     try {
@@ -237,6 +238,7 @@ const Comment = ({navigation, route}) => {
             style={styles.commentImage}
           />
           <TextInput
+            ref={textInputRef}
             autoFocus={true}
             style={{paddingLeft: 10}}
             placeholder="댓글을 입력하세요..."
@@ -248,7 +250,7 @@ const Comment = ({navigation, route}) => {
         <TouchableOpacity
           style={{padding: 5}}
           onPress={async (e) => {
-            if (writtenComment !== undefined) {
+            if (writtenComment !== '') {
               try {
                 const data = (
                   await axios.post(
@@ -277,6 +279,8 @@ const Comment = ({navigation, route}) => {
                     updateClick: false,
                   }),
                 );
+                textInputRef.current.clear();
+                setWrittenComment('');
               } catch (e) {
                 console.log(e);
               }
