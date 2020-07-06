@@ -35,8 +35,6 @@ const Message = ({
       ? []
       : chatData[route.params.index].chatList;
 
-  console.log(message);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       title: info.targetNm,
@@ -57,6 +55,7 @@ const Message = ({
         onSetChatData(copyList);
       });
     return () => {
+      console.log(route.params.index);
       onSetChatZeroCount(route.params.index);
     };
   }, []);
