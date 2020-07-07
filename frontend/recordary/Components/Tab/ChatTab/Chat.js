@@ -113,7 +113,7 @@ const Chat = ({navigation, chatData}) => {
               ]}>
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: 13,
                   width: 270,
                   overflow: 'hidden',
                   height: 20,
