@@ -148,8 +148,8 @@ const Day = ({
                             width: 50,
                           }
                     }>
-                    <Text style={{textAlign: 'center'}}>
-                      {value.tabCd === null ? 'All' : value.tabNm}
+                    <Text style={{textAlign: 'center', color: 'black'}}>
+                      {value.tabCd === null ? 'All' : value.tabNM}
                     </Text>
                   </View>
                 </View>

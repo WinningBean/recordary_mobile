@@ -142,6 +142,7 @@ export default connect(mapStateToProps)(Chat);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'rgb(230,230,230)',
   },
   item: {
     height: 70,

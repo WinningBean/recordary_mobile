@@ -22,8 +22,6 @@ import Timeline from './Timeline';
 import OnlyPostExTimeline from './OnlyPostExTimeline';
 import TimelineOneDay from './TimelineOneDay';
 import TimelineMultiDay from './TimelineMultiDay';
-import Comment from './Comment';
-
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
@@ -172,8 +170,9 @@ export default HomeTab;
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 5,
+    paddingTop: 10,
     paddingBottom: 5,
+    backgroundColor: 'rgb(230,230,230)',
   },
   post: {
     padding: 5,

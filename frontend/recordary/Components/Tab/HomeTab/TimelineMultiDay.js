@@ -260,7 +260,7 @@ export default function TimelineMultiDay({postList, user}) {
 const styles = StyleSheet.create({
   post: {
     padding: 5,
-    marginBottom: 10,
+    marginBottom: 30,
     marginLeft: 10,
     marginRight: 10,
     backgroundColor: 'white',
