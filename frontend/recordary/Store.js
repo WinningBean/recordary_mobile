@@ -15,6 +15,15 @@ const reducer = (state, action) => {
     case 'SET_USER':
       return {...state, user: action.user};
     case 'SET_LOGIN':
+      if (action.isLogin === false) {
+        return {
+          isLogin: false,
+          user: {},
+          friendList: undefined,
+          groupList: undefined,
+          chatData: [],
+        };
+      }
       return {...state, isLogin: action.isLogin};
     case 'SAVE_FRIENDLIST':
       return {
