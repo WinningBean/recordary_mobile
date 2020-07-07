@@ -308,7 +308,7 @@ const Profile = ({navigation, route}) => {
                             })
                           }>
                           <View style={{alignItems: 'center'}}>
-                            <Text style={{fontSize: 14}}>팔로우</Text>
+                            <Text style={{fontSize: 14}}>팔로워</Text>
                             <Text style={{fontSize: 16}}>
                               {info.followerCount}
                             </Text>
@@ -324,7 +324,7 @@ const Profile = ({navigation, route}) => {
                             })
                           }>
                           <View style={{alignItems: 'center', marginLeft: 10}}>
-                            <Text style={{fontSize: 14}}>팔로잉</Text>
+                            <Text style={{fontSize: 14}}>팔로우</Text>
                             <Text style={{fontSize: 16}}>
                               {info.followingCount}
                             </Text>
