@@ -261,9 +261,10 @@ const styles = StyleSheet.create({
   post: {
     padding: 5,
     marginBottom: 30,
-    marginLeft: 10,
-    marginRight: 10,
+    // marginLeft: 10,
+    // marginRight: 10,
     backgroundColor: 'white',
+    elevation: 2,
   },
   spaceBetween: {
     paddingLeft: 5,

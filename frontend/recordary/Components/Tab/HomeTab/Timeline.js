@@ -24,6 +24,7 @@ export default function Timeline({postList, user}) {
   const [mediaList, setMediaList] = useState([]);
   const [active, setActive] = useState(0);
   const navigation = useNavigation();
+
   useEffect(() => {
     (async () => {
       try {
@@ -279,9 +280,10 @@ const styles = StyleSheet.create({
   post: {
     padding: 5,
     marginBottom: 30,
-    marginLeft: 10,
-    marginRight: 10,
+    // marginLeft: 10,
+    // marginRight: 10,
     backgroundColor: 'white',
+    elevation: 2,
   },
   spaceBetween: {
     paddingLeft: 5,

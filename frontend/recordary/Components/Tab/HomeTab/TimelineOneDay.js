@@ -15,6 +15,7 @@ import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
+
 export default function TimelineOneDay({postList, user}) {
   const [data, setData] = useState(postList);
   const navigation = useNavigation();
@@ -172,8 +173,11 @@ export default function TimelineOneDay({postList, user}) {
                   ...data,
                   currentUserLikePost: false,
                   postLikeCount: data.postLikeCount - 1,
-                  postLikeFirstUser: (await axios.get(`/post/${data.postCd}`))
-                    .data.postLikeFirstUser,
+                  postLikeFirstUser: (
+                    await axios.get(
+                      `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/${data.postCd}`,
+                    )
+                  ).data.postLikeFirstUser,
                   // data.postLikeFirstUser.userCd === props.user.userCd ? null : data.postLikeForstUser,
                   // data.postLikeFirstUser.userCd === props.user.userCd ? 다음 사람의 데이터...ㅠ : data.postLikeForstUser,
                 });
@@ -236,9 +240,10 @@ const styles = StyleSheet.create({
   post: {
     padding: 5,
     marginBottom: 30,
-    marginLeft: 10,
-    marginRight: 10,
+    // marginLeft: 10,
+    // marginRight: 10,
     backgroundColor: 'white',
+    elevation: 2,
   },
   spaceBetween: {
     paddingLeft: 5,
