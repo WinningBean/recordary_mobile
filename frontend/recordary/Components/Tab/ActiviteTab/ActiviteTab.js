@@ -279,6 +279,7 @@ const styles = StyleSheet.create({
     padding: 5,
     margin: 5,
     backgroundColor: 'white',
+    elevation: 2,
   },
   spaceBetween: {
     paddingLeft: 5,

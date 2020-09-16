@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import * as dateFns from 'date-fns';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -28,7 +29,27 @@ const Comment = ({navigation, route}) => {
       updateClick: false,
     })),
   );
+  const [refreshing, setRefreshing] = useState(false);
+
   const textInputRef = useRef();
+
+  const getCommentList = () => {
+    axios
+      .get(
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/${route.params.post.postCd}`,
+      )
+      .then(({data}) => {
+        console.log(data);
+        setCommentList(
+          data.commentList.map((value) => ({
+            ...value,
+            showRecommentClick: {recommentList: [], click: false},
+            updateClick: false,
+          })),
+        );
+        setRefreshing(false);
+      });
+  };
 
   const getRecommentList = async (value, index, bool) => {
     try {
@@ -58,7 +79,7 @@ const Comment = ({navigation, route}) => {
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View
           style={{
             backgroundColor: 'white',
@@ -134,7 +155,117 @@ const Comment = ({navigation, route}) => {
           )}
         </View>
         <View style={{paddingLeft: 5, marginTop: 5}}>
-          {commentList.length > 0
+          <FlatList
+            contentContainerStyle={{flexGrow: 1}}
+            data={commentList}
+            keyExtractor={(val) => val.postCd}
+            renderItem={({item, index}) => {
+              const value = item;
+              return (
+                <View
+                  style={{display: 'flex', flexDirection: 'row'}}
+                  key={`${value.commentCd}-${index}`}>
+                  <Image
+                    source={{
+                      uri: value.userFK.userPic,
+                    }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      resizeMode: 'cover',
+                      borderRadius: 50,
+                      marginTop: 10,
+                    }}
+                  />
+                  <View
+                    style={{
+                      display: 'flex',
+                      paddingTop: 5,
+                      paddingBottom: 5,
+                      paddingLeft: 10,
+                    }}>
+                    <View style={{display: 'flex', flexDirection: 'row'}}>
+                      <View>
+                        <View>
+                          <Text
+                            style={{
+                              fontSize: 15,
+                              fontWeight: 'bold',
+                            }}>
+                            {value.userFK.userId}({value.userFK.userNm})
+                          </Text>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() =>
+                            user === undefined
+                              ? null
+                              : getRecommentList(
+                                  value,
+                                  index,
+                                  value.showRecommentClick.click,
+                                )
+                          }>
+                          {value.reCommentCount > 0 ? (
+                            value.showRecommentClick.click === false ? (
+                              <View style={styles.flexRow}>
+                                <View style={{padding: 2}}>
+                                  <MaterialCommunityIcons
+                                    name="comment-processing"
+                                    size={15}
+                                  />
+                                </View>
+                                <Text
+                                  style={{
+                                    color: 'gray',
+                                  }}>{`댓글 ${
+                                  value.showRecommentClick.recommentList
+                                    .length > 0
+                                    ? value.showRecommentClick.recommentList
+                                        .length
+                                    : value.reCommentCount
+                                }개`}</Text>
+                              </View>
+                            ) : (
+                              <Text>{`댓글 접기`}</Text>
+                            )
+                          ) : (
+                            <View style={{padding: 2}}>
+                              <MaterialCommunityIcons
+                                name="comment-processing"
+                                size={15}
+                              />
+                            </View>
+                          )}
+                        </TouchableOpacity>
+                      </View>
+                      <View>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            paddingLeft: 10,
+                            maxWidth: 290,
+                          }}>
+                          {value.commentContent}
+                        </Text>
+                      </View>
+                    </View>
+                    <View>
+                      {value.showRecommentClick.click === true ? (
+                        <RecommentList
+                          list={value.showRecommentClick.recommentList}
+                        />
+                      ) : null}
+                    </View>
+                  </View>
+                </View>
+              );
+            }}
+            refreshing={refreshing}
+            onRefresh={() => {
+              getCommentList();
+            }}
+          />
+          {/* {commentList.length > 0
             ? commentList.map((value, index) => (
                 <View
                   style={{display: 'flex', flexDirection: 'row'}}
@@ -181,16 +312,24 @@ const Comment = ({navigation, route}) => {
                           }>
                           {value.reCommentCount > 0 ? (
                             value.showRecommentClick.click === false ? (
-                              <Text
-                                style={{
-                                  color: 'gray',
-                                }}>{`댓글 ${
-                                value.showRecommentClick.recommentList.length >
-                                0
-                                  ? value.showRecommentClick.recommentList
-                                      .length
-                                  : value.reCommentCount
-                              }개`}</Text>
+                              <View style={styles.flexRow}>
+                                <View style={{padding: 2}}>
+                                  <MaterialCommunityIcons
+                                    name="comment-processing"
+                                    size={15}
+                                  />
+                                </View>
+                                <Text
+                                  style={{
+                                    color: 'gray',
+                                  }}>{`댓글 ${
+                                  value.showRecommentClick.recommentList
+                                    .length > 0
+                                    ? value.showRecommentClick.recommentList
+                                        .length
+                                    : value.reCommentCount
+                                }개`}</Text>
+                              </View>
                             ) : (
                               <Text>{`댓글 접기`}</Text>
                             )
@@ -222,13 +361,12 @@ const Comment = ({navigation, route}) => {
                         />
                       ) : null}
                     </View>
-                    <View></View>
                   </View>
                 </View>
               ))
-            : null}
+            : null} */}
         </View>
-      </ScrollView>
+      </View>
       <View style={[styles.spaceBetween, styles.commentWrite]}>
         <View style={styles.flexRow}>
           <Image
@@ -333,7 +471,11 @@ const styles = StyleSheet.create({
   commentWrite: {
     backgroundColor: 'white',
     height: 50,
-    marginLeft: 5,
-    marginRight: 5,
+    paddingLeft: 5,
+    paddingRight: 5,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
   },
 });
