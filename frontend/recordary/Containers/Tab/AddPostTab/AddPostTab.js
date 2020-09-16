@@ -5,6 +5,7 @@ const mapStateToProps = (state) => {
   return {
     isLogin: state.isLogin,
     user: state.user,
+    groupList: state.groupList === undefined ? undefined : state.groupList,
   };
 };
 
