@@ -52,15 +52,14 @@ export default function TimelineMultiDay({postList, user}) {
       .filter(
         (value) =>
           startDate <= value.scheduleStr && endDate > value.scheduleStr,
-      )
-      .slice();
-
-    console.log(queueList, day);
+      );
 
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
         while (
           queueList.length > 0 &&
+          dateFns.startOfDay(queueList[0].scheduleStr) <=
+            dateFns.endOfDay(queueList[0].scheduleEnd) &&
           dateFns.isWithinInterval(day, {
             start: dateFns.startOfDay(queueList[0].scheduleStr),
             end: dateFns.endOfDay(queueList[0].scheduleEnd),
