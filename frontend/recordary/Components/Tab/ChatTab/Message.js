@@ -19,6 +19,8 @@ import {connect} from 'react-redux';
 
 import axios from 'axios';
 
+import * as dateFns from 'date-fns';
+
 const {width} = Dimensions.get('window');
 
 const Message = ({
@@ -94,6 +96,7 @@ const Message = ({
         ref={scrollViewRef}
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd(true)}>
         {message.map((value, index) => {
+          const createdDateTime = dateFns.parseISO(value.crateChat);
           if (value.sendUser.userCd === user.userCd) {
             return (
               <View
@@ -106,6 +109,22 @@ const Message = ({
                   ]}>
                   {value.content}
                 </Text>
+                <View style={styles.chatDateTime}>
+                  <Text>
+                    {dateFns.isSameDay(new Date(), createdDateTime)
+                      ? dateFns.format(createdDateTime, 'a') === 'AM'
+                        ? '오전 ' + dateFns.format(createdDateTime, 'h:mm')
+                        : '오후 ' + dateFns.format(createdDateTime, 'h:mm')
+                      : `${dateFns.format(
+                          createdDateTime,
+                          'M' + ' / ' + 'd',
+                        )} ${
+                          dateFns.format(createdDateTime, 'a') === 'AM'
+                            ? '(오전'
+                            : '(오후'
+                        } ${dateFns.format(createdDateTime, 'h:mm)')}`}
+                  </Text>
+                </View>
               </View>
             );
           }
@@ -123,6 +142,19 @@ const Message = ({
                 </Text>
                 <Text style={[styles.chatText, {backgroundColor: 'lightgray'}]}>
                   {value.content}
+                </Text>
+              </View>
+              <View style={styles.chatDateTime}>
+                <Text>
+                  {dateFns.isSameDay(new Date(), createdDateTime)
+                    ? dateFns.format(createdDateTime, 'a') === 'AM'
+                      ? '오전 ' + dateFns.format(createdDateTime, 'h:mm')
+                      : '오후 ' + dateFns.format(createdDateTime, 'h:mm')
+                    : `${dateFns.format(createdDateTime, 'M' + ' / ' + 'd')} ${
+                        dateFns.format(createdDateTime, 'a') === 'AM'
+                          ? '(오전'
+                          : '(오후'
+                      } ${dateFns.format(createdDateTime, 'h:mm)')}`}
                 </Text>
               </View>
             </View>
@@ -241,5 +273,10 @@ const styles = StyleSheet.create({
   chatWrite: {
     backgroundColor: 'white',
     height: 50,
+  },
+  chatDateTime: {
+    justifyContent: 'flex-end',
+    paddingLeft: 2,
+    paddingBottom: 8,
   },
 });

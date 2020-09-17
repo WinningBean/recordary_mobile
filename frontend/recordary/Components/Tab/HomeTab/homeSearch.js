@@ -52,111 +52,124 @@ const homeSearch = ({navigation, route}) => {
   // };
 
   const userList = () => {
-    return searchedUser.map((value, index) => (
-      <View style={styles.spaceBetween} key={`${value.userCd}-${index}`}>
-        <View style={[styles.flexRow, {margin: 5}]}>
-          <Image
-            source={{
-              uri: value.userInfo.userPic,
-            }}
-            style={{
-              width: 40,
-              height: 40,
-              resizeMode: 'cover',
-              borderRadius: 50,
-            }}
-          />
-          <Text style={{padding: 10, fontSize: 18}}>
-            {value.userInfo.userId}({value.userInfo.userNm})
-          </Text>
-        </View>
-        {value.userFollowTarget ? (
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                'unFollow',
-                '팔로우를 취소하시겠습니까?',
-                [
-                  {
-                    text: '아니오',
-                    onPress: () => console.log('No Pressed'),
-                    style: 'cancel',
-                  },
-                  {
-                    text: '예',
-                    onPress: () =>
-                      axios
-                        .delete(
-                          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/unFollow/${route.params.user.userCd}`,
-                          {
-                            params: {targetCd: value.userInfo.userCd},
-                          },
-                        )
-                        .then((unfollow) => {
-                          console.log(unfollow.data);
-                        })
-                        .catch((e) => {
-                          console.log(e);
-                        }),
-                  },
-                ],
-                {cancelable: false},
-              )
-            }>
-            <MaterialCommunityIcons
-              style={{padding: 10}}
-              name="account-check"
-              size={30}
-              color="black"
+    return searchedUser.map((value, index) => {
+      const currIndex = index;
+      return (
+        <View style={styles.spaceBetween} key={`${value.userCd}-${index}`}>
+          <View style={[styles.flexRow, {margin: 5}]}>
+            <Image
+              source={{
+                uri: value.userInfo.userPic,
+              }}
+              style={{
+                width: 40,
+                height: 40,
+                resizeMode: 'cover',
+                borderRadius: 50,
+              }}
             />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                'Follow',
-                '팔로우 하시겠습니까?',
-                [
-                  {
-                    text: '아니오',
-                    onPress: () => console.log('No Pressed'),
-                    style: 'cancel',
-                  },
-                  {
-                    text: '예',
-                    onPress: () =>
-                      axios
-                        .post(
-                          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/follow/${route.params.user.userCd}`,
-                          JSON.stringify(value.userInfo.userCd),
-                          {
-                            headers: {
-                              Accept: 'application/json',
-                              'Content-Type': 'application/json',
+            <Text style={{padding: 10, fontSize: 18}}>
+              {value.userInfo.userId}({value.userInfo.userNm})
+            </Text>
+          </View>
+          {value.userFollowTarget ? (
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  'unFollow',
+                  '팔로우를 취소하시겠습니까?',
+                  [
+                    {
+                      text: '아니오',
+                      onPress: () => console.log('No Pressed'),
+                      style: 'cancel',
+                    },
+                    {
+                      text: '예',
+                      onPress: () =>
+                        axios
+                          .delete(
+                            `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/unFollow/${route.params.user.userCd}`,
+                            {
+                              params: {targetCd: value.userInfo.userCd},
                             },
-                          },
-                        )
-                        .then((follow) => {
-                          console.log(follow.data);
-                        })
-                        .catch((e) => {
-                          console.log(e);
-                        }),
-                  },
-                ],
-                {cancelable: false},
-              )
-            }>
-            <MaterialIcons
-              name="add"
-              style={{padding: 10}}
-              size={30}
-              color="black"
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-    ));
+                          )
+                          .then((unfollow) => {
+                            const copySearchedUser = searchedUser.concat();
+                            copySearchedUser[
+                              currIndex
+                            ].userFollowTarget = !copySearchedUser[currIndex]
+                              .userFollowTarget;
+                            setSearchedUser(copySearchedUser);
+                          })
+                          .catch((e) => {
+                            console.log(e);
+                          }),
+                    },
+                  ],
+                  {cancelable: false},
+                )
+              }>
+              <MaterialCommunityIcons
+                style={{padding: 10}}
+                name="account-check"
+                size={30}
+                color="black"
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  'Follow',
+                  '팔로우 하시겠습니까?',
+                  [
+                    {
+                      text: '아니오',
+                      onPress: () => console.log('No Pressed'),
+                      style: 'cancel',
+                    },
+                    {
+                      text: '예',
+                      onPress: () =>
+                        axios
+                          .post(
+                            `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/follow/${route.params.user.userCd}`,
+                            JSON.stringify(value.userInfo.userCd),
+                            {
+                              headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                              },
+                            },
+                          )
+                          .then((follow) => {
+                            const copySearchedUser = searchedUser.concat();
+                            copySearchedUser[
+                              currIndex
+                            ].userFollowTarget = !copySearchedUser[currIndex]
+                              .userFollowTarget;
+                            setSearchedUser(copySearchedUser);
+                          })
+                          .catch((e) => {
+                            console.log(e);
+                          }),
+                    },
+                  ],
+                  {cancelable: false},
+                )
+              }>
+              <MaterialIcons
+                name="add"
+                style={{padding: 10}}
+                size={30}
+                color="black"
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      );
+    });
   };
 
   const groupList = () => {
