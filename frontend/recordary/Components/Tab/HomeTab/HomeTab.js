@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 10,
     paddingBottom: 5,
-    backgroundColor: 'rgb(230,230,230)',
+    backgroundColor: '#eee',
   },
   post: {
     padding: 5,

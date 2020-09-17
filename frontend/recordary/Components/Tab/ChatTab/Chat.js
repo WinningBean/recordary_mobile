@@ -97,7 +97,7 @@ const Chat = ({navigation, chatData}) => {
           </View>
           <View style={{paddingLeft: 10}}>
             <View style={[styles.itemContent, {justifyContent: 'flex-end'}]}>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>
                 {value.isGroup
                   ? value.targetNm
                   : `${value.targetId}(${value.targetNm})`}

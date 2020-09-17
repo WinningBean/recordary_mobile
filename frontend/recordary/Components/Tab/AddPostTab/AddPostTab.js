@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,11 +15,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as dateFns from 'date-fns';
+
 import axios from 'axios';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 const Stack = createStackNavigator();
 
-const AddPostTab = ({user}) => {
+const AddPostTab = ({user, groupList}) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -27,6 +28,7 @@ const AddPostTab = ({user}) => {
         component={AddPost}
         initialParams={{
           user: user,
+          groupList: groupList,
         }}
       />
     </Stack.Navigator>
@@ -69,18 +71,29 @@ const AddPost = ({navigation, route}) => {
       // ),
     });
   }, []);
-  // const [post, setPost] = useState({
-  //   userCd: route.params.user.userCd,
-  //   groupCd: null,
-  //   postOriginCd: null,
-  //   scheduleCd: null,
-  //   mediaCd: null,
-  //   postEx: null,
-  //   postPublicState: 0,
-  //   postScheduleShareState: false,
-  // });
-  //postEx예시
-  const [postEx, setPostEx] = useState(null);
+
+  const [post, setPost] = useState({
+    userCd: route.params.user.userCd,
+    groupCd: null,
+    postOriginCd: null,
+    scheduleCd: null,
+    mediaCd: null,
+    postEx: null,
+    postPublicState: 0,
+    postScheduleShareState: false,
+  });
+
+  const [scheduleInfo, setScheduleInfo] = useState({
+    tabCd: null,
+    userCd: route.params.user.userCd,
+    scheduleNm: '',
+    scheduleEx: '',
+    scheduleStr: new Date(),
+    scheduleEnd: new Date(),
+    scheduleCol: 'rgb(64, 114, 89)',
+    schedulePublicState: 0,
+    scheduleMembers: [],
+  });
 
   const [selectedValue, setSelectedValue] = useState('그룹 미선택');
   const [selectedPublic, setSelectedPublic] = useState('전체공개');
@@ -91,24 +104,26 @@ const AddPost = ({navigation, route}) => {
   const [mode, setMode] = useState('');
 
   const [startShow, setStartShow] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
 
   const [endShow, setEndShow] = useState(false);
-  const [endDate, setEndDate] = useState(new Date());
 
   const onStartChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setStartShow(false);
-    setStartDate(currentDate);
+    setScheduleInfo({
+      ...scheduleInfo,
+      scheduleStr: currentDate,
+      scheduleEnd: currentDate,
+    });
   };
+
   const onEndChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setEndShow(false);
-    setEndDate(currentDate);
-  };
-  const handleChange = (e) => {
-    console.log(e);
-    setPostEx(e);
+    setScheduleInfo({
+      ...scheduleInfo,
+      scheduleEnd: currentDate,
+    });
   };
 
   return (
@@ -117,12 +132,15 @@ const AddPost = ({navigation, route}) => {
         mode="dropdown"
         selectedValue={selectedValue}
         style={{height: 50}}
-        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}>
-        <Picker.Item label="그룹 미선택" value="그룹 미선택" />
-        <Picker.Item label="성호그룹" value="group1" />
-        <Picker.Item label="주은그룹" value="group2" />
-        <Picker.Item label="승빈그룹" value="group3" />
-        <Picker.Item label="수경그룹" value="group4" />
+        onValueChange={(itemValue, itemIndex) => {
+          setSelectedValue(itemValue);
+          setPost({...post, groupCd: itemValue});
+          console.log(itemValue);
+        }}>
+        <Picker.Item label="그룹 미선택" value={null} />
+        {route.params.groupList.map((value, index) => (
+          <Picker.Item label={value.groupNm} value={value.groupCd} />
+        ))}
       </Picker>
       <View
         style={{
@@ -174,20 +192,39 @@ const AddPost = ({navigation, route}) => {
               <MaterialIcons name="perm-media" size={30} />
             )}
           </TouchableOpacity>
-          <Picker
-            mode="dialog"
-            selectedValue={selectedPublic}
-            style={{
-              height: 30,
-              width: 120,
-            }}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedPublic(itemValue)
-            }>
-            <Picker.Item label="전체공개" value="public1" />
-            <Picker.Item label="친구만" value="public2" />
-            <Picker.Item label="나만보기" value="public3" />
-          </Picker>
+          {post.groupCd === null ? (
+            <Picker
+              mode="dialog"
+              selectedValue={selectedPublic}
+              style={{
+                height: 30,
+                width: 120,
+              }}
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedPublic(itemValue);
+                setPost({...post, postPublicState: itemValue});
+              }}>
+              <Picker.Item label="전체공개" value={0} />
+              <Picker.Item label="팔로워만" value={1} />
+              <Picker.Item label="친구만" value={2} />
+              <Picker.Item label="나만보기" value={3} />
+            </Picker>
+          ) : (
+            <Picker
+              mode="dialog"
+              selectedValue={selectedPublic}
+              style={{
+                height: 30,
+                width: 120,
+              }}
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedPublic(itemValue);
+                setPost({...post, postPublicState: itemValue});
+              }}>
+              <Picker.Item label="전체공개" value={0} />
+              <Picker.Item label="비공개" value={3} />
+            </Picker>
+          )}
         </View>
       </View>
       {isScheduleClick === true ? (
@@ -200,6 +237,9 @@ const AddPost = ({navigation, route}) => {
           }}
           placeholder="일정제목"
           maxLength={200}
+          onChangeText={(value) =>
+            setScheduleInfo({...scheduleInfo, scheduleNm: value})
+          }
         />
       ) : null}
       <TextInput
@@ -212,8 +252,9 @@ const AddPost = ({navigation, route}) => {
         autoFocus={true}
         multiline={true}
         maxLength={2000}
-        onChangeText={handleChange}
+        onChangeText={(value) => setPost({...post, postEx: value})}
       />
+
       {isScheduleClick === true ? (
         <>
           <View
@@ -235,7 +276,7 @@ const AddPost = ({navigation, route}) => {
                 }}>
                 <Text
                   style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
-                  {dateFns.format(startDate, 'yyyy.M.d EEE')}
+                  {dateFns.format(scheduleInfo.scheduleStr, 'yyyy.M.d EEE')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -247,7 +288,7 @@ const AddPost = ({navigation, route}) => {
                 }}>
                 <Text
                   style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
-                  {dateFns.format(startDate, 'a h:mm')}
+                  {dateFns.format(scheduleInfo.scheduleStr, 'a h:mm')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -271,7 +312,7 @@ const AddPost = ({navigation, route}) => {
                 }}>
                 <Text
                   style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
-                  {dateFns.format(endDate, 'yyyy.M.d EEE')}
+                  {dateFns.format(scheduleInfo.scheduleEnd, 'yyyy.M.d EEE')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -283,7 +324,7 @@ const AddPost = ({navigation, route}) => {
                 }}>
                 <Text
                   style={{fontSize: 16, fontWeight: 'bold', paddingRight: 5}}>
-                  {dateFns.format(endDate, 'a h:mm')}
+                  {dateFns.format(scheduleInfo.scheduleEnd, 'a h:mm')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -292,7 +333,7 @@ const AddPost = ({navigation, route}) => {
       ) : null}
       {startShow === true ? (
         <DateTimePicker
-          value={startDate}
+          value={scheduleInfo.scheduleStr}
           mode={mode}
           is24Hour={true}
           display="default"
@@ -300,7 +341,7 @@ const AddPost = ({navigation, route}) => {
         />
       ) : endShow === true ? (
         <DateTimePicker
-          value={endDate}
+          value={scheduleInfo.scheduleEnd}
           mode={mode}
           is24Hour={true}
           display="default"
@@ -326,25 +367,46 @@ const AddPost = ({navigation, route}) => {
                 text: '예',
                 onPress: async () => {
                   try {
-                    if (postEx !== null) {
-                      const postData = (
+                    var getScheduleCd = null;
+                    if (isScheduleClick === true) {
+                      getScheduleCd = (
                         await axios.post(
-                          `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
+                          'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/schedule/',
                           {
+                            tabCd: null,
+                            groupCd: post.groupCd,
                             userCd: route.params.user.userCd,
-                            groupCd: null,
-                            postOriginCd: null,
-                            scheduleCd: null,
-                            mediaCd: null,
-                            postEx: postEx,
-                            postPublicState: 0,
-                            postScheduleShareState: false,
+                            scheduleNm: scheduleInfo.scheduleNm,
+                            scheduleEx: post.postEx,
+                            scheduleStr: scheduleInfo.scheduleStr.getTime(),
+                            scheduleEnd: scheduleInfo.scheduleEnd.getTime(),
+                            scheduleCol: scheduleInfo.scheduleCol,
+                            scheduleMember: scheduleInfo.scheduleMembers,
+                            schedulePublicState:
+                              scheduleInfo.schedulePublicState,
                           },
                         )
                       ).data;
-                      console.log(postData);
-                    } else {
-                      console.log('else + ' + postEx);
+                      console.log(getScheduleCd);
+                    }
+                    const postData = (
+                      await axios.post(
+                        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/`,
+                        {
+                          userCd: route.params.user.userCd,
+                          groupCd: post.groupCd,
+                          postOriginCd: null,
+                          scheduleCd: getScheduleCd,
+                          mediaCd: null,
+                          postEx: post.postEx,
+                          postPublicState: 0,
+                          postScheduleShareState: false,
+                        },
+                      )
+                    ).data;
+                    console.log(postData);
+                    if (postData !== '') {
+                      navigation.goBack();
                     }
                   } catch (e) {
                     console.log(e);

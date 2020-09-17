@@ -5,9 +5,11 @@ import {
   View,
   TouchableOpacity,
   Image,
+  KeyboardAvoidingView,
   TextInput,
   ScrollView,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import * as dateFns from 'date-fns';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -28,7 +30,27 @@ const Comment = ({navigation, route}) => {
       updateClick: false,
     })),
   );
+  const [refreshing, setRefreshing] = useState(false);
+
   const textInputRef = useRef();
+
+  const getCommentList = () => {
+    axios
+      .get(
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/post/${route.params.post.postCd}`,
+      )
+      .then(({data}) => {
+        console.log(data);
+        setCommentList(
+          data.commentList.map((value) => ({
+            ...value,
+            showRecommentClick: {recommentList: [], click: false},
+            updateClick: false,
+          })),
+        );
+        setRefreshing(false);
+      });
+  };
 
   const getRecommentList = async (value, index, bool) => {
     try {
@@ -58,7 +80,7 @@ const Comment = ({navigation, route}) => {
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View
           style={{
             backgroundColor: 'white',
@@ -133,9 +155,15 @@ const Comment = ({navigation, route}) => {
             </View>
           )}
         </View>
+        {/* <KeyboardAvoidingView> */}
         <View style={{paddingLeft: 5, marginTop: 5}}>
-          {commentList.length > 0
-            ? commentList.map((value, index) => (
+          <FlatList
+            contentContainerStyle={{flexGrow: 1}}
+            data={commentList}
+            keyExtractor={(val) => val.postCd}
+            renderItem={({item, index}) => {
+              const value = item;
+              return (
                 <View
                   style={{display: 'flex', flexDirection: 'row'}}
                   key={`${value.commentCd}-${index}`}>
@@ -181,16 +209,24 @@ const Comment = ({navigation, route}) => {
                           }>
                           {value.reCommentCount > 0 ? (
                             value.showRecommentClick.click === false ? (
-                              <Text
-                                style={{
-                                  color: 'gray',
-                                }}>{`댓글 ${
-                                value.showRecommentClick.recommentList.length >
-                                0
-                                  ? value.showRecommentClick.recommentList
-                                      .length
-                                  : value.reCommentCount
-                              }개`}</Text>
+                              <View style={styles.flexRow}>
+                                <View style={{padding: 2}}>
+                                  <MaterialCommunityIcons
+                                    name="comment-processing"
+                                    size={15}
+                                  />
+                                </View>
+                                <Text
+                                  style={{
+                                    color: 'gray',
+                                  }}>{`댓글 ${
+                                  value.showRecommentClick.recommentList
+                                    .length > 0
+                                    ? value.showRecommentClick.recommentList
+                                        .length
+                                    : value.reCommentCount
+                                }개`}</Text>
+                              </View>
                             ) : (
                               <Text>{`댓글 접기`}</Text>
                             )
@@ -204,7 +240,7 @@ const Comment = ({navigation, route}) => {
                           )}
                         </TouchableOpacity>
                       </View>
-                      <View>
+                      <>
                         <Text
                           style={{
                             fontSize: 15,
@@ -213,7 +249,7 @@ const Comment = ({navigation, route}) => {
                           }}>
                           {value.commentContent}
                         </Text>
-                      </View>
+                      </>
                     </View>
                     <View>
                       {value.showRecommentClick.click === true ? (
@@ -222,13 +258,18 @@ const Comment = ({navigation, route}) => {
                         />
                       ) : null}
                     </View>
-                    <View></View>
                   </View>
                 </View>
-              ))
-            : null}
+              );
+            }}
+            refreshing={refreshing}
+            onRefresh={() => {
+              getCommentList();
+            }}
+          />
         </View>
-      </ScrollView>
+        {/* </KeyboardAvoidingView> */}
+      </View>
       <View style={[styles.spaceBetween, styles.commentWrite]}>
         <View style={styles.flexRow}>
           <Image
@@ -298,6 +339,7 @@ export default Comment;
 const styles = StyleSheet.create({
   container: {
     padding: 5,
+    flex: 1,
   },
   spaceBetween: {
     paddingLeft: 5,
@@ -333,7 +375,11 @@ const styles = StyleSheet.create({
   commentWrite: {
     backgroundColor: 'white',
     height: 50,
-    marginLeft: 5,
-    marginRight: 5,
+    paddingLeft: 5,
+    paddingRight: 5,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
   },
 });
