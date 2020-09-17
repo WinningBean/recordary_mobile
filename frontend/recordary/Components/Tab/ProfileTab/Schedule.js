@@ -11,6 +11,7 @@ import {
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
   Modal,
+  Image,
 } from 'react-native';
 
 import {TriangleColorPicker} from 'react-native-color-picker';
@@ -35,11 +36,13 @@ const Schedule = ({navigation, route}) => {
     route.params.data !== undefined
       ? route.params.data
       : {
+          tabCd: null,
           scheduleNm: '',
           scheduleEx: '',
           scheduleStr: dateFns.startOfDay(route.params.selectedDate),
           scheduleEnd: dateFns.endOfDay(route.params.selectedDate),
           scheduleCol: 'rgb(64, 114, 89)',
+          scheduleMemberList: [],
           schedulePublicState: 0,
         },
   );
@@ -47,13 +50,14 @@ const Schedule = ({navigation, route}) => {
   const [isClickStartTime, setIsClickStartTime] = useState(undefined);
   const [isAllTime, setIsAllTime] = useState(true);
   const [isClickColor, setIsClickColor] = useState(false);
+  const [isMemberListClick, setIsMemberListClick] = useState(false);
   const colorRef = useRef();
   console.log(data);
   return (
     <View style={styles.container}>
       <View
         style={{
-          height: height * 0.4,
+          height: height * 0.46,
           backgroundColor: 'white',
           // borderBottomLeftRadius: 30,
           // borderBottomRightRadius: 30,
@@ -63,6 +67,37 @@ const Schedule = ({navigation, route}) => {
           paddingHorizontal: 20,
           paddingTop: 10,
         }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            height: height * 0.05,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Text style={{fontWeight: 'bold', fontSize: 18}}>탭 선택</Text>
+          <View
+            style={
+              data.tabCd === null
+                ? {
+                    backgroundColor: 'rgb(255,197,0)',
+                    margin: 5,
+                    padding: 5,
+                    height: 30,
+                    width: 100,
+                  }
+                : {
+                    backgroundColor: data.tabCol,
+                    margin: 5,
+                    padding: 5,
+                    height: 30,
+                    width: 100,
+                  }
+            }>
+            <Text style={{textAlign: 'center', color: 'black'}}>
+              {data.tabCd === null ? 'All' : data.tabNM}
+            </Text>
+          </View>
+        </View>
         <View style={{flexDirection: 'row'}}>
           <TextInput
             style={{fontSize: 24, flex: 6}}
@@ -188,7 +223,7 @@ const Schedule = ({navigation, route}) => {
       </View>
       <View
         style={{
-          height: height * 0.36,
+          height: height * 0.32,
           backgroundColor: 'white',
           marginTop: 20,
           borderColor: '#ddd',
@@ -222,34 +257,96 @@ const Schedule = ({navigation, route}) => {
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View
               style={{
-                flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
               <MaterialIcons name="group" size={24} />
             </View>
-            <View style={{flex: 5, justifyContent: 'center'}}>
-              <Text style={{color: '#777', fontSize: 16}}>그룹 미선택</Text>
+            <View style={{justifyContent: 'center'}}>
+              <Text style={{paddingLeft: 10, color: '#777', fontSize: 16}}>
+                그룹 미선택
+              </Text>
             </View>
           </View>
         </TouchableNativeFeedback>
-        <TouchableNativeFeedback>
-          <View style={{flex: 1, flexDirection: 'row'}}>
+        <TouchableNativeFeedback onPress={() => setIsMemberListClick(true)}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <View
               style={{
-                flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
               <MaterialIcons name="person-add" size={24} />
             </View>
-            <View style={{flex: 5, justifyContent: 'center'}}>
-              <Text style={{color: '#777', fontSize: 16}}>
-                함께하는 친구 미선택
+            <View style={{justifyContent: 'center'}}>
+              <Text style={{paddingLeft: 10, color: '#777', fontSize: 16}}>
+                함께하는 친구
               </Text>
             </View>
+            {data.scheduleMemberList.length > 0 ? (
+              <TouchableNativeFeedback
+                onPress={() => setIsMemberListClick(true)}>
+                <Text style={{paddingLeft: 10, fontSize: 16}}>4명</Text>
+              </TouchableNativeFeedback>
+            ) : (
+              <View>
+                <Text style={{paddingLeft: 10, color: '#777', fontSize: 16}}>
+                  없음
+                </Text>
+              </View>
+            )}
           </View>
         </TouchableNativeFeedback>
+        {isMemberListClick === false ? null : (
+          <Modal
+            transparent
+            animated={true}
+            animationType="fade"
+            onRequestClose={() => setIsMemberListClick(false)}>
+            <TouchableWithoutFeedback
+              onPress={() => setIsMemberListClick(false)}>
+              <View style={styles.modalOverlay} />
+            </TouchableWithoutFeedback>
+
+            <View style={styles.modalContent}>
+              <View
+                style={{
+                  width: width * 0.5,
+                  backgroundColor: 'white',
+                }}>
+                {data.scheduleMemberList.map((val, i) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}>
+                    <Image
+                      source={{
+                        uri: val.userPic,
+                      }}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        resizeMode: 'cover',
+                        borderRadius: 50,
+                        margin: 10,
+                      }}
+                    />
+                    <Text style={{fontSize: 16, marginRight: 15}}>
+                      {val.userId}({val.userNm})
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </Modal>
+        )}
         <TouchableNativeFeedback>
           <View style={{flex: 1}}></View>
         </TouchableNativeFeedback>
@@ -446,5 +543,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: '#000000aa',
+  },
+  modalContent: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: height * 0.08,
   },
 });
