@@ -298,8 +298,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   postImage: {
-    width: Dimensions.get('window').width * 0.9,
-    height: Dimensions.get('window').width * 0.9,
+    width: Dimensions.get('window').width * 0.95,
+    height: Dimensions.get('window').width * 0.95,
     resizeMode: 'cover',
     margin: 5,
   },
