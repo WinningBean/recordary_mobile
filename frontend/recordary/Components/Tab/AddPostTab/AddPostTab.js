@@ -91,7 +91,7 @@ const AddPost = ({navigation, route}) => {
     scheduleEx: '',
     scheduleStr: new Date(),
     scheduleEnd: addHours(new Date(), 1),
-    scheduleCol: 'rgb(64, 114, 89)',
+    scheduleCol: '#ffc500',
     schedulePublicState: 0,
     scheduleMembers: [],
   });
@@ -382,6 +382,7 @@ const AddPost = ({navigation, route}) => {
                             scheduleStr: scheduleInfo.scheduleStr.getTime(),
                             scheduleEnd: scheduleInfo.scheduleEnd.getTime(),
                             scheduleCol: scheduleInfo.scheduleCol,
+
                             scheduleMember: scheduleInfo.scheduleMembers,
                             schedulePublicState:
                               scheduleInfo.schedulePublicState,
