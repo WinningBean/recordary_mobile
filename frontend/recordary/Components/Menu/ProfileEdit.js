@@ -12,7 +12,6 @@ import {
 
 import FastImage from 'react-native-fast-image';
 import ImagePicker from 'react-native-image-picker';
-import RNFetchBlob from 'rn-fetch-blob';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -39,44 +38,30 @@ const ProfileEdit = ({navigation, route}) => {
                 style: 'cancel',
               },
               {text: '예', onPress: async () => {
-
-              RNFetchBlob.fetch('POST', 'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/${currentUser.userCd}/profileUpload', {
-                  Authorization : "Bearer access-token",
-                  otherHeader : "foo",
-                  'Content-Type' : 'multipart/form-data',
-                }, [
-                  // element with property `filename` will be transformed into `file` in form data
-                  { name : 'userPic', filename : 'userPic.png', data: RNFetchBlob.wrap(userPicData)},
-                ]).then((resp) => {
-                  // ...
-                }).catch((err) => {
-                  Alert.alert('서버 오류로 인해 프로필 수정에 실패했습니다!!!!!!!!!');
-                })
-
-////                const dataurl = await canvas.toDataURL('image/*');
-////                console.log(dataurl);
-//                const formData = new FormData();
-////                const name = userPicData.fileName;
-////                console.log(name);
-////                const [, type] = name.split(".");
-////                formData.append("userPic", { name, type: "image/jpeg", uri: userPicData.uri });
-//                   formData.append("userPic", userPicData.uri);
+//                const dataurl = await canvas.toDataURL('image/*');
+//                console.log(dataurl);
+                const formData = new FormData();
+//                const name = userPicData.fileName;
+//                console.log(name);
+//                const [, type] = name.split(".");
+//                formData.append("userPic", { name, type: "image/jpeg", uri: userPicData.uri });
+                   formData.append("userPic", userPicData);
 //                   console.log(userPicData.uri);
-//                   console.log(formData);
+                   console.log(formData);
 //                   console.log(userPicData.path);
-//
-//                   try {
-//                     const userPicUrl = await axios.post(
-//                       'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/${currentUser.userCd}/profileUpload',
-//                       formData,
-//                       {
-//                         headers: {'Content-Type': 'multipart/form-data; boundary=------WebKitFormBoundary7MA4YWxkTrZu0gW'},
-//                       },
-//                     );
-//                    } catch (error) {
-//                     Alert.alert('서버 오류로 인해 프로필 수정에 실패했습니다.');
-//                     // console.error(error);
-//                   }
+
+                   try {
+                     const userPicUrl = await axios.post(
+                       'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/${currentUser.userCd}/profileUpload',
+                       formData,
+                       {
+                         headers: {'Content-Type': 'multipart/form-data; boundary=------WebKitFormBoundary7MA4YWxkTrZu0gW'},
+                       },
+                     );
+                    } catch (error) {
+                     Alert.alert('서버 오류로 인해 프로필 수정에 실패했습니다.');
+                     // console.error(error);
+                   }
                  },
             }])
           }>
