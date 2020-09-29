@@ -291,7 +291,9 @@ const Schedule = ({navigation, route}) => {
             {data.scheduleMemberList.length > 0 ? (
               <TouchableNativeFeedback
                 onPress={() => setIsMemberListClick(true)}>
-                <Text style={{paddingLeft: 10, fontSize: 16}}>4명</Text>
+                <Text style={{paddingLeft: 10, fontSize: 16}}>
+                  {data.scheduleMemberList.length}
+                </Text>
               </TouchableNativeFeedback>
             ) : (
               <View>

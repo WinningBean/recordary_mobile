@@ -15,6 +15,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as dateFns from 'date-fns';
+import {addHours, startOfDay, endOfDay, startOfSecond} from 'date-fns';
 
 import axios from 'axios';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -89,8 +90,8 @@ const AddPost = ({navigation, route}) => {
     scheduleNm: '',
     scheduleEx: '',
     scheduleStr: new Date(),
-    scheduleEnd: new Date(),
-    scheduleCol: 'rgb(64, 114, 89)',
+    scheduleEnd: addHours(new Date(), 1),
+    scheduleCol: '#ffc500',
     schedulePublicState: 0,
     scheduleMembers: [],
   });
@@ -113,7 +114,7 @@ const AddPost = ({navigation, route}) => {
     setScheduleInfo({
       ...scheduleInfo,
       scheduleStr: currentDate,
-      scheduleEnd: currentDate,
+      scheduleEnd: addHours(currentDate, 1),
     });
   };
 
@@ -381,6 +382,7 @@ const AddPost = ({navigation, route}) => {
                             scheduleStr: scheduleInfo.scheduleStr.getTime(),
                             scheduleEnd: scheduleInfo.scheduleEnd.getTime(),
                             scheduleCol: scheduleInfo.scheduleCol,
+
                             scheduleMember: scheduleInfo.scheduleMembers,
                             schedulePublicState:
                               scheduleInfo.schedulePublicState,
