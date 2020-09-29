@@ -44,9 +44,10 @@ const Profile = ({navigation, route}) => {
   const [scheduleList, setScheduleList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  console.log(selectedDate);
 
   useLayoutEffect(() => {
+    console.log('>>>>>>>>>>>>>>>>>>>>currUser.userCd>>>>>>>>>>>>>>>>>>>>>>>>>>' + currUser.userCd);
+    console.log('>>>>>>>>>>>>>>>>>>>>>currUser.userNm>>>>>>>>>>>>>>>>>>>>>>>>>' + currUser.userNm);
     navigation.setOptions({
       title:
         route.params.isGroup === undefined
@@ -87,8 +88,26 @@ const Profile = ({navigation, route}) => {
             </Text>
           </TouchableOpacity>
         ),
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.push('todoTab',{
+                userCd: currUser.userCd,
+                userNm: currUser.userNm
+              });
+            }}>
+            <Text style={{padding: 10}}>
+              <MaterialCommunityIcons
+                name="comment-search-outline"
+                size={34}
+                color="white"
+              />
+            </Text>
+          </TouchableOpacity>
+        ),
     });
   }, []);
+
 
   useEffect(() => {
     if (route.params.isGroup === true) {

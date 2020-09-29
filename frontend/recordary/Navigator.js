@@ -23,6 +23,7 @@ import ProfileEdit from 'Components/Menu/ProfileEdit';
 import Loading from 'Containers/Loading';
 
 import WebSock from './Components/WebSock';
+import TodoTab from 'Components/Tab/TodoTab/TodoTab';
 
 const Stack = createStackNavigator();
 
@@ -94,6 +95,20 @@ const Navigator = ({isLogin, user, setIsLogin, setUser}) => {
                   cardStyleInterpolator:
                     CardStyleInterpolators.forHorizontalIOS,
                   headerStyle: {backgroundColor: 'rgb(64,115,158)'},
+                  headerTintColor: 'white',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 24,
+                  },
+                }}
+              />
+             <Stack.Screen
+                name="todoTab"
+                component={TodoTab}
+                options={{
+                  cardStyleInterpolator:
+                    CardStyleInterpolators.forHorizontalIOS,
+                  headerStyle: {backgroundColor: 'rgb(175, 77, 160)'},
                   headerTintColor: 'white',
                   headerTitleStyle: {
                     fontWeight: 'bold',
