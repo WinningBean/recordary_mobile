@@ -27,7 +27,6 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 
 import * as dateFns from 'date-fns';
-import Todo from './Todo'
 import { Button } from 'react-native-paper';
 
 const {width, height} = Dimensions.get('window');
