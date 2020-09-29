@@ -58,6 +58,8 @@ target 'recordary' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
   target 'recordaryTests' do
     inherit! :complete
     # Pods for testing

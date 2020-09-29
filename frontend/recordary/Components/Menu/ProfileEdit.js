@@ -12,10 +12,15 @@ import {
 
 import FastImage from 'react-native-fast-image';
 import ImagePicker from 'react-native-image-picker';
+import Canvas from 'react-native-canvas';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 var userPicData;
+
+const handleCanvas = (canvas) => {
+    const ctx = canvas.getContext('2d');
+  }
 
 const ProfileEdit = ({navigation, route}) => {
   useLayoutEffect(() => {
@@ -38,22 +43,51 @@ const ProfileEdit = ({navigation, route}) => {
                 style: 'cancel',
               },
               {text: '예', onPress: async () => {
-//                const dataurl = await canvas.toDataURL('image/*');
-//                console.log(dataurl);
-                const formData = new FormData();
-//                const name = userPicData.fileName;
-//                console.log(name);
-//                const [, type] = name.split(".");
-//                formData.append("userPic", { name, type: "image/jpeg", uri: userPicData.uri });
-                   formData.append("userPic", userPicData);
-//                   console.log(userPicData.uri);
-                   console.log(formData);
-//                   console.log(userPicData.path);
 
+                console.log(userPicData.uri);
+
+                if (currentUser.userPic != userPicData.uri) {
+                    var canvas = React.createElement('canvas');
+                    var ctx = handleCanvas;
+
+                    var image = React.createElement('img', {
+                        src: userPicData.uri
+                    });
+
+                    let height = userPicData.height;
+                    let width = userPicData.width;
+                    height *= 250 / width;
+                    width = 250;
+
+//                    ctx.drawImage(0, 0, width, height);
+
+
+//                    var dataurl = Canvas.toDataURL('image/jpeg');
+//
+//                    console.log("ggggggggggggggggggggggggggggggggggggggggggggggggggg");
+//                    console.log(dataurl);
+//
+//                    setCurrentUser({...currentUser, userPic: dataurl});
+                 } else {
+                    setCurrentUser({...currentUser, userPic: userPicData.uri});
+                 }
+
+////                const dataurl = await canvas.toDataURL('image/*');
+////                console.log(dataurl);
+                const formData = new FormData();
+////                const name = userPicData.fileName;
+////                console.log(name);
+////                const [, type] = name.split(".");
+////                formData.append("userPic", { name, type: "image/jpeg", uri: userPicData.uri });
+                   formData.append("userPic", currentUser.userPic);
+////                   console.log(userPicData.uri);
+//                   console.log(formData);
+////                   console.log(userPicData.path);
+//
                    try {
                      const userPicUrl = await axios.post(
                        'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/user/${currentUser.userCd}/profileUpload',
-                       formData,
+                        formData,
                        {
                          headers: {'Content-Type': 'multipart/form-data; boundary=------WebKitFormBoundary7MA4YWxkTrZu0gW'},
                        },
