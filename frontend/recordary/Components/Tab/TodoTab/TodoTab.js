@@ -39,10 +39,14 @@ const TodoTab = ({navigation, route}) => {
   const [isClickColor, setIsClickColor] = useState(false);
   const [isClickDeadLine, setIsClickDeadLine] = useState(undefined);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [input, setInput] = useState('');
+
   var today = new Date();
   var koreanWeek = undefined;
+  var isFirstLoding = true;
   const colorRef = useRef();
-
+  const scrollViewRef = useRef();
+  const textInputRef = useRef();
 
   const [data, setData] = useState(
     {
@@ -53,8 +57,6 @@ const TodoTab = ({navigation, route}) => {
       toDoSate: false,
     },
   );
-
-  console.log('>>>>>>>>>>>>>>>>>>>>data.toDoCol>>>>>>>>>>>>>>>>>>>>>>>>>>' + data.toDoCol);
 
   useLayoutEffect(() => {
   
@@ -80,12 +82,13 @@ const TodoTab = ({navigation, route}) => {
     if (data === '') {
       setTodoList([]);
     }
-    console.log(data);
-    setTodoList(data);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>요청보넴");
+    setTodoList(data.map((value) => ({ ...value, toDoEndDate: parseISO(value.toDoEndDate) })));
   }catch(error){
     console.error(error);
     Alert.alert('서버에러로 인하여 데이터를 받아오는데 실패하였습니다.');
   }
+
   };
 
   const getPreToDoList = async () => {
@@ -96,8 +99,8 @@ const TodoTab = ({navigation, route}) => {
     if (data === '') {
       setPreTodoList([]);
     }
-    console.log(data);
-    setPreTodoList(data);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>요청보넴");
+    setPreTodoList(data.map((value) => ({ ...value, toDoEndDate: parseISO(value.toDoEndDate) })));
   }catch(error){
     console.error(error);
     Alert.alert('서버에러로 인하여 데이터를 받아오는데 실패하였습니다.');
@@ -105,37 +108,55 @@ const TodoTab = ({navigation, route}) => {
   };
 
   useEffect(() => {
-   getToDoList();
-   getPreToDoList();
+  if(isFirstLoding){
+    getToDoList();
+    getPreToDoList();
+    isFirstLoding = false;
+  }
 
   }, []);
 
-  const scrollViewRef = useRef();
-  const textInputRef = useRef();
-  const [input, setInput] = useState('');
 
-  const addToDo = (e) => {
+  const addToDo = async () => {
     if (input === '') {
       return;
     }
-    console.log('addToDo');
-    axios
-      .post(
-        'http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/',
-        {
-          userCd: route.params.userCd,
-          toDoContent: input,
-          toDoEndDate: startOfSecond(endOfDay(selectedDate)).getTime(),
-          toDoCol: data.toDoCol,
-          toDoSate: false,
-        },
-      )
-      .then(() => {
-        textInputRef.current.clear();
-      })
-      .finally(() => {
-        setInput('');
+    textInputRef.current.clear();
+    try {
+      const { todoCd } = await
+        axios
+          .post('http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/',
+            {
+              userCd: route.params.userCd,
+              toDoContent: input,
+              toDoEndDate: startOfSecond(endOfDay(selectedDate)).getTime(),
+              toDoCol: data.toDoCol,
+              toDoSate: false,
+            });
+
+      var addTodoIndex = toDoList.length;
+
+      toDoList.map((value, index) => {
+        if (isAfter(value.toDoEndDate, selectedDate)) {
+          addTodoIndex = index;
+        }
       });
+
+      const newTodo = toDoList.slice();
+      newTodo.splice(addTodoIndex, 0, {
+        toDoCd: todoCd,
+        toDoContent: input,
+        toDoEndDate: selectedDate,
+        toDoCol: data.toDoCol,
+        toDoSate: false,
+      });
+      setTodoList(newTodo);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('서버에러로 인하여 데이터를 받아오는데 실패하였습니다.');
+    }
+
+    setInput('');
   };
 
   switch (format(selectedDate, 'i')) {
@@ -169,8 +190,8 @@ const TodoTab = ({navigation, route}) => {
 
   const loadToDo = (value, index) => {
 
-    const deadline = differenceInCalendarDays( parseISO(value.toDoEndDate), today);
-
+    const deadline = differenceInCalendarDays( value.toDoEndDate, today);
+   
     return (
       <View style={styles.todo} key={`${value.toDoCd}`}>
         <TouchableOpacity 
@@ -300,7 +321,7 @@ const TodoTab = ({navigation, route}) => {
         }else {
           return (
             <DateTimePicker
-              value={data.toDoEndDate}
+              value={selectedDate}
               mode="date"
               display="default"
               locale="ko"
