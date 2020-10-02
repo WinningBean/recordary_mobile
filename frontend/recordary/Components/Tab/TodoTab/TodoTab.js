@@ -79,9 +79,6 @@ const TodoTab = ({navigation, route}) => {
     const {data} = await axios.get(
       `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/${route.params.userCd}`,
     );
-    if (data === '') {
-      setTodoList([]);
-    }
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>요청보넴");
     setTodoList(data.map((value) => ({ ...value, toDoEndDate: parseISO(value.toDoEndDate) })));
   }catch(error){
@@ -96,9 +93,6 @@ const TodoTab = ({navigation, route}) => {
     const {data} = await axios.get(
       `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/pre/${route.params.userCd}`,
     );
-    if (data === '') {
-      setPreTodoList([]);
-    }
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>요청보넴");
     setPreTodoList(data.map((value) => ({ ...value, toDoEndDate: parseISO(value.toDoEndDate) })));
   }catch(error){
@@ -113,17 +107,16 @@ const TodoTab = ({navigation, route}) => {
     getPreToDoList();
     isFirstLoding = false;
   }
-
   }, []);
 
 
   const addToDo = async () => {
+    textInputRef.current.clear();
     if (input === '') {
       return;
     }
-    textInputRef.current.clear();
     try {
-      const { todoCd } = await
+     const todoCd = (await
         axios
           .post('http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/',
             {
@@ -132,9 +125,12 @@ const TodoTab = ({navigation, route}) => {
               toDoEndDate: startOfSecond(endOfDay(selectedDate)).getTime(),
               toDoCol: data.toDoCol,
               toDoSate: false,
-            });
+            })).data;
+
+        console.log("<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>"+ todoCd);
 
       var addTodoIndex = toDoList.length;
+      var newTodo = toDoList.concat();
 
       toDoList.map((value, index) => {
         if (isAfter(value.toDoEndDate, selectedDate)) {
@@ -142,13 +138,12 @@ const TodoTab = ({navigation, route}) => {
         }
       });
 
-      const newTodo = toDoList.slice();
       newTodo.splice(addTodoIndex, 0, {
         toDoCd: todoCd,
         toDoContent: input,
         toDoEndDate: selectedDate,
         toDoCol: data.toDoCol,
-        toDoSate: false,
+        toDoCompleteState: false,
       });
       setTodoList(newTodo);
     } catch (error) {
@@ -158,6 +153,23 @@ const TodoTab = ({navigation, route}) => {
 
     setInput('');
   };
+
+  const updateTodo = async (value, index, isEndDeadLine) => {
+    console.log(">>>>>>>>>>>>>>>>>>"+value.toDoCompleteState+">>>>>>>>>>>>" + value.todoCd);
+  try{
+     await axios.post(
+      `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/update/${value.toDoCd}`,
+    );
+
+    var newTodo = isEndDeadLine ? preToDoList.concat() : toDoList.concat();
+    newTodo[index] = { ...newTodo[index], toDoCompleteState: !value.toDoCompleteState };
+    isEndDeadLine ? setPreTodoList(newTodo) : setTodoList(newTodo);
+
+    }catch{
+      console.error(error);
+      Alert.alert('서버에러로 인하여 데이터를 변경하는데 실패하였습니다.');
+  }
+};
 
   switch (format(selectedDate, 'i')) {
     case '0':
@@ -188,42 +200,34 @@ const TodoTab = ({navigation, route}) => {
       koreanWeek = '에러';
   }
 
-  const loadToDo = (value, index) => {
+  const loadToDo = (value, index, isEndDeadLine) => {
 
     const deadline = differenceInCalendarDays( value.toDoEndDate, today);
    
     return (
       <View style={styles.todo} key={`${value.toDoCd}`}>
         <TouchableOpacity 
-          onClick={async () => { 
-            try {
-              await axios.post(`http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/update/${value.toDoCd}`);
-            } catch (error) {
-              onsole.error(error);
-              Alert.alert('서버에러로 인하여 데이터를 수정하는데 실패하였습니다.');
-            }
-          }}>
+          onPress={() =>updateTodo(value, index, isEndDeadLine)}>
           <View
             style={[
               styles.circle,
               value.toDoCompleteState ? styles.completedCircle : { borderColor: `${value.toDoCol}` }
             ]}
-
           />
         </TouchableOpacity>
-        <View style ={{ marginLeft: 0, textAlign: 'left'}}>
-          <Text
-            style={[
-              styles.text,
-              value.toDoCompleteState ? styles.completedText : styles.uncompletedText
-            ]}
-          >
-            {value.toDoContent}
-          </Text>
-          <Text style={styles.deadline}>
-            {deadline === 0 ? 'D-DAY' : deadline > 0 ? `${deadline}일 후` : `${-deadline}일 전`}
-          </Text>
-        </View>
+          <View style={{ marginLeft: 0, textAlign: 'left'}} >
+            <Text
+              style={[
+                styles.text,
+                value.toDoCompleteState ? styles.completedText : styles.uncompletedText
+              ]}
+            >
+              {value.toDoContent}
+            </Text>
+            <Text style={styles.deadline}>
+              {deadline === 0 ? 'D-DAY' : deadline > 0 ? `${deadline}일 후` : `${-deadline}일 전`}
+            </Text>
+          </View>
       </View>
     );
   };
@@ -237,7 +241,7 @@ const TodoTab = ({navigation, route}) => {
 
         {isOpen ? (
           <View>
-            {preToDoList.map((value, index) => loadToDo(value, index))}
+            {preToDoList.map((value, index) => loadToDo(value, index, true))}
             <TouchableOpacity onPress={() => setIsOpen(false)}>
               <View style={styles.open}>
               </View>
@@ -249,7 +253,7 @@ const TodoTab = ({navigation, route}) => {
             </View>
           </TouchableOpacity>
           )}
-        {toDoList.map((value, index) => loadToDo(value, index))}
+        {toDoList.map((value, index) => loadToDo(value, index, false))}
       </ScrollView>
       <View style={{justifyContent: "space-between",
                     display: 'flex',
