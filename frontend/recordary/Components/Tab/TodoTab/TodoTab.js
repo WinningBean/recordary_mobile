@@ -17,6 +17,7 @@ import {
 import { format, differenceInCalendarDays, startOfSecond, endOfDay, parseISO, isAfter } from 'date-fns';
 import {TriangleColorPicker} from 'react-native-color-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -275,12 +276,22 @@ const TodoTab = ({navigation, route}) => {
             {pastDeadLineTodoList.map((value, index) => loadTodo(value, index, true))}
             <TouchableOpacity onPress={() => setIsOpen(false)}>
               <View style={styles.open}>
+              <MaterialCommunityIcons
+                name="chevron-up"
+                size={34}
+                color="black"
+              />
               </View>
             </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity onPress={ ()=> setIsOpen(true)}>
             <View style={styles.open}>
+            <MaterialCommunityIcons
+                name="chevron-down"
+                size={34}
+                color="black"
+              />
             </View>
           </TouchableOpacity>
           )}

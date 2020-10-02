@@ -98,7 +98,7 @@ const Profile = ({navigation, route}) => {
             }}>
             <Text style={{padding: 10}}>
               <MaterialCommunityIcons
-                name="comment-search-outline"
+                name="clipboard-text"
                 size={34}
                 color="white"
               />
