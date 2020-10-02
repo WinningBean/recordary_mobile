@@ -8,6 +8,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Image,
+  Alert,
   Modal,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
@@ -127,14 +128,13 @@ const TodoTab = ({navigation, route}) => {
               toDoSate: false,
             })).data;
 
-        console.log("<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>"+ todoCd);
-
       var addTodoIndex = toDoList.length;
       var newTodo = toDoList.concat();
 
-      toDoList.map((value, index) => {
-        if (isAfter(value.toDoEndDate, selectedDate)) {
+      toDoList.some((value, index) => {
+        if (value.toDoEndDate > selectedDate) {
           addTodoIndex = index;
+          return true;
         }
       });
 
@@ -155,21 +155,36 @@ const TodoTab = ({navigation, route}) => {
   };
 
   const updateTodo = async (value, index, isEndDeadLine) => {
-    console.log(">>>>>>>>>>>>>>>>>>"+value.toDoCompleteState+">>>>>>>>>>>>" + value.todoCd);
-  try{
-     await axios.post(
-      `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/update/${value.toDoCd}`,
-    );
+    try {
+      await axios.post(
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/update/${value.toDoCd}`,
+      );
 
-    var newTodo = isEndDeadLine ? preToDoList.concat() : toDoList.concat();
-    newTodo[index] = { ...newTodo[index], toDoCompleteState: !value.toDoCompleteState };
-    isEndDeadLine ? setPreTodoList(newTodo) : setTodoList(newTodo);
+      var newTodo = isEndDeadLine ? preToDoList.concat() : toDoList.concat();
+      newTodo[index] = { ...newTodo[index], toDoCompleteState: !value.toDoCompleteState };
+      isEndDeadLine ? setPreTodoList(newTodo) : setTodoList(newTodo);
 
-    }catch{
+    } catch {
       console.error(error);
       Alert.alert('서버에러로 인하여 데이터를 변경하는데 실패하였습니다.');
-  }
-};
+    }
+  };
+
+  const deleteTodo = async (value, index, isEndDeadLine) => {
+    try {
+      await axios.delete(
+        `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/${value.toDoCd}`,
+      );
+      var newTodo = isEndDeadLine ? preToDoList.concat() : toDoList.concat();
+      newTodo.splice(index, 1);
+      isEndDeadLine ? setPreTodoList(newTodo) : setTodoList(newTodo);
+
+    } catch {
+      console.error(error);
+      Alert.alert('서버에러로 인하여 데이터를 삭제하는데 실패하였습니다.');
+    }
+
+  };
 
   switch (format(selectedDate, 'i')) {
     case '0':
@@ -215,6 +230,21 @@ const TodoTab = ({navigation, route}) => {
             ]}
           />
         </TouchableOpacity>
+        <TouchableOpacity style ={{ width: width*0.8 }} onLongPress={() => Alert.alert(
+            '할일 삭제',
+            '할일을 삭제하시겠습니까?',
+            [
+              {
+                text: '아니오',
+                style: 'cancel',
+              },
+              {
+                text: '예',
+                onPress: () => deleteTodo(value, index, isEndDeadLine),
+              }
+            ]
+          )
+          }>
           <View style={{ marginLeft: 0, textAlign: 'left'}} >
             <Text
               style={[
@@ -228,6 +258,7 @@ const TodoTab = ({navigation, route}) => {
               {deadline === 0 ? 'D-DAY' : deadline > 0 ? `${deadline}일 후` : `${-deadline}일 전`}
             </Text>
           </View>
+          </TouchableOpacity>
       </View>
     );
   };
