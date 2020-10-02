@@ -34,8 +34,8 @@ const {width, height} = Dimensions.get('window');
 
 const TodoTab = ({navigation, route}) => {
 
-  const [toDoList, setTodoList] = useState([]);
-  const [preToDoList, setPreTodoList] = useState([]);
+  const [todoList, setTodoList] = useState([]);
+  const [pastDeadLineTodoList, setPastDeadLineTodoList] = useState([]);
   const [isOpen, setIsOpen] = useState(false)
   const [isClickColor, setIsClickColor] = useState(false);
   const [isClickDeadLine, setIsClickDeadLine] = useState(undefined);
@@ -75,7 +75,7 @@ const TodoTab = ({navigation, route}) => {
   }, []);
 
 
-  const getToDoList = async () => {
+  const getTodoList = async () => {
     try{
     const {data} = await axios.get(
       `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/${route.params.userCd}`,
@@ -89,13 +89,13 @@ const TodoTab = ({navigation, route}) => {
 
   };
 
-  const getPreToDoList = async () => {
+  const getPastDeadLineTodoList = async () => {
     try{
     const {data} = await axios.get(
       `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/pre/${route.params.userCd}`,
     );
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>요청보넴");
-    setPreTodoList(data.map((value) => ({ ...value, toDoEndDate: parseISO(value.toDoEndDate) })));
+    setPastDeadLineTodoList(data.map((value) => ({ ...value, toDoEndDate: parseISO(value.toDoEndDate) })));
   }catch(error){
     console.error(error);
     Alert.alert('서버에러로 인하여 데이터를 받아오는데 실패하였습니다.');
@@ -104,14 +104,14 @@ const TodoTab = ({navigation, route}) => {
 
   useEffect(() => {
   if(isFirstLoding){
-    getToDoList();
-    getPreToDoList();
+    getTodoList();
+    getPastDeadLineTodoList();
     isFirstLoding = false;
   }
   }, []);
 
 
-  const addToDo = async () => {
+  const addTodo = async () => {
     textInputRef.current.clear();
     if (input === '') {
       return;
@@ -128,10 +128,10 @@ const TodoTab = ({navigation, route}) => {
               toDoSate: false,
             })).data;
 
-      var addTodoIndex = toDoList.length;
-      var newTodo = toDoList.concat();
+      var addTodoIndex = todoList.length;
+      var newTodo = todoList.concat();
 
-      toDoList.some((value, index) => {
+      todoList.some((value, index) => {
         if (value.toDoEndDate > selectedDate) {
           addTodoIndex = index;
           return true;
@@ -160,9 +160,9 @@ const TodoTab = ({navigation, route}) => {
         `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/update/${value.toDoCd}`,
       );
 
-      var newTodo = isEndDeadLine ? preToDoList.concat() : toDoList.concat();
+      var newTodo = isEndDeadLine ? pastDeadLineTodoList.concat() : todoList.concat();
       newTodo[index] = { ...newTodo[index], toDoCompleteState: !value.toDoCompleteState };
-      isEndDeadLine ? setPreTodoList(newTodo) : setTodoList(newTodo);
+      isEndDeadLine ? setPastDeadLineTodoList(newTodo) : setTodoList(newTodo);
 
     } catch {
       console.error(error);
@@ -175,9 +175,9 @@ const TodoTab = ({navigation, route}) => {
       await axios.delete(
         `http://ec2-15-165-140-48.ap-northeast-2.compute.amazonaws.com:8080/toDo/${value.toDoCd}`,
       );
-      var newTodo = isEndDeadLine ? preToDoList.concat() : toDoList.concat();
+      var newTodo = isEndDeadLine ? pastDeadLineTodoList.concat() : todoList.concat();
       newTodo.splice(index, 1);
-      isEndDeadLine ? setPreTodoList(newTodo) : setTodoList(newTodo);
+      isEndDeadLine ? setPastDeadLineTodoList(newTodo) : setTodoList(newTodo);
 
     } catch {
       console.error(error);
@@ -215,7 +215,7 @@ const TodoTab = ({navigation, route}) => {
       koreanWeek = '에러';
   }
 
-  const loadToDo = (value, index, isEndDeadLine) => {
+  const loadTodo = (value, index, isEndDeadLine) => {
 
     const deadline = differenceInCalendarDays( value.toDoEndDate, today);
    
@@ -272,7 +272,7 @@ const TodoTab = ({navigation, route}) => {
 
         {isOpen ? (
           <View>
-            {preToDoList.map((value, index) => loadToDo(value, index, true))}
+            {pastDeadLineTodoList.map((value, index) => loadTodo(value, index, true))}
             <TouchableOpacity onPress={() => setIsOpen(false)}>
               <View style={styles.open}>
               </View>
@@ -284,7 +284,7 @@ const TodoTab = ({navigation, route}) => {
             </View>
           </TouchableOpacity>
           )}
-        {toDoList.map((value, index) => loadToDo(value, index, false))}
+        {todoList.map((value, index) => loadTodo(value, index, false))}
       </ScrollView>
       <View style={{justifyContent: "space-between",
                     display: 'flex',
@@ -346,7 +346,7 @@ const TodoTab = ({navigation, route}) => {
               setTimeout(() => scrollViewRef.current.scrollToEnd(true), 400)
             }
             onChangeText={(value) => setInput(value)}
-            onSubmitEditing={addToDo}
+            onSubmitEditing={addTodo}
           />
 
         </View>
