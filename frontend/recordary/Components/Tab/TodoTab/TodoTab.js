@@ -316,12 +316,12 @@ const TodoTab = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity  onPress={() => setIsClickColor(true)}>
             <View style={{
-                  width: 40,
-                  height: 40,
+                  width: 34,
+                  height: 34,
                   borderRadius: 20,
                   marginRight: 10,
               backgroundColor:data.toDoCol,
-              marginVertical: 5,
+              margin: 8
               
             }}>
 
@@ -331,8 +331,8 @@ const TodoTab = ({navigation, route}) => {
       <View
         style={[
           {
-            borderTopColor: '#bbb',
-            borderTopWidth: StyleSheet.hairlineWidth,
+            // borderTopColor: '#bbb',
+            // borderTopWidth: StyleSheet.hairlineWidth,
             height: height*0.07,
             paddingLeft: 5,
             display: 'flex',
@@ -351,8 +351,8 @@ const TodoTab = ({navigation, route}) => {
               paddingLeft: 10,
               paddingBottom: 10,
               paddingTop: 10,
-              borderTopColor: '#bbb',
-              borderTopWidth: StyleSheet.hairlineWidth,
+              //borderTopColor: '#bbb',
+              //borderTopWidth: StyleSheet.hairlineWidth,
               flex: 1,
               fontSize: 25
             }}
@@ -510,9 +510,9 @@ const styles = StyleSheet.create({
     borderColor: "#F23657"
   },
   text: {
-    fontSize: 20,
+    fontSize: 18,
     textAlign: "left",
-    marginVertical: 10,
+    marginVertical:10,
     marginBottom: 0
   },
   completedText: {
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
   deadline: {
     color: 'green', 
     fontSize: 14,
-    marginBottom: 20
+    marginBottom: 14
   },
   modalOverlay: {
     position: 'absolute',
