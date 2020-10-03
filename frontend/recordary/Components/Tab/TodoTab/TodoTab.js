@@ -55,7 +55,7 @@ const TodoTab = ({navigation, route}) => {
       userCd: route.params.userCd,
       toDoContent: input,
       toDoEndDate: today,
-      toDoCol: 'rgb(64, 114, 89)',
+      toDoCol: '#407259',
       toDoSate: false,
     },
   );
@@ -298,15 +298,19 @@ const TodoTab = ({navigation, route}) => {
         {todoList.map((value, index) => loadTodo(value, index, false))}
       </ScrollView>
       <View style={{justifyContent: "space-between",
+                    backgroundColor: 'white',
+                    borderTopColor: "#aaa",
+                    borderTopWidth: StyleSheet.hairlineWidth,
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center'}}>
           <TouchableOpacity onPress={() => setIsClickDeadLine(true)}>
             <View
               style={{
-                width: width*0.5                
+                width: width*0.5,     
+                marginLeft: 5          
               }}>
-               <Text style={{fontSize:17}}>{`  ${format(selectedDate, 'yyyy/MM/dd')} ${koreanWeek}까지`}  </Text> 
+               <Text style={{fontSize:17 }}>{`  ${format(selectedDate, 'yyyy/MM/dd')} ${koreanWeek}까지`}  </Text> 
             </View>
 
           </TouchableOpacity>
@@ -315,6 +319,7 @@ const TodoTab = ({navigation, route}) => {
                   width: 40,
                   height: 40,
                   borderRadius: 20,
+                  marginRight: 10,
               backgroundColor:data.toDoCol,
               marginVertical: 5,
               
