@@ -223,6 +223,7 @@ const Month = ({
       for (let i = 0; i < 7; i++) {
         while (
           queueList.length > 0 &&
+          queueList[0].scheduleStr < queueList[0].scheduleEnd &&
           dateFns.isWithinInterval(day, {
             start: dateFns.startOfDay(queueList[0].scheduleStr),
             end: dateFns.endOfDay(queueList[0].scheduleEnd),

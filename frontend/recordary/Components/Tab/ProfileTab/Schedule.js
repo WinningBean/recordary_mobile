@@ -191,7 +191,7 @@ const Schedule = ({navigation, route}) => {
               setData({
                 ...data,
                 start: dateFns.startOfDay(data.scheduleStr),
-                end: dateFns.endOfDay(data.scheduleEnd),
+                end: dateFns.startOfSecond(dateFns.endOfDay(data.scheduleEnd)),
               });
             }}>
             <View
@@ -371,9 +371,25 @@ const Schedule = ({navigation, route}) => {
         <TouchableNativeFeedback
           onPress={() => {
             if (route.params.data === undefined) {
-              route.params.onRegisterSchedule(data);
+              route.params.onRegisterSchedule({
+                ...data,
+                scheduleStr: isAllTime
+                  ? dateFns.startOfDay(data.scheduleStr)
+                  : data.scheduleStr,
+                scheduleEnd: isAllTime
+                  ? dateFns.startOfSecond(dateFns.endOfDay(data.scheduleEnd))
+                  : data.scheduleEnd,
+              });
             } else {
-              route.params.onModify(data);
+              route.params.onModify({
+                ...data,
+                scheduleStr: isAllTime
+                  ? dateFns.startOfDay(data.scheduleStr)
+                  : data.scheduleStr,
+                scheduleEnd: isAllTime
+                  ? dateFns.startOfSecond(dateFns.endOfDay(data.scheduleEnd))
+                  : data.scheduleEnd,
+              });
             }
             navigation.goBack();
           }}>
@@ -419,7 +435,7 @@ const Schedule = ({navigation, route}) => {
                   setData({
                     ...data,
                     scheduleEnd: isAllTime
-                      ? dateFns.startOfDay(selectedDate)
+                      ? dateFns.startOfSecond(dateFns.endOfDay(selectedDate))
                       : selectedDate,
                   });
                 }
