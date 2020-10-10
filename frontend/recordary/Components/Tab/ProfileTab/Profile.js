@@ -44,10 +44,15 @@ const Profile = ({navigation, route}) => {
   const [scheduleList, setScheduleList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-
   useLayoutEffect(() => {
-    console.log('>>>>>>>>>>>>>>>>>>>>currUser.userCd>>>>>>>>>>>>>>>>>>>>>>>>>>' + currUser.userCd);
-    console.log('>>>>>>>>>>>>>>>>>>>>>currUser.userNm>>>>>>>>>>>>>>>>>>>>>>>>>' + currUser.userNm);
+    console.log(
+      '>>>>>>>>>>>>>>>>>>>>currUser.userCd>>>>>>>>>>>>>>>>>>>>>>>>>>' +
+        currUser.userCd,
+    );
+    console.log(
+      '>>>>>>>>>>>>>>>>>>>>>currUser.userNm>>>>>>>>>>>>>>>>>>>>>>>>>' +
+        currUser.userNm,
+    );
     navigation.setOptions({
       title:
         route.params.isGroup === undefined
@@ -88,26 +93,28 @@ const Profile = ({navigation, route}) => {
             </Text>
           </TouchableOpacity>
         ),
-        headerRight: () => (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.push('todoTab',{
-                userCd: currUser.userCd,
-                userNm: currUser.userNm
-              });
-            }}>
-            <Text style={{padding: 10}}>
-              <MaterialCommunityIcons
-                name="clipboard-text"
-                size={34}
-                color="white"
-              />
-            </Text>
-          </TouchableOpacity>
-        ),
+      headerRight:
+        route.params.isGroup === true
+          ? null
+          : () => (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.push('todoTab', {
+                    userCd: currUser.userCd,
+                    userNm: currUser.userNm,
+                  });
+                }}>
+                <Text style={{padding: 10}}>
+                  <MaterialCommunityIcons
+                    name="clipboard-text"
+                    size={34}
+                    color="white"
+                  />
+                </Text>
+              </TouchableOpacity>
+            ),
     });
   }, []);
-
 
   useEffect(() => {
     if (route.params.isGroup === true) {
@@ -300,21 +307,33 @@ const Profile = ({navigation, route}) => {
                     }}>
                     {info === undefined ? null : route.params.isGroup ===
                       true ? (
-                      <TouchableOpacity
-                        style={{flex: 1}}
-                        onPress={() =>
-                          navigation.push('ListComponent', {
-                            isGroup: true,
-                            userInfo: info.memberList,
-                          })
-                        }>
-                        <View style={{alignItems: 'center'}}>
-                          <Text style={{fontSize: 14}}>그룹 멤버</Text>
-                          <Text style={{fontSize: 16}}>
-                            {info !== undefined ? info.memberList.length : 0}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
+                      <>
+                        <TouchableOpacity style={{flex: 1}}>
+                          <View style={{alignItems: 'center'}}>
+                            <Text style={{fontSize: 14}}>그룹장</Text>
+                            <Text style={{fontSize: 16}}>
+                              {info !== undefined
+                                ? info.admin.userNm
+                                : 'undefind'}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={{flex: 1}}
+                          onPress={() =>
+                            navigation.push('ListComponent', {
+                              isGroup: true,
+                              userInfo: info.memberList,
+                            })
+                          }>
+                          <View style={{alignItems: 'center'}}>
+                            <Text style={{fontSize: 14}}>그룹 멤버</Text>
+                            <Text style={{fontSize: 16}}>
+                              {info !== undefined ? info.memberList.length : 0}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      </>
                     ) : (
                       <>
                         <TouchableOpacity

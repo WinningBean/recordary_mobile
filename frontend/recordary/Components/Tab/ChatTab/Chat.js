@@ -60,6 +60,7 @@ const Chat = ({navigation, chatData}) => {
         onPress={() => {
           navigation.navigate('message', {
             index: index,
+            isGroup: value.isGroup,
           });
         }}
         key={`chatlist-${value.roomCd}`}>

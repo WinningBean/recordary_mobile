@@ -40,6 +40,9 @@ const Message = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       title: info.targetNm,
+      headerStyle: {
+        backgroundColor: route.params.isGroup ? 'tomato' : 'rgb(64,115,158)',
+      },
     });
   }, []);
 
