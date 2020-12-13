@@ -1,4 +1,4 @@
-# recordary_mobile
+# recordary_mobile ([pc](https://github.com/wsb0722/recordary_pc))
 
 ## Recordary : Schedule based Social Networking Service
 :school: 졸업작품전 프로젝트로 진행
@@ -17,12 +17,12 @@
 - Babel
 - webpack
 
+- Gradle - version 4.10.2
+
 - Java - version 1.8.0
 - Spring Boot - version 2.1.9.RELEASE
 - JPA
 - JUnit - version 4.12
-
-- Gradle - version 4.10.2
 - MySQL
 - AWS
 
