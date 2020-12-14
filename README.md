@@ -5,7 +5,6 @@
 ![image](https://user-images.githubusercontent.com/53260922/102009393-7a2ce880-3d7a-11eb-958f-2f01a17159cc.png)
 ### Screenshot
 <p align="center"><img src="https://user-images.githubusercontent.com/53260922/102082883-111aa300-3e56-11eb-8d70-4c77ba8da7c2.png" width="30%"></p>
-![image](https://user-images.githubusercontent.com/53260922/102082883-111aa300-3e56-11eb-8d70-4c77ba8da7c2.png)
 
 ## Contributor :man_technologist: :woman_technologist:
 - 위성호 [Sungho-Wi](https://github.com/Sungho-Wi)
