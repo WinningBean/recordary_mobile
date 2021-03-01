@@ -1,4 +1,4 @@
-# recordary_mobile ([pc](https://github.com/wsb0722/recordary_pc))
+# recordary_mobile ([pc](https://github.com/Winning-Bean/recordary_pc))
 
 ## Recordary : Schedule based Social Networking Service
 :school: 졸업작품전 프로젝트로 진행
@@ -8,7 +8,7 @@
 
 ## Contributor :man_technologist: :woman_technologist:
 - 위성호 [Sungho-Wi](https://github.com/Sungho-Wi)
-- 위승빈 [wsb0722](https://github.com/wsb0722) (leader)
+- 위승빈 [wsb0722](https://github.com/Winning-Bean) (leader)
 - 최주은 [jueun275](https://github.com/jueun275)
 - 황수경 [sukyeongh](https://github.com/sukyeongh)
 
@@ -41,4 +41,3 @@
 ![image](https://user-images.githubusercontent.com/53260922/102014438-4b723a80-3d99-11eb-8ff1-d76cc08c8e84.png)
 ![image](https://user-images.githubusercontent.com/53260922/102014446-50cf8500-3d99-11eb-96ec-5585db7d317d.png)
 ![image](https://user-images.githubusercontent.com/53260922/102014447-54630c00-3d99-11eb-9b8a-e13f28773932.png)
-
